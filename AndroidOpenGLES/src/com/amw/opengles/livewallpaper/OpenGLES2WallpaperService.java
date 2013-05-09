@@ -4,9 +4,12 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView.Renderer;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public abstract class OpenGLES2WallpaperService extends GLWallpaperService{
+    private static final String TAG = "OpenGLES2WallpaperService";
+    
     @Override
     public Engine onCreateEngine() {
         return new OpenGLES2Engine();
@@ -28,6 +31,7 @@ public abstract class OpenGLES2WallpaperService extends GLWallpaperService{
                 setEGLContextClientVersion(2);
                 setRenderer(getNewRenderer());
             } else {
+                Log.d(TAG, "OpenGL ES 2.0 is not supported");
                 return;
             }    
         }
