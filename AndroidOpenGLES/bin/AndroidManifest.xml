@@ -12,16 +12,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name="com.amw.opengles.FirstActivity"
-            android:label="@string/title_activity_main" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.amw.opengles.SecondActivity"></activity>
+        <service android:name="com.amw.opengles.livewallpaper.MyWallpaperService" android:permission="android.permission.BIND_WALLPAPER"></service>
     </application>
 
 </manifest>
