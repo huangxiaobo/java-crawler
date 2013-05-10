@@ -12,7 +12,7 @@ public class JmeDroid extends AndroidHarness {
 		Log.d("TIME TRACE : ", Thread.currentThread().getStackTrace()[2].getFileName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + " --- " + SystemClock.uptimeMillis());
 		
 		// Set the application class to run
-		appClass = "com.routon.jmeanimation.HelloJME";
+		appClass = "com.routon.jmeanimation.JmeDesktop";
 		
 		// Try ConfigType.FASTEST; or ConfigType.LEGACY if you have problems
 		eglConfigType = ConfigType.BEST;
