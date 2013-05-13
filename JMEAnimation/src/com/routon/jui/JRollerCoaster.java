@@ -32,7 +32,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 	private int rcHead = 0;
 	private float rcSpeed = 1.0f;
 	
-	private float rcSpeedBaseline = 1.0f;
+	private float rcSpeedBaseline = 2.0f;
 	private float rcSpeedFactor = 0.918f;
 	
 	private int rcLoop = ROLLER_COASTER_LOOP_NON;

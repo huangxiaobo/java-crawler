@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/layoutMain"
+        android:layout_width="349dip"
+        android:layout_height="600dip"
+        android:layout_marginLeft="900dip"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/layoutHead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal" >
+			         
+    		<ImageView
+        		android:id="@+id/img_anim"
+        		android:layout_width="wrap_content"
+        		android:layout_height="50dip"
+        		 />
+    		
+        </LinearLayout>
+        
+         <LinearLayout
+            android:id="@+id/layoutFoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="right"
+            android:orientation="horizontal" >
+			
+                		
+    		<ImageView
+        		android:id="@+id/img_label"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:src="@drawable/routon_label_1080p"
+        		 />
+        </LinearLayout>
+    </RelativeLayout>
+    
+</RelativeLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/testlayout"
+    android:layout_width="642dp"
+    android:layout_height="256dp"
+    android:alwaysDrawnWithCache = "true"
+    android:background="@drawable/commend_bg_1080p" >
+
+
+			 <TextView
+			     android:id="@+id/testtitle"
+			     android:layout_width="140dp"
+			     android:layout_height="wrap_content"
+			     android:layout_marginLeft="441dp"
+			     android:layout_marginTop="16dp"
+			     android:ellipsize="marquee"
+			     android:textColor="#ffffff"
+			     android:textSize="20sp"
+			     android:gravity="center"
+			     android:singleLine="true"
+			     android:marqueeRepeatLimit="marquee_forever"
+			     android:focusable="true"
+			     android:focusableInTouchMode="true" >
+
+			     </TextView>
+</FrameLayout>
