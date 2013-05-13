@@ -114,18 +114,21 @@ public class HelloJME extends JStage {
 	}
 	
 	private void testRollerCoaster() {
-		AnimationFactory animationFactory = new AnimationFactory(4, "anim", 30);
+		AnimationFactory animationFactory = new AnimationFactory(4.0f, "anim", 30);
 		
 		animationFactory.addTimeTranslation(0, new Vector3f(-3.0f, 1.5f, 0.0f));
-		animationFactory.addTimeTranslation(1, new Vector3f(-1.5f, 1.5f, 0.0f));
-		animationFactory.addTimeTranslation(2, new Vector3f( 0.0f, 1.5f, 0.0f));
-		animationFactory.addTimeTranslation(3, new Vector3f( 1.5f, 1.5f, 0.0f));
-		animationFactory.addTimeTranslation(4, new Vector3f( 3.0f, 1.5f, 0.0f));
+//		animationFactory.addTimeTranslation(1, new Vector3f(-1.5f, 1.5f, 0.0f));
+//		animationFactory.addTimeTranslation(2, new Vector3f( 0.0f, 1.5f, 0.0f));
+//		animationFactory.addTimeTranslation(3, new Vector3f( 1.5f, 1.5f, 0.0f));
+//		animationFactory.addTimeTranslation(3.5f, new Vector3f( 2.5f, 1.5f, 0.0f));
+		animationFactory.addTimeTranslation(4.0f, new Vector3f( 3.0f, 1.5f, 0.0f));
+		//animationFactory.addTimeTranslation(5, new Vector3f( 3.0f, 1.5f, 0.0f));
 		
 		Animation animation = animationFactory.buildAnimation();
 		
 		JFocusStrategy focusStrategy = new JFocusStrategy(2, new float[] {0, 1, 2, 3, 4});
-		JRollerCoaster rollerCoaster = new JRollerCoaster(animation, focusStrategy);
+		JRollerCoaster rollerCoaster = new JRollerCoaster("roller coaster", animation, focusStrategy);
+		rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
 /*		
 		JQuad jQuad = new JQuad(1.0f, 1.0f);
 		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");

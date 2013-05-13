@@ -17,6 +17,10 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 	
 	private static String ROLLER_COASTER_CONTROL_TAG = "JRollerCoaster Control";
 	
+	public static int ROLLER_COASTER_LOOP_NON = 0;
+	public static int ROLLER_COASTER_LOOP_REVERSE = -1;
+	public static int ROLLER_COASTER_LOOP_FUTURE_EXTENSION_RESERVE = 1;
+	
 	private Animation advance = null;
 	private Animation retreat = null;;
 	
@@ -31,11 +35,15 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 	private float rcSpeedBaseline = 1.0f;
 	private float rcSpeedFactor = 0.918f;
 	
-	public JRollerCoaster(Animation advance, JFocusStrategy focusStrategy) {
-		this(advance, null, focusStrategy);
+	private int rcLoop = ROLLER_COASTER_LOOP_NON;
+	
+	public JRollerCoaster(String name, Animation advance, JFocusStrategy focusStrategy) {
+		this(name, advance, null, focusStrategy);
 	}
 	
-	public JRollerCoaster(Animation advance, Animation retreat, JFocusStrategy focusStrategy) {
+	public JRollerCoaster(String name, Animation advance, Animation retreat, JFocusStrategy focusStrategy) {
+		super(name);
+		
 		this.advance = advance;
 		this.retreat = retreat;
 		
@@ -48,6 +56,16 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 	
 	public void setRetreatKeys(int[] keys) {
 		rKeys = keys;
+	}
+	
+	public void setLoopMode(int loop) {
+		if (loop == ROLLER_COASTER_LOOP_NON || loop == ROLLER_COASTER_LOOP_REVERSE) {
+			rcLoop = loop;
+		}
+	}
+	
+	public int getLoopMode() {
+		return rcLoop;
 	}
 	
 	private int gearSwitcher(int key) {
@@ -66,11 +84,11 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 		return 0;
 	}
 	
-	private void onAdvance() {
+	public void onAdvance() {
 		int childrenNum = getChildren().size();
-		boolean go = focusStrategy.advance(childrenNum);
+		int go = focusStrategy.advance(childrenNum);
 		
-		if (go == true) {
+		if (go > 0) {
 			Log.d(TAG, "onAdvance ---- rcHead = " + rcHead + " " + focusStrategy.getFocus() + " " + focusStrategy.getAnchorage() + " " + focusStrategy.getLastPosition());
 
 			int gear = focusStrategy.getGear();
@@ -81,15 +99,26 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 			focusStrategy.deltaAnchorage(1);
 			focusStrategy.updateFocus();
 			
+			Log.d(TAG, "onAdvance ++++ rcHead = " + rcHead + " " + focusStrategy.getFocus() + " " + focusStrategy.getAnchorage() + " " + focusStrategy.getLastPosition());
 			updateRollerCoasterSpeed();
+		}
+		else {
+			go = -go;
+			
+			if (rcLoop == ROLLER_COASTER_LOOP_REVERSE) {
+				Log.d(TAG, "ROLLER_COASTER_LOOP_REVERSE --- retreat : " + go);
+				for (int i = 0; i < go; i++) {
+					onRetreat();
+				}
+			}
 		}
 	}
 	
 	private void onRetreat() {
 		int childrenNum = getChildren().size();
-		boolean go = focusStrategy.retreat(childrenNum);
+		int go = focusStrategy.retreat(childrenNum);
 		
-		if (go == true) {
+		if (go > 0) {
 			Log.d(TAG, "onRetreat ---- rcHead = " + rcHead + " " + focusStrategy.getFocus() + " " + focusStrategy.getAnchorage() + " " + focusStrategy.getLastPosition());
 
 			int gear = focusStrategy.getGear();
@@ -100,7 +129,18 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 			focusStrategy.deltaAnchorage(-1);
 			focusStrategy.updateFocus();
 			
+			Log.d(TAG, "onRetreat ++++ rcHead = " + rcHead + " " + focusStrategy.getFocus() + " " + focusStrategy.getAnchorage() + " " + focusStrategy.getLastPosition());
 			updateRollerCoasterSpeed();
+		}
+		else {
+			go = -go;
+			
+			if (rcLoop == ROLLER_COASTER_LOOP_REVERSE) {
+				Log.d(TAG, "ROLLER_COASTER_LOOP_REVERSE --- advance : " + go);
+				for (int i = 0; i < go; i++) {
+					onAdvance();
+				}
+			}
 		}
 	}
 	
@@ -244,6 +284,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 		}
 		
 		int gear = focusStrategy.getGear(index, position);
+//		Log.d(TAG, "onTimePointReach spatial = " + spatial.getName() + " time = " + time + " gear = " + gear);
 		if (gear > 0) {
 			if (position == focusStrategy.getCameraShotNum() - 1) {								// out of region 
 				spatial.setVisibility(false);
@@ -271,7 +312,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 					playChildSpatial(index + 1, (retreat == null) ? 0 : 1, focusStrategy.getLastCameraShotTime(), time, -rcSpeed);
 				}
 				
-				channel.setTimeCheckPoint(focusStrategy.getCameraShotTime(position) - 1);			// continue to previous position
+				channel.setTimeCheckPoint(focusStrategy.getCameraShotTime(position - 1));			// continue to previous position
 			}
 		}
 		else {
@@ -301,26 +342,18 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 					int channelIndex = 0;
 					AnimChannel ncChannel = ncControl.getChannel(channelIndex);
 					
-					newComer.setVisibility(true);
 					ncChannel.setTime(newComerTime);
+					ncChannel.pause();
+					
+					newComer.setVisibility(true);
 				}
 			}
 			
 			channel.pause();
 		}
-		
-		if (position == focusStrategy.getPacesetter()) {	// TODO: this strategy may cause error when the camera shot times are not evenly distributed
-			// update last position of the focus
-			if (gear > 0) {
-				focusStrategy.deltaLastPosition(1);
-			}
-			else if (gear < 0) {
-				focusStrategy.deltaLastPosition(-1);
-			}
-			else {
-				focusStrategy.setLastPosition(position);
-			}
-		}
+
+		// update last position of the focus
+		focusStrategy.setLastPosition(index, position);
 	}
 
 	private void updateRollerCoasterSpeed() {	
@@ -337,14 +370,12 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 		AnimControl control = null;
 		AnimChannel channel = null;
 		
-		float time, position;
-		int i, j, channelIndex = 0;
-		for (i = rcHead, j = focusStrategy.getAnchorage(i); i < childrenNum/* && j < cameraShotNum*/; i++, j++) {
+		float time = 0.0f, position = 0.0f;
+		int i, j, channelIndex = 0, startHead = rcHead;
+
+L_rc_launcher: 		
+		for (i = rcHead, j = focusStrategy.getAnchorage(i); i < childrenNum && position <= cameraShotNum - 1; i++, j++) {
 			spatial = children.get(i);	
-//			Log.d(TAG, "i = " + i + " spatial = " + spatial.getName());
-			if (spatial.isVisible() == false)
-				break;
-			
 			control = spatial.getUserData(ROLLER_COASTER_CONTROL_TAG);
 			
 			time = -1.0f;
@@ -363,6 +394,12 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 				channelIndex = 0;
 			}
 			
+			if (i == startHead && time >= focusStrategy.getCameraShotTime(1) && rcHead > 0) {
+				rcHead--;
+				
+				continue L_rc_launcher;
+			}
+			
 			position = focusStrategy.getCameraShotPositionFloat(time);
 			if (position == 0.0f && j < 0) {
 				spatial.setVisibility(false);
@@ -370,12 +407,16 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 				rcHead++;
 				continue;
 			}
-			if (position == cameraShotNum - 1 && j > cameraShotNum - 1) {
-				spatial.setVisibility(false);
-				
-				break;
+
+			if (position >= cameraShotNum - 1) {
+				if (j > cameraShotNum - 1) {
+					spatial.setVisibility(false);
+					
+					break;
+				}
 			}
 			
+			spatial.setVisibility(true);
 			if (position < j) {
 				if (channelIndex == 1) {						// switch to advance channel
 					channel.pause();
@@ -396,13 +437,19 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 					channel.setTime(time);
 				}
 				
-				channel.setTimeCheckPoint(focusStrategy.getCameraShotTime((int) (position - Float.MIN_VALUE)));	
+				int prevPos = (int) (position);
+				if (prevPos == position) 
+					prevPos--;
+				
+				channel.setTimeCheckPoint(focusStrategy.getCameraShotTime(prevPos));	
 				channel.setSpeed(-rcSpeed);
 				channel.play();
 			}
 			else {		// position == j
 //				channel.pause();
 			}
-		}
+			
+			position += 1.0f;
+		}		
 	}
 }

@@ -6,6 +6,10 @@ import com.jme3.scene.Node;
 public class JActorGroup extends Node implements JActorGene {
 	private JActorKeyEventListener keyEventListener = null;
 	
+	public JActorGroup(String name) {
+		super(name);
+	}
+
 	@Override
 	public void requestKeyFocus() {
 		JActor.jActorRequsetKeyFocus(this);

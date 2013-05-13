@@ -1,6 +1,7 @@
 package com.routon.jmeanimation;
 
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.widget.TextView;
@@ -30,7 +31,8 @@ public class JmeDesktop extends JStage {
     static private String TAG = "HelloJME";
     
     private TextView droidTxt = null;
-    private TextView droidLabel = null;
+    
+    private JRollerCoaster recomPanel;
     
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
@@ -48,168 +50,81 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void simpleInitApp() {
-        droidTxt = new TextView((Context)JmeAndroidSystem.getActivity());
-        droidTxt.setText("ASK中文");
-        droidTxt.setTextSize(38);
-        
-        JDroidView droid = new JDroidView("a droid view", droidTxt);
-        droid.setFixOnLT(10, 580, true);
-        rootNode.attachChild(droid);
-        
-//      droid.setVisibility(false);
-        
-        try {
-            droidLabel = new TextView((Context)JmeAndroidSystem.getActivity());
-            droidLabel.setText("This is a Android View demo on Java Engine.");
-            droidLabel.setTextSize(58);
-            droidLabel.setWidth(600);
-            droidLabel.setSingleLine();
-            droidLabel.setEllipsize(TruncateAt.MARQUEE);
-            droidLabel.setMarqueeRepeatLimit(-1);
-            droidLabel.setSelected(true);
-            
-            JDroidView label = new JDroidView("a droid view", droidLabel);
-            label.setFixOnLT(10, 0, true);      
-            rootNode.attachChild(label);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-//      testProj();
-        
-//        testRollerCoaster();
-        
-//        showRollerCoaster();
-        
-        showDesktopLayout();
+        showRecommendation();
+        showRollerCoaster();  
     }
-    
-    private void testProj() {
-        Quad quad = new Quad(6, 3);
-        Material mat_stl = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat_stl.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond.jpg"));
         
-        Geometry rect = new Geometry("Rectangle", quad);
-        rect.setMaterial(mat_stl);
-        rect.move(3.0f, 1.0f, 0.0f);
-        rect.rotate(0.0f, 0.8f, 0.0f);
-        rootNode.attachChild(rect);
-        
-        Geometry rectProj = new Geometry("Rectangle", quad);
-        rectProj.setMaterial(mat_stl);
-        rectProj.move(3.0f, -4.0f, 0.0f);
-        rectProj.rotate(0.0f, 0.8f, 0.0f);
-     
-        rectProj.setProjectionCenter(0.0f, -2.5f);
-        rootNode.attachChild(rectProj);
-
-        Node projC = new Node();
-        JQuad jquad = new JQuad(4.0f, 3.0f);
-        Geometry rectUpvector = new Geometry("Rectangle", jquad);
-//      Box box = new Box(2.0f, 0.3f, 1.5f);
-//      Geometry rectUpvector = new Geometry("Rectangle", box);
-        rectUpvector.setMaterial(mat_stl);
-        rectUpvector.setLocalTranslation(-7.8519f, -5.44365e-007f, -12.4536f);
-        rectUpvector.setLocalRotation(new Quaternion(0.653282f, 0.270598f, -0.270598f, 0.653281f));
-        
-//      rectUpvector.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/*normal*/, new Vector3f(0.0f, 0.0f, -1.0f)/*up vector*/); 
-        projC.attachChild(rectUpvector);
-        
-        projC.move(0.0f, -2f, 0.0f);
-        projC.setProjectionCenterY(-2f);
-        projC.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/*normal*/, new Vector3f(0.0f, 0.0f, -1.0f)/*up vector*/);    
-        rootNode.attachChild(projC);
-    }
-    
-    private void testRollerCoaster() {
-        AnimationFactory animationFactory = new AnimationFactory(4, "anim", 30);
-        
-        animationFactory.addTimeTranslation(0, new Vector3f(-3.0f, 1.5f, 0.0f));
-        animationFactory.addTimeTranslation(1, new Vector3f(-1.5f, 1.5f, 0.0f));
-        animationFactory.addTimeTranslation(2, new Vector3f( 0.0f, 1.5f, 0.0f));
-        animationFactory.addTimeTranslation(3, new Vector3f( 1.5f, 1.5f, 0.0f));
-        animationFactory.addTimeTranslation(4, new Vector3f( 3.0f, 1.5f, 0.0f));
-        
-        Animation animation = animationFactory.buildAnimation();
-        
-        JFocusStrategy focusStrategy = new JFocusStrategy(2, new float[] {0, 1, 2, 3, 4});
-        JRollerCoaster rollerCoaster = new JRollerCoaster(animation, focusStrategy);
-/*      
-        JQuad jQuad = new JQuad(1.0f, 1.0f);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setTexture("ColorMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond.jpg"));
-        
-        for (int i = 0; i < 8; i++) {
-            Geometry child = new Geometry("child " + i, jQuad);
-            child.setMaterial(mat);
-            
-            rollerCoaster.attachChild(child);
-        }
-*/
-        for (int i = 0; i < 10; i++) {
-            TextView alphabet = new TextView((Context)JmeAndroidSystem.getActivity());
-            alphabet.setText("" + i);
-            alphabet.setTextSize(68);
-            
-            JDroidView rcChild = new JDroidView("RC Child " + i, alphabet);
-            rollerCoaster.attachChild(rcChild);
-        }
-        
-        rollerCoaster.requestKeyFocus();
-        rootNode.attachChild(rollerCoaster);
-    }
-    
     private void showRollerCoaster() {
         assetManager.registerLoader("com.routon.jui.JAnimLoader", "anim");
-        List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-3.anim");
-        JFocusStrategy focusStrategy = new JFocusStrategy(2, new float[] {0, 2, 4, 6, 8});
-        JRollerCoaster rollerCoaster = new JRollerCoaster(anim.get(1), focusStrategy);
+        List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-6.anim");
+        JFocusStrategy focusStrategy = new JFocusStrategy(5, new float[] {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20});
+        JRollerCoaster rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0), focusStrategy);
+        rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
     
+        String[] Jpgs = new String[] {
+                "Textures/1.jpg",
+                "Textures/2.jpg",
+                "Textures/3.jpg",
+                "Textures/4.jpg"
+        };
+        JQuad quad = new JQuad(2.0f, 3.0f);
+      
         for (int i = 0; i < 10; i++) {
-            TextView alphabet = new TextView((Context)JmeAndroidSystem.getActivity());
-            alphabet.setText("" + i);
-            alphabet.setTextSize(68);
-            
-            JDroidView rcChild = new JDroidView("RC Child " + i, alphabet);
+            Geometry rcChild = new Geometry("Rectangle", quad);
+            Material mat_stl = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            mat_stl.setTexture("ColorMap", assetManager.loadTexture(Jpgs[i % Jpgs.length]));
+            rcChild.setMaterial(mat_stl);
             rollerCoaster.attachChild(rcChild);
         }
         
         rollerCoaster.requestKeyFocus();
-        rootNode.attachChild(rollerCoaster);
+        rollerCoaster.setLocalTranslation(0, -0.5f, 0);
+        rollerCoaster.setProjectionCenterY(-0.5f);
+        rollerCoaster.setLocalScale(0.85f);
         rollerCoaster.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/*normal*/, new Vector3f(0.0f, 0.0f, -1.0f)/*up vector*/);
+        rootNode.attachChild(rollerCoaster);
     }
     
-    private void showDesktopLayout() {
-        //加载动画
-        assetManager.registerLoader("com.routon.jui.JAnimLoader", "anim");
-        List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-3.anim");
-            
-        //创建停止点
-        List<Float> timeList = new ArrayList<Float>();
-        Animation am = anim.get(0);
-        float lenght = am.getLength();
-        float t = 0, delta = 1.0f;
-        while(t <= lenght) {
-            timeList.add(t);
-            t += delta;
-        }
+    private void showRecommendation () {
+        AnimationFactory animationFactory = new AnimationFactory(12f, "anim", 30);
         
-        JDesktopLayout panel = new JDesktopLayout(anim.subList(1, 2), timeList, (timeList.size() + 1) / 2);
-                
+        animationFactory.addTimeTranslation(0, new Vector3f(-15f, 0f, 0.0f));
+        animationFactory.addTimeTranslation(12, new Vector3f( 15f, 0f, 0.0f));
+        Animation animation = animationFactory.buildAnimation();
+
+        JFocusStrategy focusStrategy = new JFocusStrategy(2, new float[] {0f, 3f, 6f, 9f, 12f});
+        recomPanel = new JRollerCoaster("Recommendation", animation, focusStrategy);
+        recomPanel.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
+    
+        JQuad quad = new JQuad(6, 3, 0, 2.5f);
+        Material mat_stl = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_stl.setTexture("ColorMap", assetManager.loadTexture("Textures/Wood.jpg"));
+
+        
         for (int i = 0; i < 10; i++) {
-            TextView alphabet = new TextView((Context)JmeAndroidSystem.getActivity());
-            alphabet.setText("" + i);
-            alphabet.setTextSize(68);
-            
-            JDroidView rcChild = new JDroidView("RC Child " + i, alphabet);
-            panel.attachChild(rcChild);
+            Geometry rcChild = new Geometry("Rectangle", quad);
+            rcChild.setMaterial(mat_stl);
+            recomPanel.attachChild(rcChild);
         }
         
-        panel.initialize();
-        panel.requestKeyFocus();
-        rootNode.attachChild(panel);
-        //panel.setLocalScale(0.5f, 0.5f, 0.5f);
-        panel.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/*normal*/, new Vector3f(0.0f, 0.0f, -1.0f)/*up vector*/); 
+        recomPanel.requestKeyFocus();
+        rootNode.attachChild(recomPanel);
+        recomPanel.setProjectionCenterY(1.5f);
+        
+        handler.postDelayed(myRunnable, 4000);
     }
+    
+    private Handler handler = new Handler();  
+    private boolean run     = true;
+    
+    private Runnable myRunnable= new Runnable() {    
+        public void run() {  
+             
+            if (run) {  
+                //recomPanel.
+                recomPanel.onAdvance();
+                handler.postDelayed(this, 4000);  
+            }  
+        }  
+    };
 }

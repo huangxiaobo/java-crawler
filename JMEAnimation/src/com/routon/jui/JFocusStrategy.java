@@ -51,6 +51,10 @@ public class JFocusStrategy {
 	public void setLastPosition(int pos) {
 		this.lastPos = pos;
 	}
+
+	public void setLastPosition(int index, int pos) {
+		this.lastPos = focus - index + pos;
+	}
 	
 	public void deltaLastPosition(int delta) {
 		this.lastPos += delta;
@@ -169,17 +173,17 @@ public class JFocusStrategy {
 		return lastPos == anchorage;
 	}
 	
-	public boolean advance(int childrenNum) {
+	public int advance(int childrenNum) {
 		if (anchorage - focus < pacesetter)
-			return true;
+			return 1;
 		else 
-			return false;
+			return -(getAnchorage(childrenNum - 1) - pacesetter);
 	}
 	
-	public boolean retreat(int childrenNum) {
+	public int retreat(int childrenNum) {
 		if (anchorage + (childrenNum - focus - 1) > pacesetter)
-			return true;
+			return 1;
 		else 
-			return false;
+			return -(pacesetter - getAnchorage(0));
 	}
 }

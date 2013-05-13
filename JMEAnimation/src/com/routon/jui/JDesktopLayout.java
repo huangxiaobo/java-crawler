@@ -56,7 +56,9 @@ public class JDesktopLayout extends JActorGroup {
     private int focusTimePos            = -1;
     private boolean fillAllModel        = false;
 
-    public JDesktopLayout(List<Animation> anims, List<Float> ts, int midPointIdx) {
+    public JDesktopLayout(String name, List<Animation> anims, List<Float> ts, int midPointIdx) {
+        super(name);
+        
         timePointsList = ts;
         leftTimePointIndex = 0;
         rightTimePointIndex = timePointsList.size() - 1;
@@ -441,7 +443,7 @@ public class JDesktopLayout extends JActorGroup {
     }
     
     //速度
-    private int speedAsc = 1;
+    private float speedAsc = 1;
 
     public void moveBackward() {
         System.out.println(TAG + "moveBackward. KEY_LEFT.");
@@ -481,7 +483,7 @@ public class JDesktopLayout extends JActorGroup {
                 if (compareList(currentNodePlace, targetNodePlace) == true) {//当前停止在目标位置
                     speedAsc = 1;       //从稳定点出发，速度初始值
                 } else {
-                    speedAsc++;         //连续在同一方向按键，速度提高
+                    speedAsc += 0.5f;         //连续在同一方向按键，速度提高
                 }
                 moveTarget(curplayDirect);
                 if (true || compareList(currentNodePlace, nextNodePlace)) {
@@ -538,7 +540,7 @@ public class JDesktopLayout extends JActorGroup {
             if (compareList(currentNodePlace, targetNodePlace) == true) {//当前停止在目标位置,再按向前键时不应该增加速度
                 speedAsc = 1;   //从稳定点出发，速度初始值
             } else {
-                speedAsc++;     //连续在同一方向按键，速度提高
+                speedAsc += 0.5f;     //连续在同一方向按键，速度提高
             }
             moveTarget(curplayDirect);
             if (true ||compareList(currentNodePlace, nextNodePlace)) {
