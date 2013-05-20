@@ -9,7 +9,6 @@ import java.util.Vector;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector4f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -21,7 +20,7 @@ import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Texture2D;
 
 public class AtlasRectangleMap {
-	static private String ATLAS_PRINTER_SHADER = "Common/MatDefs/Misc/Unshaded.j3md";
+	private static final String ATLAS_PRINTER_SHADER = "Common/MatDefs/Misc/Unshaded.j3md";
 	
 	private AtlasRectangleMapNode root;
 	

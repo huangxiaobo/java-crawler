@@ -55,8 +55,8 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
 	private FrameLayout mPanelWithoutReflection;
 	private TextView m_OriginView = null;
 	private ImageView  m_imageView1;
-	private ImageView mInvertedImage;
-	private ImageView alphaImage;
+	//private ImageView mInvertedImage;    //comment --add by hxb
+	//private ImageView alphaImage;        //comment --add by hxb
 	private ImageView mMenuFoucs;
 	private LinearLayout mMenuList, mMenuBackgorund;
 	private Tpanel mPanelData;
@@ -110,8 +110,9 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         m_OriginView.setTextColor(Color.BLACK);
         // TextPaint tp = m_OriginView .getPaint();
         // tp.setFakeBoldText(true);
-        mInvertedImage = (ImageView)m_FrameLayout.findViewById(R.id.invertedImage);
-        alphaImage = (ImageView)m_FrameLayout.findViewById(R.id.alphaImage);
+        // Next 2 lines commented by hxb
+        //mInvertedImage = (ImageView)m_FrameLayout.findViewById(R.id.invertedImage);
+        //alphaImage = (ImageView)m_FrameLayout.findViewById(R.id.alphaImage);
         mMenuList =  (LinearLayout)m_FrameLayout.findViewById(R.id.menuList);
         mMenuList.setRotationY(180f);
         mMenuBackgorund = (LinearLayout)m_FrameLayout.findViewById(R.id.menulistBackground);
@@ -166,7 +167,7 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
     }
     
     public void setMask(float alpha) {
-        alphaImage.setAlpha(alpha);
+        //alphaImage.setAlpha(alpha);   // Commented by hxb
     }
     
     public void setSelection(int position) {
@@ -357,10 +358,13 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         m_OriginView.setTextColor(Color.WHITE);
         m_OriginView.setRotationY(180f);
         isFrontSide = false;
+        // Next lines commented by hxb
+        /*
         if (mBitmapInvertedBack != null)
             mInvertedImage.setImageBitmap(mBitmapInvertedBack);
         else
             updateReflection();
+            */
         invalidate();
     }
     
@@ -373,12 +377,17 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         m_OriginView.setTextColor(Color.BLACK);
         m_OriginView.setRotationY(0f);
         isFrontSide = true;
+        // Next lines commented by hxb
+        /*
         if (mBitmapInvertedFront != null)
             mInvertedImage.setImageBitmap(mBitmapInvertedFront);
+            */
         invalidate();
     }
 
     private void updateReflection() {
+        // Follow lines commented by hxb
+        /*
         Bitmap invertedBitmap = createInvertedBitmap();
         if (invertedBitmap != null) {
             if (isFrontSide) {
@@ -390,6 +399,7 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
             mInvertedImage.setTop(PANEL_HEIGHT);
             invalidate();
         }
+     */
     }
     
     private Bitmap createInvertedBitmap() {

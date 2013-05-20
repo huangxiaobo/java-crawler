@@ -13,12 +13,12 @@ import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 
 public class JActor extends Geometry implements JActorGene {
-	static private String TAG = "JActor";
+	private static final String TAG = "JActor";
 	
-	static private String LIGHTING_MATERIAL = "Common/MatDefs/Light/Lighting.j3md";
-	static private String LIGHTING_MATERIAL_TEXTURE_NAME = "DiffuseMap";
-	static private String UNSHADED_MATERIAL = "Common/MatDefs/Misc/Unshaded.j3md";
-	static private String UNSHADED_MATERIAL_TEXTURE_NAME = "ColorMap";
+	private static final String LIGHTING_MATERIAL = "Common/MatDefs/Light/Lighting.j3md";
+	private static final String LIGHTING_MATERIAL_TEXTURE_NAME = "DiffuseMap";
+	private static final String UNSHADED_MATERIAL = "Common/MatDefs/Misc/Unshaded.j3md";
+	private static final String UNSHADED_MATERIAL_TEXTURE_NAME = "ColorMap";
 	
 	private boolean enableLighting = false;
 	
@@ -37,7 +37,8 @@ public class JActor extends Geometry implements JActorGene {
 		setMaterial(new Material(JStage.getGlobalStageLog().getAssetManager(), UNSHADED_MATERIAL));
 		setQueueBucket(Bucket.Transparent);
 		
-		getMaterial().getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+		getMaterial().getAdditionalRenderState().setBlendMode(BlendMode.Alpha);		// enable alpha blend
+		getMaterial().getAdditionalRenderState().setDepthTest(false);				// disable depth test 
 	}
 	
 	public void setupMesh(float width, float height) {

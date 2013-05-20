@@ -9,7 +9,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Spatial;
 
 public abstract class JStage extends SimpleApplication implements TouchListener {
-	static private JStage GLOBAL_STAGE_LOG = null;
+	private static JStage GLOBAL_STAGE_LOG = null;
 	
 	private JActorGene keyFocusedActor = null;
 	

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/8839/trunk/engine/test-data/Textures/Terrain/Rocky
+END
+RockyTexture.jpg
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/8839/trunk/engine/test-data/Textures/Terrain/Rocky/RockyTexture.jpg
+END
+Rocky.j3m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/8839/trunk/engine/test-data/Textures/Terrain/Rocky/Rocky.j3m
+END
+RockyNormals.jpg
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/8839/trunk/engine/test-data/Textures/Terrain/Rocky/RockyNormals.jpg
+END

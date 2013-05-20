@@ -11,8 +11,8 @@ import com.jme3.texture.Texture2D;
 import com.routon.jui.AtlasRectangleMap.AtlasRectangleMapEntry;
 
 public class MaterialAtlas {
-	static private String MATERIAL_ATLAS_SHADER = "Common/MatDefs/Misc/Unshaded.j3md";
-	static private int MAX_TEXTURE_SIZE = 2048;		// TODO : query from GLES library
+	private static final String MATERIAL_ATLAS_SHADER = "Common/MatDefs/Misc/Unshaded.j3md";
+	private static final int MAX_TEXTURE_SIZE = 2048;		// TODO : query from GLES library
 	
 	private RenderManager renderManager;
 	private AssetManager assetManager;

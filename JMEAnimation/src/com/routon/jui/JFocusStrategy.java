@@ -3,7 +3,7 @@ package com.routon.jui;
 import android.util.Log;
 
 public class JFocusStrategy {
-	private static String TAG = "JFocusStrategy";
+	private static final String TAG = "JFocusStrategy";
 	
 	private int pacesetter = 0;
 	private float[] cameraShot = null;

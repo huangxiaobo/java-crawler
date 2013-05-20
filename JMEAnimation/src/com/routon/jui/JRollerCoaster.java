@@ -13,13 +13,13 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 
 public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
-	private static String TAG = "JRollerCoaster";
+	private static final String TAG = "JRollerCoaster";
 	
-	private static String ROLLER_COASTER_CONTROL_TAG = "JRollerCoaster Control";
+	private static final String ROLLER_COASTER_CONTROL_TAG = "JRollerCoaster Control";
 	
-	public static int ROLLER_COASTER_LOOP_NON = 0;
-	public static int ROLLER_COASTER_LOOP_REVERSE = -1;
-	public static int ROLLER_COASTER_LOOP_FUTURE_EXTENSION_RESERVE = 1;
+	public static final int ROLLER_COASTER_LOOP_NON = 0;
+	public static final int ROLLER_COASTER_LOOP_REVERSE = -1;
+	public static final int ROLLER_COASTER_LOOP_FUTURE_EXTENSION_RESERVE = 1;
 	
 	private Animation advance = null;
 	private Animation retreat = null;;
@@ -33,7 +33,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 	private float rcSpeed = 1.0f;
 	
 	private float rcSpeedBaseline = 2.0f;
-	private float rcSpeedFactor = 0.918f;
+	private float rcSpeedFactor = 3.918f;
 	
 	private int rcLoop = ROLLER_COASTER_LOOP_NON;
 	
@@ -252,6 +252,8 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 		if (control instanceof Control) {
 			channel = control.getChannel(channelIndex);
 			channel.setTime(focusStrategy.getCameraShotTime(shotIndex));
+			
+			channel.pause();
 		}
 		
 		child.setVisibility(true);

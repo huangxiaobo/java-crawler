@@ -28,6 +28,6 @@ public class JmeDroid extends AndroidHarness {
 		// Invert the MouseEvents Y (default = true)
 		mouseEventsInvertY = true;
 		
-		maxFPS = 30;
+		maxFPS = 30;   
 	}
 }

@@ -19,13 +19,13 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 public class JDroidView extends JActor {
-	static private String TAG = "JDroidView";
+	private static final String TAG = "JDroidView";
 	
-	static private int DROID_BITMAP_WIDTH = 2048;
-	static private int DROID_BITMAP_HEIGHT = 1024;
+	private static final int DROID_BITMAP_WIDTH = 2048;
+	private static final int DROID_BITMAP_HEIGHT = 1024;
 	
-	static private Bitmap DROID_Bitmap = Bitmap.createBitmap(DROID_BITMAP_WIDTH, DROID_BITMAP_HEIGHT, Bitmap.Config.ARGB_8888);
-	static private Canvas DROID_Canvas = new Canvas(DROID_Bitmap);
+	private static final Bitmap DROID_Bitmap = Bitmap.createBitmap(DROID_BITMAP_WIDTH, DROID_BITMAP_HEIGHT, Bitmap.Config.ARGB_8888);
+	private static final Canvas DROID_Canvas = new Canvas(DROID_Bitmap);
 
 	private View droidView = null;
 	private Image jmeImage = null;
@@ -173,6 +173,7 @@ public class JDroidView extends JActor {
 		}
 		else {
 			setupMesh(width, height, false);
+			System.out.println(TAG + "width: " + width + " height: " + height);
 			
 			droidViewRenderTarget.setSubRegionInfo(true, 0, 0, width, height);
 			
