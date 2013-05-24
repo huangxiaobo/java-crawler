@@ -29,7 +29,10 @@ public class JDroidView extends JActor {
 
 	private View droidView = null;
 	private Image jmeImage = null;
+	
 	private Texture2D jmeTexture = null;
+	private int texWidth = 0;
+	private int texHeight = 0;
 	
 	private JDroidViewRenderTarget droidViewRenderTarget = new JDroidViewRenderTarget(DROID_Bitmap);
 	
@@ -128,9 +131,7 @@ public class JDroidView extends JActor {
 		int width = droidView.getMeasuredWidth();
 		int height = droidView.getMeasuredHeight();
 
-		boolean subUpdate = (getMesh() != null) && (width == droidView.getWidth()) && (height == droidView.getHeight());
-		
-//		Log.d(TAG, "subUpdate = " + subUpdate + " --- left = " + drawingRect.left + " right = " + drawingRect.right + " top = " + drawingRect.top + " bottom = " + drawingRect.bottom);
+		boolean subUpdate = (getMesh() != null) && (width == texWidth) && (height == texHeight);
 		
 		// clear canvas 
 		DROID_Canvas.save(Canvas.CLIP_SAVE_FLAG | Canvas.MATRIX_SAVE_FLAG);
@@ -172,12 +173,16 @@ public class JDroidView extends JActor {
 			droidViewRenderTarget.setSubTexUpdateInfo(true, drawingRect.left, drawingRect.top);
 		}
 		else {
-			setupMesh(width, height, false);
-			System.out.println(TAG + "width: " + width + " height: " + height);
+			setupMesh(width, height, true, false);
 			
 			droidViewRenderTarget.setSubRegionInfo(true, 0, 0, width, height);
 			
 			droidViewRenderTarget.setSubTexUpdateInfo(false, 0, 0);
+			
+			texWidth = width;
+			texHeight = height;
+			
+			Log.d(TAG, "New Mesh of DroidView : " + droidView);
 		}
 		
 		// TODO: we need a better way to avoid split

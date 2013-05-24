@@ -2,37 +2,37 @@
 package com.routon.jme_droid;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
 import com.jme3.animation.Animation;
 import com.jme3.animation.AnimationFactory;
+import com.jme3.animation.LoopMode;
+import com.jme3.asset.AssetInfo;
+import com.jme3.asset.AssetKey;
+import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.MotionPathListener;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.input.event.TouchEvent;
-import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.Light;
-import com.jme3.light.PointLight;
 import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Quad;
-import com.jme3.scene.shape.Sphere;
-import com.jme3.shadow.BasicShadowRenderer;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
-import com.jme3.shadow.SpotLightShadowFilter;
 import com.jme3.shadow.SpotLightShadowRenderer;
 import com.jme3.system.android.JmeAndroidSystem;
 import com.jme3.texture.Texture;
@@ -42,23 +42,31 @@ import com.routon.T.Launcher.TgallerypanelAdapter;
 import com.routon.T.Launcher.TgalleryrecommendAdapter;
 import com.routon.T.Launcher.TopImageView;
 import com.routon.jui.JActor;
+import com.routon.jui.JActorGene;
+import com.routon.jui.JActorGroup;
+import com.routon.jui.JActorKeyEventListener;
+import com.routon.jui.JAnimLoader;
+import com.routon.jui.JBoard;
 import com.routon.jui.JDroidView;
 import com.routon.jui.JFocusStrategy;
 import com.routon.jui.JRollerCoaster;
 import com.routon.jui.JStage;
+import com.routon.jui.JTimer;
+import com.routon.jui.JTimer.JTimerTask;
 
+import java.io.IOException;
 import java.util.List;
 
 public class JmeDesktop extends JStage {
-    static private String TAG = "HelloJME";
+    static private String TAG = "JmeDesktop";
 
     private Vector3f lightTarget = new Vector3f(0, -1.5f, 0);
 
     private Vector3f lightPosition = new Vector3f(0, -1.5f, 5);
 
-    private TextView droidTxt = null;
-
     private JRollerCoaster recomPanel;
+    
+    private JRollerCoaster rollerCoaster;
 
     private static final int RECOMMAND_NUM = 10;
 
@@ -66,11 +74,11 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
-        // Log.d(TAG, "TouchEvent = " + evt + " tpf = " + tpf);
+        Log.d(TAG, "TouchEvent = " + evt + " tpf = " + tpf);
 
-        if (evt.getType() == TouchEvent.Type.KEY_UP) {
+        if (evt.getType() == TouchEvent.Type.DOWN) {
             try {
-                droidTxt.setText("KEY UP : " + evt.getKeyCode());
+                ;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -86,7 +94,7 @@ public class JmeDesktop extends JStage {
          * al.setColor(ColorRGBA.White.mult(0.3f)); rootNode.addLight(al);
          */
   
-        Light.Type lt = null;//Light.Type.Spot;
+        Light.Type lt = null; //Light.Type.Spot;
         if (lt == Light.Type.Spot) {
 
             SpotLight spot = new SpotLight();
@@ -120,13 +128,25 @@ public class JmeDesktop extends JStage {
             viewPort.addProcessor(dlsr);
         } else {
         }
+        /*
+        // Add fog
+        FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
+        //fpp.setNumSamples(4);
+        FogFilter fog=new FogFilter();
+        fog.setFogColor(new ColorRGBA(0.9f, 0.9f, 0.9f, 1.0f));
+        fog.setFogDistance(125f);
+        fog.setFogDensity(0.9f);
+        fpp.addFilter(fog);
+        viewPort.addProcessor(fpp);
+        */
 
         showRecommendation();
         showRollerCoaster();
 
-        setupBg();
+        //FlipTest();
+        // setupBg();
     }
-
+    
     private void setupBg() {
         Material mat = assetManager.loadMaterial("Textures/Terrain/Pond/Pond.j3m");
         mat.getTextureParam("DiffuseMap").getTextureValue().setWrap(WrapMode.Repeat);
@@ -150,11 +170,41 @@ public class JmeDesktop extends JStage {
 
     private void showRollerCoaster() {
         assetManager.registerLoader("com.routon.jui.JAnimLoader", "anim");
-        List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-6.anim");
+        JAnimLoader loader = new JAnimLoader();
+        
+        List<Animation> anim = null;
+        try {
+            loader.addExtraAnimFactor("Plane006_NA_1", JAnimLoader.ExtraAnimFactorType_ColorGlass, 
+                    new float[] {
+                    0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
+            },
+            new ColorRGBA[] {
+                    new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f),
+                    new ColorRGBA(0.6f, 0.6f, 0.6f, 0.6f),
+                    new ColorRGBA(0.678f, 0.678f, 0.678f, 0.7f), 
+                    new ColorRGBA(0.81f, 0.81f, 0.81f, 0.8f),
+                    new ColorRGBA(0.87f, 0.87f, 0.87f, 0.9f), 
+                    
+                    new ColorRGBA(1, 1, 1, 1),
+                    
+                    new ColorRGBA(0.5f, 0.5f, 0.5f, 1f),
+                    new ColorRGBA(0.4f, 0.4f, 0.4f, 1f),
+                    new ColorRGBA(0.3f, 0.3f, 0.3f, 1f), 
+                    new ColorRGBA(0.2f, 0.2f, 0.2f, 1f),
+                    new ColorRGBA(0.1f, 0.1f, 0.1f, 1f),
+            });
+            AssetInfo info = assetManager.locateAsset(new AssetKey("Anims/plane-8.anim"));
+            anim = (List<Animation>)loader.load(info);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
+        //List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-8.anim");
         JFocusStrategy focusStrategy = new JFocusStrategy(5, new float[] {
                 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
         });
-        JRollerCoaster rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
+        rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
                 focusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
 
@@ -166,31 +216,54 @@ public class JmeDesktop extends JStage {
 
             JDroidView rcChild = new JDroidView("panel_" + i, panelView);
             rcChild.setEnableLighting(false);
-            //rcChild.setShadowMode(ShadowMode.CastAndReceive);// 产生和接收 阴影
+            // rcChild.setShadowMode(ShadowMode.CastAndReceive);// 产生和接收 阴影
             // rcChild.setShadowMode(ShadowMode.Receive);
             rollerCoaster.attachChild(rcChild);
-            
+            rcChild.setReflection(true, 0.3f, 0.5f,0.7f);
             if (i == 5) {
-                Texture tex_ml = assetManager.loadTexture("Textures/1_1.png");
-                JActor waitActor = new JActor("wait");
-                waitActor.setupTexture(tex_ml);
-                waitActor.setupMesh(256, 256);
-                waitActor.setEnableLighting(false);
-                rollerCoaster.attachChild(waitActor);
-                
+                JActorGroup group = new JActorGroup("");
+                final JBoard board = new JBoard("board");
+                String jps[] = {"1_1.png", "1.jpg"};
+                for (int j = 0; j < 2; ++j) {
+                    Texture tex_ml = assetManager.loadTexture("Textures/" + jps[j]);
+                    JActor actor = new JActor("anonymous_" + j);
+                    actor.setupTexture(tex_ml);
+                    actor.setupMesh(256, 256);
+                    actor.setEnableLighting(false);
+                    actor.setReflection(true, 0.3f, 0.5f, 0.7f);
+                    board.attachChild(actor);
+                }
+                group.attachChild(board);
+                group.setOnKeyEventListener(new JActorKeyEventListener () {
+
+                    @Override
+                    public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
+                        // TODO Auto-generated method stub
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
+                        // TODO Auto-generated method stub
+                        return board.onEvent("", evt, tpf);
+                        
+                    }
+                    
+                });
+                rollerCoaster.attachChild(group);
             }
         }
 
         rollerCoaster.requestKeyFocus();
         rollerCoaster.setLocalTranslation(0, -1.5f, 0);
         rollerCoaster.setProjectionCenterY(-1.5f);
-        rollerCoaster.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/* normal */, new Vector3f(0.0f,
-                0.0f, -1.0f)/* up vector */);
+        //rollerCoaster.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/* normal */, new Vector3f(0.0f,
+        //        0.0f, -1.0f)/* up vector */);
         rootNode.attachChild(rollerCoaster);      
     }
 
-    private void showRecommendation() {
-        AnimationFactory animationFactory = new AnimationFactory(12f, "anim", 30);
+    private void showRecommendation() {       
+        AnimationFactory animationFactory = new AnimationFactory(12f, "anim", 1);
 
         animationFactory.addTimeTranslation(0, new Vector3f(-15f, 0f, 0.0f));
         animationFactory.addTimeTranslation(12, new Vector3f(15f, 0f, 0.0f));
@@ -253,4 +326,25 @@ public class JmeDesktop extends JStage {
             }
         }
     };
+    
+    
+    //////////////////////////////////////////////////////
+    private boolean playing = false;
+    String jps[] = {"1_1.png", "1.jpg"};
+
+    private void FlipTest() {    
+        JBoard board = new JBoard("board");
+        for (int j = 0; j < 2; ++j) {
+            Texture tex_ml = assetManager.loadTexture("Textures/" + jps[j]);
+            JActor actor = new JActor("anonymous_" + j);
+            actor.setupTexture(tex_ml);
+            actor.setupMesh(256, 256);
+            actor.setEnableLighting(false);
+            actor.setReflection(true, 0.3f, 0.5f, 0.7f);
+            board.attachChild(actor);
+        }
+        rootNode.attachChild(board);
+        board.requestKeyFocus();
+       
+    }
 }

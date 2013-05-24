@@ -12,7 +12,7 @@ import com.jme3.input.event.TouchEvent;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 
-public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
+public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 	private static final String TAG = "JRollerCoaster";
 	
 	private static final String ROLLER_COASTER_CONTROL_TAG = "JRollerCoaster Control";
@@ -180,7 +180,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 			AnimChannel channelRetreat = null;
 			
 			if (advance != null) {
-				control.addAnim(advance.clone());
+				control.addAnim(advance);
 				
 				channelAdvance = control.createChannel();
 				channelAdvance.setAnim(advance.getName());
@@ -188,7 +188,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener{
 				channelAdvance.addListener(this);
 			}
 			if (retreat != null) {
-				control.addAnim(retreat.clone());
+				control.addAnim(retreat);
 				
 				channelRetreat = control.createChannel();
 				channelRetreat.setAnim(retreat.getName());

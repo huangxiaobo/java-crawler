@@ -394,7 +394,7 @@ public class AtlasRectangleMap {
 			if (x + width > textureWidth || y + height > textureHeight) 
 				return ;
 			
-			mesh.setTexCoordsRemap(new Vector4f((float)(x + 1) / textureWidth, (float)(y + 1) / textureHeight, (float)(width - 2) / textureWidth, (float)(height - 2) / textureHeight));
+//			mesh.setTexCoordsRemap(new Vector4f((float)(x + 1) / textureWidth, (float)(y + 1) / textureHeight, (float)(width - 2) / textureWidth, (float)(height - 2) / textureHeight));
 		}
 	};
 	

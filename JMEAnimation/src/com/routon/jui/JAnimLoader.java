@@ -6,6 +6,7 @@ import com.jme3.animation.Animation;
 import com.jme3.animation.AnimationFactory;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoader;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.util.xml.SAXUtil;
@@ -19,7 +20,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Stack;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -29,8 +30,23 @@ public class JAnimLoader extends DefaultHandler implements AssetLoader {
     private Stack<String> elementStack = new Stack<String>();
     private com.jme3.animation.AnimationFactory animFactory;
     private float time;
-    List<Animation> animationList = null;
+    private ArrayList<Animation> animationList = null;
 
+    public static final int ExtraAnimFactorType_Translation = 0;
+    public static final int ExtraAnimFactorType_Rotation = 1;
+    public static final int ExtraAnimFactorType_Scale = 2;
+    public static final int ExtraAnimFactorType_ColorGlass = 3;
+    public static final int ExtraAnimFactorType_Invalid = ExtraAnimFactorType_ColorGlass + 1;
+    
+    private class ExtraAnimFactor {
+    	int type;
+    	
+    	float[] times;
+    	Object[] factors;
+    }
+    
+    private HashMap<String, ExtraAnimFactor> extraAnimFactorMap = new HashMap<String, ExtraAnimFactor>();
+    
     public JAnimLoader() {
         super();
     }
@@ -159,6 +175,8 @@ public class JAnimLoader extends DefaultHandler implements AssetLoader {
             ;
         } else if (qName.equals("animation")) {
             if (animFactory != null) {
+            	appendExtraAnimFactors();
+            	
                 animationList.add(animFactory.buildAnimation());
             }
             animFactory = null;
@@ -173,6 +191,66 @@ public class JAnimLoader extends DefaultHandler implements AssetLoader {
     public void characters(char ch[], int start, int length) {
     }
 
+    private void appendExtraAnimFactors() {
+    	ExtraAnimFactor extra = extraAnimFactorMap.get(animFactory.getName());
+    	
+    	if (extra != null) {
+    		switch (extra.type) {
+    		case ExtraAnimFactorType_Translation: 
+    			for (int i = 0; i < extra.times.length; i++) {
+    				animFactory.addTimeTranslation(extra.times[i], (Vector3f)extra.factors[i]);
+    			}
+    			break; 
+    			
+    		case ExtraAnimFactorType_Rotation: 
+    			for (int i = 0; i < extra.times.length; i++) {
+    				animFactory.addTimeRotation(extra.times[i], (Quaternion)extra.factors[i]);
+    			}
+    			break;
+    			
+    		case ExtraAnimFactorType_Scale: 
+    			for (int i = 0; i < extra.times.length; i++) {
+    				animFactory.addTimeScale(extra.times[i], (Vector3f)extra.factors[i]);
+    			}
+    			break;
+    			
+    		case ExtraAnimFactorType_ColorGlass: 
+    			for (int i = 0; i < extra.times.length; i++) {
+    				animFactory.addTimeColorGlass(extra.times[i], (ColorRGBA)extra.factors[i]);
+    			}
+    			break; 
+    		}
+    	}
+    }
+    
+    public void addExtraAnimFactor(String name, int type, float times[], Object factors[]) {
+    	if (name == null || times == null || factors == null || times.length != factors.length) {
+    		return ;
+    	}
+    	if (type >= ExtraAnimFactorType_Invalid || type < 0) {
+    		return ;
+    	}
+    	
+    	ExtraAnimFactor extra = new ExtraAnimFactor();
+    	extra.type = type;
+    	extra.times = times;
+    	extra.factors = factors;
+    	
+    	extraAnimFactorMap.put(name, extra);
+    }
+    
+    public void removeExtraAnimFactor(String name) {
+    	if (name == null) {
+    		return ;
+    	}
+    	
+    	extraAnimFactorMap.remove(name);
+    }
+    
+    public void clearExtraAnimFactor() {
+    	extraAnimFactorMap.clear();
+    }
+    
     public Object load(AssetInfo info) throws IOException {
         try {
             reset();
