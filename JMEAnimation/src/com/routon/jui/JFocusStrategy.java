@@ -1,16 +1,21 @@
 package com.routon.jui;
 
+import java.util.List;
+
+import com.jme3.scene.Spatial;
 import android.util.Log;
 
 public class JFocusStrategy {
 	private static final String TAG = "JFocusStrategy";
 	
-	private int pacesetter = 0;
-	private float[] cameraShot = null;
+	protected int pacesetter = 0;
+	protected float[] cameraShot = null;
 	
-	private int focus = 0;	
-	private int lastPos = 0;
-	private int anchorage = 0;
+	protected int focus = 0;	
+	protected int lastPos = 0;
+	protected int anchorage = 0;
+	
+	protected int newHead = 0;
 	
 	public JFocusStrategy(int pacesetter, float[] cameraShot) {
 		this.pacesetter = pacesetter;
@@ -154,12 +159,18 @@ public class JFocusStrategy {
 	}
 	
 	public void updateFocus() {
-		int newFocus = getNewFocus();
-		
+		updateFocus(getNewFocus());
+	}
+	
+	public void updateFocus(int newFocus) {
 		anchorage = newFocus - focus + anchorage;
 		lastPos = newFocus - focus + lastPos;
 		
 		focus = newFocus;
+	}
+	
+	public int getNewHead() {
+		return newHead;
 	}
 	
 	// ---------------------------------------------------  
@@ -173,17 +184,77 @@ public class JFocusStrategy {
 		return lastPos == anchorage;
 	}
 	
-	public int advance(int childrenNum) {
-		if (anchorage - focus < pacesetter)
-			return 1;
-		else 
-			return -(getAnchorage(childrenNum - 1) - pacesetter);
+	public int advance(List<Spatial> children, int head, boolean cycle) {
+		newHead = head;
+		
+		if (cycle) {
+			if (anchorage - focus < 0) {
+				return 1;
+			}
+			else {
+				int childrenNum = children.size();
+				int move = childrenNum - cameraShot.length;
+				if (move <= 0) {
+					move = 1;
+				}
+				
+				for (int i = 0; i < move; i++) {
+					Spatial child = children.remove(childrenNum - 1);
+					child.setVisibility(false);
+					
+					children.add(0, child);					
+				}
+				
+				newHead = head + move;
+				focus = (focus + move) % childrenNum;
+				
+				return 1;
+			}
+		}
+		else {
+			if (anchorage - focus < pacesetter)
+				return 1;
+			else 
+				return -(getAnchorage(children.size() - 1) - pacesetter);
+		}
 	}
 	
-	public int retreat(int childrenNum) {
-		if (anchorage + (childrenNum - focus - 1) > pacesetter)
-			return 1;
-		else 
-			return -(pacesetter - getAnchorage(0));
+	public int retreat(List<Spatial> children, int head, boolean cycle) {
+		newHead = head;
+		
+		if (cycle) {
+			int childrenNum = children.size();
+			Log.d(TAG, "anchorage = " + anchorage + " anchorage + childrenNum - focus = " + (anchorage + childrenNum - focus));
+			if (anchorage + (childrenNum - focus/* - 1*/) >  cameraShot.length/* - 1*/) {
+				return 1;
+			}
+			else {
+				int move = head;
+				if (move <= 0) 
+					move = 1;
+				
+				for (int i = 0; i < move; i++) {
+					Spatial child = children.remove(0);
+					child.setVisibility(false);
+					
+					children.add(child);
+				}
+				
+				newHead = head - move;
+				if (newHead < 0) {
+					newHead = 0;
+				}
+				Log.d(TAG, "move = " + move + " head = " + head + " new focus = " + (focus - move + childrenNum) % childrenNum);
+				focus = (focus - move + childrenNum) % childrenNum;
+				
+				return 1;
+			}
+		}
+		else {
+			if (anchorage + (children.size() - focus - 1) > pacesetter)
+				return 1;
+			else 
+				return -(pacesetter - getAnchorage(0));
+		}
 	}
 }

@@ -53,6 +53,20 @@ public class JActor extends Geometry implements JActorGene {
 		getMaterial().getAdditionalRenderState().setDepthTest(false);				// disable depth test 
 	}
 	
+	public void setupSize(float width, float height) {
+		setupSize(width, height, false);
+	}
+	
+	public void setupSize(float width, float height, boolean isCameraSpace) {
+		if (isCameraSpace == false) {
+			width = JStage.S2Cw(width);
+			height = JStage.S2Ch(height);
+		}
+		
+		this.width = width;
+		this.height = height;
+	}
+	
 	public void setupMesh(float width, float height) {
 		setupMesh(width, height, false, false);
 	}
@@ -62,22 +76,16 @@ public class JActor extends Geometry implements JActorGene {
 	}
 	
 	public void setupMesh(float width, float height, boolean flipCoords, boolean isCameraSpace) {
-		if (isCameraSpace == false) {
-			width = JStage.S2Cw(width);
-			height = JStage.S2Ch(height);			// y flip
-		}
+		setupSize(width, height, isCameraSpace);
 		
 		if (reflection == true) {
-			setMesh(new JQuad(width, height, 0.0f, 0.0f, reflectionHeight, reflectionBrightness, reflectionTransparency, flipCoords));
+			setMesh(new JQuad(this.width, this.height, 0.0f, 0.0f, reflectionHeight, reflectionBrightness, reflectionTransparency, flipCoords));
 			getMaterial().setBoolean("VertexColor", true);
 		}
 		else {
-			setMesh(new JQuad(width, height, flipCoords));
+			setMesh(new JQuad(this.width, this.height, flipCoords));
 			getMaterial().setBoolean("VertexColor", false);
 		}
-		
-		this.width = width;
-		this.height = height;
 		
 		this.meshTexFlip = flipCoords;
 		

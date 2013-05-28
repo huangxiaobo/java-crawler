@@ -11,11 +11,13 @@ import com.jme3.animation.AnimControl;
 import com.jme3.animation.Animation;
 import com.jme3.animation.AnimationFactory;
 import com.jme3.animation.LoopMode;
+import com.jme3.animation.Track;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetKey;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.MotionPathListener;
 import com.jme3.cinematic.events.MotionEvent;
+import com.jme3.input.KeyInput;
 import com.jme3.input.event.TouchEvent;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.Light;
@@ -30,6 +32,7 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
@@ -66,7 +69,19 @@ public class JmeDesktop extends JStage {
 
     private JRollerCoaster recomPanel;
     
+    private JFocusStrategy recomPanelFocusStrategy;
+    
+    private Animation recomPanelAnim;
+    
+    private JTimer recomTimer;
+    
+    private Track scale_track;
+    
     private JRollerCoaster rollerCoaster;
+    
+    private JFocusStrategy rollerCoasterFocusStrategy;
+    
+    private Animation rollerCoasterAnim;
 
     private static final int RECOMMAND_NUM = 10;
 
@@ -74,9 +89,7 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
-        Log.d(TAG, "TouchEvent = " + evt + " tpf = " + tpf);
-
-        if (evt.getType() == TouchEvent.Type.DOWN) {
+        if (evt.getType() == TouchEvent.Type.KEY_DOWN) {
             try {
                 ;
             } catch (Exception e) {
@@ -139,9 +152,20 @@ public class JmeDesktop extends JStage {
         fpp.addFilter(fog);
         viewPort.addProcessor(fpp);
         */
+        
+        AnimationFactory af = new AnimationFactory(12, "scale-anim");
+        af.addTimeScale(0, new Vector3f(1f, 1f, 1f));
+        af.addTimeScale(3, new Vector3f(1f, 1f, 1f));
+        af.addTimeScale(6, new Vector3f(1.2f, 1.2f, 1.2f));
+        af.addTimeScale(9, new Vector3f(1f, 1f, 1f));
+        af.addTimeScale(12, new Vector3f(1f, 1f, 1f));
+        Animation scale_anim = af.buildAnimation();
+        scale_track = scale_anim.getTracks()[0];
 
         showRecommendation();
         showRollerCoaster();
+        rollerCoasterGetFocus();
+        recomPanelLoseFocus();
 
         //FlipTest();
         // setupBg();
@@ -201,11 +225,11 @@ public class JmeDesktop extends JStage {
             return;
         }
         //List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-8.anim");
-        JFocusStrategy focusStrategy = new JFocusStrategy(5, new float[] {
+        rollerCoasterFocusStrategy = new JFocusStrategy(5, new float[] {
                 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
         });
         rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
-                focusStrategy);
+                rollerCoasterFocusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
 
         TgallerypanelAdapter adpter = new TgallerypanelAdapter(
@@ -259,21 +283,56 @@ public class JmeDesktop extends JStage {
         rollerCoaster.setProjectionCenterY(-1.5f);
         //rollerCoaster.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/* normal */, new Vector3f(0.0f,
         //        0.0f, -1.0f)/* up vector */);
-        rootNode.attachChild(rollerCoaster);      
+        rootNode.attachChild(rollerCoaster);     
+        
+        // 增加按键回调
+        rollerCoaster.setOnKeyEventListener(new JActorKeyEventListener () {
+
+            @Override
+            public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
+                // TODO Auto-generated method stub
+                if (evt.getKeyCode() == KeyInput.KEY_UP) {
+                    if (recomPanel != null) {
+                        recomPanelGetFocus();
+                        rollerCoasterLoseFocus();
+                    }
+                    return true;
+                } else
+                    return false;
+            }
+            
+        });
+    }
+    
+    private void rollerCoasterGetFocus() {
+        rollerCoaster.requestKeyFocus();
+        rollerCoaster.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
+        return;
+    }
+    
+    private void rollerCoasterLoseFocus() {
+        rollerCoaster.setColorGlass(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        return;
     }
 
-    private void showRecommendation() {       
+    private void showRecommendation() {
         AnimationFactory animationFactory = new AnimationFactory(12f, "anim", 1);
-
         animationFactory.addTimeTranslation(0, new Vector3f(-15f, 0f, 0.0f));
         animationFactory.addTimeTranslation(12, new Vector3f(15f, 0f, 0.0f));
-        Animation animation = animationFactory.buildAnimation();
+        recomPanelAnim = animationFactory.buildAnimation();
 
-        JFocusStrategy focusStrategy = new JFocusStrategy(2, new float[] {
+        recomPanelFocusStrategy = new JFocusStrategy(2, new float[] {
                 0f, 3f, 6f, 9f, 12f
         });
-        recomPanel = new JRollerCoaster("Recommendation", animation, focusStrategy);
-        recomPanel.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
+        recomPanel = new JRollerCoaster("Recommendation", recomPanelAnim, 
+                recomPanelFocusStrategy);
+        recomPanel.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_CYCLE);
 
         TgalleryrecommendAdapter adapter = new TgalleryrecommendAdapter(
                 (Context) JmeAndroidSystem.getActivity());
@@ -310,23 +369,61 @@ public class JmeDesktop extends JStage {
         recomPanel.move(0, 2.5f, 0);
         recomPanel.setProjectionCenterY(2.5f);
 
-        handler.postDelayed(myRunnable, 4000);
-    }
+        recomTimer = new JTimer(4000);
+        recomTimer.setLocalSyncTask(new JTimerTask() {
 
-    private Handler handler = new Handler();
-    private boolean run = true;
-
-    private Runnable myRunnable = new Runnable() {
-        public void run() {
-
-            if (run) {
-                // recomPanel.
-                recomPanel.onAdvance();
-                handler.postDelayed(this, 4000);
+            @Override
+            public boolean task() {
+                // TODO Auto-generated method stub
+                recomPanel.onRetreat();
+                return false;
             }
-        }
-    };
+        });
+        
+        recomPanel.setOnKeyEventListener(new JActorKeyEventListener () {
+
+            @Override
+            public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
+                // TODO Auto-generated method stub
+                if (evt.getKeyCode() == KeyInput.KEY_DOWN) {
+                    if (rollerCoaster != null) {
+                      rollerCoasterGetFocus();
+                      recomPanelLoseFocus();
+                    }
+                    return true;
+                } else
+                    return false;
+            }
+            
+        });
+    }
     
+    private void recomPanelGetFocus () {
+        recomTimer.pause(); //recomPanel不再自动播放
+        recomPanel.requestKeyFocus();   //recomPanel得到键盘事件
+        recomPanel.onCancel();
+        if (recomPanelFocusStrategy.isFocused()) {
+            Spatial s = recomPanel.getChild(recomPanelFocusStrategy.getFocus());
+            s.setLocalScale(1.2f);
+        }
+        recomPanel.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
+        recomPanelAnim.addTrack(scale_track);
+    }
+    private void recomPanelLoseFocus() {
+        if (1 == 1 || recomPanelFocusStrategy.isFocused()) {//有焦点
+            for (Spatial s : recomPanel.getChildren())
+                s.setLocalScale(1);
+        }
+        recomPanel.setColorGlass(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
+        recomPanelAnim.removeTrack(scale_track);
+        recomTimer.start();
+    }
     
     //////////////////////////////////////////////////////
     private boolean playing = false;
