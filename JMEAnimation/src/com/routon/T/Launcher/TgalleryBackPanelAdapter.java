@@ -29,9 +29,11 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnKeyListener;
 import android.view.animation.Interpolator;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -41,48 +43,47 @@ import android.widget.ListView;
 import android.widget.Scroller;
 import android.widget.TextView;
 
+import com.jme3.input.KeyInput;
 import com.routon.jme_droid.R;
 //import  com.routon.T.launcher.TgallerypanelView;
 //import com.routon.T.launcher.R;
+
+class TgalleryBackPanelListView extends FrameLayout {
+    private final static String TAG = "TgalleryBackPanelListView";
+    private Context mContext;
+    private FrameLayout mLayout;
+
+    public TgalleryBackPanelListView(Context context) {
+        super(context);
+        // TODO Auto-generated constructor stub
+    }
+    
+};
 
 /*
  * Display Android View class
  * Each TgallerypanelView is a item attach with Gallery, 
  */
-class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
+class TgalleryBackPanelView  extends FrameLayout{
+    private final static String TAG = "TgalleryBackPanelView";
     private Context mContext;
 	private View m_FrameLayout = null;
 	private FrameLayout mPanelWithoutReflection;
 	private TextView m_OriginView = null;
 	private ImageView  m_imageView1;
-	//private ImageView mInvertedImage;    //comment --add by hxb
-	//private ImageView alphaImage;        //comment --add by hxb
 	private ImageView mMenuFoucs;
 	private LinearLayout mMenuList, mMenuBackgorund;
 	private Tpanel mPanelData;
-	private Bitmap mBitmapFront = null, mBitmapBack = null;
+	private Bitmap mBitmapBack = null;
 	private MenuListAdapter mListAdapter = null;
-	private boolean isFrontSide = true;
 	
 	private int mItemCount = 0;
 	private int mMenuListY = 0, mFocusY = 0;
 	private int mSelectedIndex = 0, mFirstIndex = 0;
 	private int mMaxVisibleItems = 5, mCenterIndex = 2;
-    private Scroller mListScroller, mFocusScroller;
-    private int SCROLL_DURATION = 600;
-    
-    private ObjectAnimator rotateAnim1 = null, scaleXAnim1 = null, scaleYAnim1 = null;
-    private ObjectAnimator rotateAnim2 = null, scaleXAnim2 = null, scaleYAnim2 = null;
-    private AnimatorSet animSet1 = null, animSet2 = null;
-    private AnimatorListenerAdapter animLis1 = null, animLis2 = null;
-    private Runnable runFinished1 = null, runFinished2 = null;
-    private boolean animStarted = false;
-    private boolean needSwitch = false;
-    
-    private float SWITCH_ANGLE_MIN = 85f, SWITCH_ANGLE_MAX = 90f;
-    private float ROTATE_SCALE_MIN = 1.0f, ROTATE_SCALE_MAX = 1.3f;
-    private int ROTATE_DURATION = 400;
-    
+    private Scroller mListScroller, mFocusScroller = null;
+    private int SCROLL_DURATION = 0;
+        
     public static final int ROTATE_FRONT_TO_BACK = 1;
     public static final int ROTATE_BACK_TO_FRONT = -1;
     
@@ -95,35 +96,26 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
     
     private boolean needUpdate = false;
     
-	public TgallerypanelView(Context hostActivity, Tpanel panel) {
+	public TgalleryBackPanelView(Context hostActivity, Tpanel panel) {
 		super(hostActivity);
 		mContext = hostActivity;
 		mPanelData = panel;
 		
-		m_FrameLayout = LayoutInflater.from(hostActivity).inflate(R.layout.tpanel_item, this);
+		m_FrameLayout = LayoutInflater.from(hostActivity).inflate(R.layout.tpanel_item_back, this);
 		mPanelWithoutReflection = (FrameLayout)m_FrameLayout.findViewById(R.id.panelFrame);
 		m_imageView1 = (ImageView)m_FrameLayout.findViewById(R.id.imagepanelView);
 		m_OriginView = (TextView)m_FrameLayout.findViewById(R.id.m_OriginView);
 		m_OriginView.setTextSize(PANEL_TEXT_SIZE);
 		m_OriginView.setGravity(Gravity.BOTTOM | Gravity.CENTER);
-        m_OriginView.setTextColor(Color.BLACK);
-        // TextPaint tp = m_OriginView .getPaint();
-        // tp.setFakeBoldText(true);
-        // Next 2 lines commented by hxb
-        //mInvertedImage = (ImageView)m_FrameLayout.findViewById(R.id.invertedImage);
-        //alphaImage = (ImageView)m_FrameLayout.findViewById(R.id.alphaImage);
+        m_OriginView.setTextColor(Color.WHITE);
+        
         mMenuList =  (LinearLayout)m_FrameLayout.findViewById(R.id.menuList);
-        mMenuList.setRotationY(180f);
         mMenuBackgorund = (LinearLayout)m_FrameLayout.findViewById(R.id.menulistBackground);
         mMenuFoucs =  (ImageView)m_FrameLayout.findViewById(R.id.menuFocus);
         mListScroller = new Scroller(hostActivity);
         mFocusScroller = new Scroller(hostActivity);
         
-        Drawable draw = Drawable.createFromPath(mPanelData.getStyle());
-        if (draw != null)
-            mBitmapFront = ((BitmapDrawable)draw).getBitmap();
-        
-        draw = Drawable.createFromPath(mPanelData.getAnimationPic());
+        Drawable draw = Drawable.createFromPath(mPanelData.getAnimationPic());
         if (draw != null)
             mBitmapBack = ((BitmapDrawable)draw).getBitmap();
         
@@ -133,37 +125,53 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
             updateListAdapter();
         }
         
-        switchToFrontView();
-
+        switchToBackView();
+        
         mPanelWithoutReflection.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         mPanelWithoutReflection.layout(0, 0, 
                 mPanelWithoutReflection.getMeasuredWidth(), 
                 mPanelWithoutReflection.getMeasuredHeight());
-        
-        updateReflection();
-        
-        createAnimation();
+       
+        this.setOnKeyListener(new OnKeyListener () {
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // TODO Auto-generated method stub
+                Log.d(TAG, "view: " + v + " keyCode: " + keyCode + " event: " + event);
+               if (keyCode == KeyInput.KEY_DOWN) {
+                   setNext();
+                   return true;
+               } else if (keyCode == KeyInput.KEY_UP) {
+                   setPrev();
+                   return true;
+               }
+               return false;
+            }
+        });
 	}
 	
     @Override
     public void computeScroll() {
+        Log.d(TAG, "computeScroll");
         if (mListScroller.computeScrollOffset()) {
+            Log.d(TAG, "mListScroller.computeScrollOffset()");
             int currY = mListScroller.getCurrY();
             // Log.d("shibojun", "mMenuList currY: " + currY);
             // mMenuBackgorund.scrollTo(0, currY);
             mMenuList.setTranslationY(currY);
             mMenuBackgorund.setTranslationY(currY);
-            updateReflection();
             invalidate();
         } else if (mFocusScroller.computeScrollOffset()) {
+            Log.d(TAG, "mFocusScroller.computeScrollOffset()");
             int currY = mFocusScroller.getCurrY();
             // Log.d("shibojun", "mMenuFoucs currY: " + currY);
             mMenuFoucs.setTranslationY(currY);
-            updateReflection();
             invalidate();
         }
     }
+    
+
     
     public void setMask(float alpha) {
         //alphaImage.setAlpha(alpha);   // Commented by hxb
@@ -174,7 +182,12 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         int i = 0;
         View child;
         
-        // Log.d("shibojun", mPanelData.getName() + ": " + "setSelection: " + position);
+        Log.d(TAG, mPanelData.getName() + ": " + 
+        "setSelection: " + position + 
+        " mItemCount: " + mItemCount +
+        " mSelectedIndex: " + mSelectedIndex +
+        " mFocusY: " + mFocusY
+        );
         
         if (mListAdapter == null || mItemCount <= 0)
             return;
@@ -218,7 +231,7 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         }
         if (!mFocusScroller.isFinished()) {
             mFocusScroller.abortAnimation();
-            mMenuFoucs.setTranslationY(mFocusScroller.getFinalY());
+            mMenuFoucs.setTranslationY(mFocusScroller.getFinalY());   
         }
 
         // the focus scroll down, the list scroll up
@@ -240,16 +253,20 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
                 mFocusY += scrollDistance;
             }
         } else {
+            Log.d(TAG, "mSelectedIndex ！= mFirstIndex + mCenterIndex");
             mFocusScroller.startScroll(0, mFocusY, 0, scrollDistance, SCROLL_DURATION);
             mFocusY += scrollDistance;
         }
         mSelectedIndex += scrollCount;
         
-        // Log.d("shibojun", mPanelData.getName());
-        // Log.d("shibojun", "mFirstIndex: " + mFirstIndex);
-        // Log.d("shibojun", "scrollDistance: " + scrollDistance);
-        // Log.d("shibojun", "scrollDirection: " + scrollDirection);
-        // Log.d("shibojun", "mSelectedIndex: " + mSelectedIndex);
+        Log.d(TAG, mPanelData.getName());
+        Log.d(TAG, "mFirstIndex: " + mFirstIndex);
+        Log.d(TAG, "scrollDistance: " + scrollDistance);
+        Log.d(TAG, "scrollDirection: " + scrollDirection);
+        Log.d(TAG, "mSelectedIndex: " + mSelectedIndex);
+        Log.d(TAG, "mFocusScroller.getFinalY(): " + mFocusScroller.getFinalY());
+        Log.d(TAG, "mFocusScroller.getCurrY(): " + mFocusScroller.getCurrY());
+        Log.d(TAG, "mFocusY: " + mFocusY);
         
         invalidate();
         
@@ -347,7 +364,7 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
             m_imageView1.setLayoutParams(new LayoutParams(PANEL_WIDTH, PANEL_HEIGHT));
         }
     }
-
+    
     private void switchToBackView() {
         setImageBitmap(mBitmapBack);
         mMenuList.setVisibility(VISIBLE);
@@ -355,255 +372,8 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
         mMenuFoucs.setVisibility(VISIBLE);
         m_OriginView.setText(mPanelData.getName());
         m_OriginView.setTextColor(Color.WHITE);
-        m_OriginView.setRotationY(180f);
-        isFrontSide = false;
-        // Next lines commented by hxb
-        /*
-        if (mBitmapInvertedBack != null)
-            mInvertedImage.setImageBitmap(mBitmapInvertedBack);
-        else
-            updateReflection();
-            */
-        invalidate();
-    }
-    
-    private void switchToFrontView() {
-        setImageBitmap(mBitmapFront);
-        mMenuList.setVisibility(INVISIBLE);
-        mMenuBackgorund.setVisibility(INVISIBLE);
-        mMenuFoucs.setVisibility(INVISIBLE);
-        m_OriginView.setText(mPanelData.getName());
-        m_OriginView.setTextColor(Color.BLACK);
-        m_OriginView.setRotationY(0f);
-        isFrontSide = true;
-        // Next lines commented by hxb
-        /*
-        if (mBitmapInvertedFront != null)
-            mInvertedImage.setImageBitmap(mBitmapInvertedFront);
-            */
-        invalidate();
-    }
 
-    private void updateReflection() {
-        // Follow lines commented by hxb
-        /*
-        Bitmap invertedBitmap = createInvertedBitmap();
-        if (invertedBitmap != null) {
-            if (isFrontSide) {
-                mBitmapInvertedFront = invertedBitmap;
-            } else {
-                mBitmapInvertedBack = invertedBitmap;
-            }
-            mInvertedImage.setImageBitmap(invertedBitmap);
-            mInvertedImage.setTop(PANEL_HEIGHT);
-            invalidate();
-        }
-     */
-    }
-    
-    private Bitmap createInvertedBitmap() {
         invalidate();
-        
-        //mPanelWithoutReflection.buildDrawingCache();
-        //Bitmap originalImage = mPanelWithoutReflection.getDrawingCache();
-        
-        Bitmap originalImage = Bitmap.createBitmap(PANEL_WIDTH, PANEL_HEIGHT, Bitmap.Config.ARGB_8888);
-        if (originalImage == null)
-            return null;
-        
-        Canvas canvas = new Canvas(originalImage);
-        mPanelWithoutReflection.draw(canvas);
-        
-        int width = PANEL_WIDTH;
-        int height = PANEL_HEIGHT / 2;
-        
-        Matrix matrix = new Matrix();
-        matrix.preScale(1, -1);
-        Bitmap reflectionImage = Bitmap.createBitmap(originalImage, 0, PANEL_HEIGHT / 2, width, height, matrix, false);
-        
-        if (reflectionImage == null)
-            return null;
-        
-        // Log.d("shibojun", "originalImage: " + "width: " + originalImage.getWidth() + ", height: " + originalImage.getHeight());
-        
-        LinearGradient shader = new LinearGradient(0, 0, 0, height, 0xdd404040, 0x00000000, TileMode.CLAMP);
-        Paint paint = new Paint();
-        paint.setShader(shader);
-        paint.setXfermode(new PorterDuffXfermode(android.graphics.PorterDuff.Mode.MULTIPLY));
-        //paint.setAntiAlias(true);
-        canvas = new Canvas(reflectionImage);
-        canvas.drawRect(0, 0, width, reflectionImage.getHeight(), paint);
-        
-        //originalImage.recycle();
-        //originalImage = null;
-        
-        //mPanelWithoutReflection.setDrawingCacheEnabled(false);
-        
-        return reflectionImage;
-    }
-    
-    public void setFinishedRunnable(Runnable run1, Runnable run2) {
-        if (run1 != null)
-            runFinished1 = run1;
-        if (run2 != null)
-            runFinished2 = run2;
-    }
-    
-    /**
-     * 中间慢两端快的插值算法
-     */
-    @Deprecated
-    class AnimInterpolator implements Interpolator {
-        
-        public AnimInterpolator() {
-        }
-        
-        public AnimInterpolator(Context context, AttributeSet attrs) {
-        }
-        
-        public float getInterpolation(float input) {
-            if (input < 0.5f)
-                return (float) (0.5f * Math.sqrt(Math.sin(input * Math.PI)));
-            else
-                return (float) (-0.5f * Math.sqrt(Math.sin(input * Math.PI)) + 1);
-        }
-    }
-
-    private void createAnimation() {
-        rotateAnim1 = ObjectAnimator.ofFloat(this, "rotationY", 0f, 180f);
-        scaleXAnim1 = ObjectAnimator.ofFloat(this, "scaleX", ROTATE_SCALE_MIN, ROTATE_SCALE_MAX);
-        scaleYAnim1 = ObjectAnimator.ofFloat(this, "scaleY", ROTATE_SCALE_MIN, ROTATE_SCALE_MAX);
-        animSet1 =  new AnimatorSet();
-        animSet1.playTogether(rotateAnim1, scaleXAnim1, scaleYAnim1);
-        animSet1.setDuration(ROTATE_DURATION);
-       // animSet1.setInterpolator(new AnimInterpolator());
-        rotateAnim1.addUpdateListener(this);
-        
-        rotateAnim2 = ObjectAnimator.ofFloat(this, "rotationY", 180f, 0f);
-        scaleXAnim2 = ObjectAnimator.ofFloat(this, "scaleX", ROTATE_SCALE_MAX, ROTATE_SCALE_MIN);
-        scaleYAnim2 = ObjectAnimator.ofFloat(this, "scaleY", ROTATE_SCALE_MAX, ROTATE_SCALE_MIN);
-        animSet2 =  new AnimatorSet();
-        animSet2.playTogether(rotateAnim2, scaleXAnim2, scaleYAnim2);
-        animSet2.setDuration(ROTATE_DURATION);
-       // animSet2.setInterpolator(new AnimInterpolator());
-        rotateAnim2.addUpdateListener(this);
-        
-        // listener1: front to back finished
-        animLis1 = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator anim) {
-                animStarted = false;
-                switchToBackView();
-                needSwitch = false;
-                if (runFinished1 != null)
-                    runFinished1.run();
-                anim.removeAllListeners();
-                // Log.d("shibojun", "animLis1: " + "animStarted: " + animStarted + ", " + "needSwitch: " + needSwitch);
-            }
-        };
-        // listener2: back to front finished
-        animLis2 = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator anim) {
-                animStarted = false;
-                switchToFrontView();
-                needSwitch = false;
-                if (runFinished2 != null)
-                    runFinished2.run();
-                anim.removeAllListeners();
-                // Log.d("shibojun", "animLis2: " + "animStarted: " + animStarted + ", " + "needSwitch: " + needSwitch);
-            }
-        };
-    }
-    
-    public void flipit() {
-        // Log.d("shibojun", "flipit: " + "animStarted: " + animStarted + ", " + "needSwitch: " + needSwitch);
-        if (animSet1.isRunning()) {
-            //Log.d("shibojun", "animSet1 isRunning");
-        } else if (animSet2.isRunning()) {
-            // Log.d("shibojun", "animSet2 isRunning");
-            long curTime = ROTATE_DURATION - rotateAnim2.getCurrentPlayTime();
-            animSet2.removeAllListeners();
-            animSet2.end();
-            animSet1.addListener(animLis1);
-            animSet1.start();
-            rotateAnim1.setCurrentPlayTime(curTime);
-            scaleXAnim1.setCurrentPlayTime(curTime);
-            scaleYAnim1.setCurrentPlayTime(curTime);
-        } else {
-            // Log.d("shibojun", "no anim isRunning");
-            animSet1.removeAllListeners();
-            animSet2.removeAllListeners();
-            animSet1.addListener(animLis1);
-            animSet1.start();
-            animStarted = true;
-        }
-        // Log.d("shibojun", "after flipit: " + "animStarted: " + animStarted + ", " + "needSwitch: " + needSwitch);
-    }
-
-    public void backit() {
-        // Log.d("shibojun", "backit: " + "animStarted: " + animStarted + ", "+ "needSwitch: " + needSwitch);
-        if (animSet1.isRunning()) {
-            // Log.d("shibojun", "animSet1 isRunning");
-            long curTime = ROTATE_DURATION - rotateAnim1.getCurrentPlayTime();
-            animSet1.removeAllListeners();
-            animSet1.end();
-            animSet2.addListener(animLis2);
-            animSet2.start();
-            rotateAnim2.setCurrentPlayTime(curTime);
-            scaleXAnim2.setCurrentPlayTime(curTime);
-            scaleYAnim2.setCurrentPlayTime(curTime);
-        } else if (animSet2.isRunning()) {
-            // Log.d("shibojun", "animSet2 isRunning");
-        } else {
-            // Log.d("shibojun", "no anim isRunning");
-            hideItemsOutOfList();
-            animSet1.removeAllListeners();
-            animSet2.removeAllListeners();
-            animSet2.addListener(animLis2);
-            animSet2.start();
-            animStarted = true;
-        }
-        // Log.d("shibojun", "after backit: " + "animStarted: " + animStarted + ", " + "needSwitch: " + needSwitch);
-    }
-
-    @Override
-    public void onAnimationUpdate(ValueAnimator arg0) {
-        if (animStarted) {
-            float currAngle = this.getRotationY();
-         // Log.i("zhenghui","currAngle="+currAngle);
-            if (arg0.equals(rotateAnim1)) {
-                //Log.i("zhenghui","currAngle="+currAngle);
-                if (currAngle < SWITCH_ANGLE_MIN) {
-                    if (!needSwitch) {
-                        needSwitch = true;
-                    }
-                } else {
-                    if (needSwitch) {
-                        switchToBackView();
-                        needSwitch = false;
-                    }
-                }
-            } else if (arg0.equals(rotateAnim2)) {
-                if (currAngle > SWITCH_ANGLE_MAX) {
-                    if (!needSwitch) {
-                        needSwitch = true;
-                    }
-                } else {
-                    if (needSwitch) {
-                        switchToFrontView();
-                        needSwitch = false;
-                    }
-                }
-            }
-        }
-        invalidate();
-        /*
-        View parentView = (View)this.getParent();
-        if (parentView != null)
-            parentView.invalidate();
-        */
-        return;
     }
 
     public void updateicons(int menunum,String icons){
@@ -729,7 +499,7 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
     }
 }
 
- class TgallerypanelData {
+ class TgalleryBackPanelData {
 	 
 	 public List<Tpanel> updateTgallerypanelData(){
 		 
@@ -837,21 +607,21 @@ class TgallerypanelView  extends FrameLayout implements AnimatorUpdateListener{
 	 
 }
 
-public class TgallerypanelAdapter<MiddleImageView> extends TImageAdapter{
+public class TgalleryBackPanelAdapter<MiddleImageView> extends TImageAdapter{
 	private Context mContext;
     private  List<Tpanel> panels;
-    private TgallerypanelData mImageData;
-    private List<TgallerypanelView> m_TgallerypanelViews = null;
+    private TgalleryBackPanelData mImageData;
+    private List<TgalleryBackPanelView> m_TgallerypanelViews = null;
     int i=0,j;
     private ListView m_ListView;
 	int panelnum=0;
 	public Boolean First;
 	
 	
-	public TgallerypanelAdapter(Context c) {
+	public TgalleryBackPanelAdapter(Context c) {
 		super(c);
 		mContext = c;
-		mImageData = new TgallerypanelData();
+		mImageData = new TgalleryBackPanelData();
 		 First=true;
 		updatemiddleadapter();
 	}
@@ -893,16 +663,6 @@ public class TgallerypanelAdapter<MiddleImageView> extends TImageAdapter{
 		return panels;
 	}
 	
-	public void rotate(final int position, int direction, Runnable runFinished) {
-        if (direction == TgallerypanelView.ROTATE_FRONT_TO_BACK) {
-            m_TgallerypanelViews.get(position).setFinishedRunnable(runFinished, null);
-            m_TgallerypanelViews.get(position).flipit();
-        } else if (direction == TgallerypanelView.ROTATE_BACK_TO_FRONT){
-            m_TgallerypanelViews.get(position).setFinishedRunnable(null, runFinished);
-            m_TgallerypanelViews.get(position).backit();
-        }
-	}
-	
 	public void updatemiddleadapter() {
 		boolean recommendstate=true;
 		Log.i("zhenghui","into updatemiddleadapter1111111111");
@@ -919,7 +679,7 @@ public class TgallerypanelAdapter<MiddleImageView> extends TImageAdapter{
 		if (m_TgallerypanelViews != null) {
 			m_TgallerypanelViews =null;
 		}
-		m_TgallerypanelViews = new ArrayList<TgallerypanelView>(panels.size());
+		m_TgallerypanelViews = new ArrayList<TgalleryBackPanelView>(panels.size());
 		
 		int panel_idx = 0;
 		for (i = 0; i < panelnum; i++) {
@@ -931,7 +691,7 @@ public class TgallerypanelAdapter<MiddleImageView> extends TImageAdapter{
 				panels.remove(panel_idx);
 				continue;
 			} else {
-				m_TgallerypanelViews.add(new TgallerypanelView(mContext, panels.get(panel_idx)));
+				m_TgallerypanelViews.add(new TgalleryBackPanelView(mContext, panels.get(panel_idx)));
 				panel_idx++;
 			}
 		}

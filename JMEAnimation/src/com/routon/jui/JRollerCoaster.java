@@ -79,31 +79,13 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 		for (int i = 0; i < rKeys.length; i++) {
 			if (key == rKeys[i]) {
 				return -1;
-            }
-        }
-
-        return 0;
-    }
-
-    public void onCancel() {
-        int gear = focusStrategy.getGear();
-        if (gear > 1) {
-            gear = gear - 1;
-
-            for (int i = 0; i < gear; i++) {
-                onRetreat();
-            }
-        }
-        else if (gear < -1) {
-            gear = -gear - 1;
-
-            for (int i = 0; i < gear; i++) {
-                onAdvance();
-            }
-        }
-    }
-	   
-	public void onAdvance() {
+			}
+		}
+		
+		return 0;
+	}
+	
+	private void onAdvance() {
 		int go = focusStrategy.advance(getChildren(), rcHead, rcLoop == ROLLER_COASTER_LOOP_CYCLE);
 		rcHead = focusStrategy.getNewHead();
 		
@@ -134,10 +116,9 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 	}
 	
 	public void onRetreat() {
-		Log.d(TAG, "rcLoop = " + rcLoop);
 		int go = focusStrategy.retreat(getChildren(), rcHead, rcLoop == ROLLER_COASTER_LOOP_CYCLE);
 		rcHead = focusStrategy.getNewHead();
-		Log.d(TAG, " ========== rcHead = " + rcHead);
+		
 		if (go > 0) {
 			Log.d(TAG, "onRetreat ---- rcHead = " + rcHead + " " + focusStrategy.getFocus() + " " + focusStrategy.getAnchorage() + " " + focusStrategy.getLastPosition());
 
@@ -164,13 +145,31 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 		}
 	}
 	
+	public void onCancel() {
+		int gear = focusStrategy.getGear();
+		if (gear > 1) {
+			gear = gear - 1;
+			
+			for (int i = 0; i < gear; i++) {
+				onRetreat();
+			}
+		}
+		else if (gear < -1) {
+			gear = -gear - 1;
+			
+			for (int i = 0; i < gear; i++) {
+				onAdvance();
+			}
+		}
+	}
+	
 	@Override
-	public boolean onEvent(String name, TouchEvent evt, float tpf) {
+	public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf) {
 		if (focusStrategy.isFocused()) {			// dispatch to focus spatial
 			Spatial child = getChild(focusStrategy.getFocus());
 			
 			if (child instanceof JActorGene && isChildStable(child)) {
-				if (((JActorGene) child).onEvent(name, evt, tpf) == true) {
+				if (((JActorGene) child).onEvent(name, evt, false, tpf) == true) {
 					return true;
 				}
 			}
@@ -189,7 +188,7 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 			}
 		}
 		
-		return super.onEvent(name, evt, tpf);									// dispatch to normal path
+		return super.onEvent(name, evt, bubble, tpf);									// dispatch to normal path
 	}
 	
 	@Override

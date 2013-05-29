@@ -224,7 +224,7 @@ public class JFocusStrategy {
 		
 		if (cycle) {
 			int childrenNum = children.size();
-			Log.d(TAG, "anchorage = " + anchorage + " anchorage + childrenNum - focus = " + (anchorage + childrenNum - focus));
+			
 			if (anchorage + (childrenNum - focus/* - 1*/) >  cameraShot.length/* - 1*/) {
 				return 1;
 			}
@@ -244,7 +244,6 @@ public class JFocusStrategy {
 				if (newHead < 0) {
 					newHead = 0;
 				}
-				Log.d(TAG, "move = " + move + " head = " + head + " new focus = " + (focus - move + childrenNum) % childrenNum);
 				focus = (focus - move + childrenNum) % childrenNum;
 				
 				return 1;

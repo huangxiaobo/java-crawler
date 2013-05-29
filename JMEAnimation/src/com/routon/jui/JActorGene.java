@@ -9,7 +9,13 @@ public interface JActorGene {
 	public void setFixOnLT(boolean fix);
 	public void setFixOnLT(float x, float y, boolean fix);
 	
-	public boolean onEvent(String name, TouchEvent evt, float tpf);
+	public void setupSize(float width, float height);
+	public void setupSize(float width, float height, boolean isCameraSpace);
+	
+	public float getWidth();
+	public float getHeight();
+	
+	public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf);
 	
 	public void setOnKeyEventListener(JActorKeyEventListener listener);
 	public JActorKeyEventListener getOnKeyEventListener();

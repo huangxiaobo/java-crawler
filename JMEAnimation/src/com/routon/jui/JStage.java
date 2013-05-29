@@ -43,7 +43,7 @@ public abstract class JStage extends SimpleApplication implements TouchListener 
 	}
 	
 	public void onTouch(String name, TouchEvent evt, float tpf) {
-		if (keyFocusedActor == null || keyFocusedActor.onEvent(name, evt, tpf) == false) { 
+		if (keyFocusedActor == null || keyFocusedActor.onEvent(name, evt, true, tpf) == false) { 
 			onEvent(name, evt, tpf);
 		}
 	}
@@ -58,6 +58,14 @@ public abstract class JStage extends SimpleApplication implements TouchListener 
 		float cx = cam.getFrustumRight() * cam.getLocation().z / cam.getFrustumNear();
 		
 		return (w / cam.getWidth()) * cx * 2;
+	}
+	
+	static public float C2Sw(float w) {
+		Camera cam = GLOBAL_STAGE_LOG.getCamera();
+		
+		float cx = cam.getFrustumRight() * cam.getLocation().z / cam.getFrustumNear();
+		
+		return  w * cam.getWidth() / cx / 2.0f;
 	}
 	
 	static public float S2Cx(float x) {
@@ -75,6 +83,14 @@ public abstract class JStage extends SimpleApplication implements TouchListener 
 		float cy = cam.getFrustumTop() * cam.getLocation().z / cam.getFrustumNear();
 		
 		return (h / cam.getHeight()) * cy * 2;
+	}
+	
+	static public float C2Sh(float h) {
+		Camera cam = GLOBAL_STAGE_LOG.getCamera();
+		
+		float cy = cam.getFrustumTop() * cam.getLocation().z / cam.getFrustumNear();
+		
+		return h * cam.getHeight() / cy / 2.0f;
 	}
 	
 	static public float S2Cy(float y) {

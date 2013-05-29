@@ -3,7 +3,10 @@ package com.routon.jme_droid;
 
 import android.content.Context;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.jme3.animation.AnimChannel;
@@ -41,6 +44,8 @@ import com.jme3.system.android.JmeAndroidSystem;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
 import com.jme3.util.TangentBinormalGenerator;
+import com.routon.T.Launcher.TgalleryBackPanelAdapter;
+import com.routon.T.Launcher.TgalleryFrontPanelAdapter;
 import com.routon.T.Launcher.TgallerypanelAdapter;
 import com.routon.T.Launcher.TgalleryrecommendAdapter;
 import com.routon.T.Launcher.TopImageView;
@@ -232,50 +237,53 @@ public class JmeDesktop extends JStage {
                 rollerCoasterFocusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
 
-        TgallerypanelAdapter adpter = new TgallerypanelAdapter(
+        TgalleryFrontPanelAdapter adpter_f = new TgalleryFrontPanelAdapter(
+                (Context) JmeAndroidSystem.getActivity());
+        TgalleryBackPanelAdapter adpter_b = new TgalleryBackPanelAdapter(
                 (Context) JmeAndroidSystem.getActivity());
 
         for (int i = 0; i < PANEL_NUM; i++) {
-            View panelView = (View) adpter.getView(i, null, null);
-
-            JDroidView rcChild = new JDroidView("panel_" + i, panelView);
+            JActorGroup group = new JActorGroup("");
+            final JBoard board = new JBoard("");
+            
+            View panelFrontView = (View) adpter_f.getView(i, null, null);
+            JDroidView rcChild = new JDroidView("panel_front_" + i, panelFrontView);
             rcChild.setEnableLighting(false);
-            // rcChild.setShadowMode(ShadowMode.CastAndReceive);// 产生和接收 阴影
-            // rcChild.setShadowMode(ShadowMode.Receive);
-            rollerCoaster.attachChild(rcChild);
             rcChild.setReflection(true, 0.3f, 0.5f,0.7f);
+            board.attachChild(rcChild);
+  
+            View panelBackView = (View) adpter_b.getView(i, null, null);
+            JDroidView rcChild2 = new JDroidView("panel_back_" + i, panelBackView);
+            rcChild2.setEnableLighting(false);
+            rcChild2.setReflection(true, 0.3f, 0.5f,0.7f);
+            board.attachChild(rcChild2);       
+            
+            group.attachChild(board);
+            rollerCoaster.attachChild(group);
+            group.setOnKeyEventListener(new JActorKeyEventListener () {
+
+                @Override
+                public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+
+                @Override
+                public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
+                    // TODO Auto-generated method stub
+                    return board.onEvent("", evt, false, tpf);
+                }
+                
+            });
+            
+            /*
             if (i == 5) {
                 JActorGroup group = new JActorGroup("");
-                final JBoard board = new JBoard("board");
-                String jps[] = {"1_1.png", "1.jpg"};
-                for (int j = 0; j < 2; ++j) {
-                    Texture tex_ml = assetManager.loadTexture("Textures/" + jps[j]);
-                    JActor actor = new JActor("anonymous_" + j);
-                    actor.setupTexture(tex_ml);
-                    actor.setupMesh(256, 256);
-                    actor.setEnableLighting(false);
-                    actor.setReflection(true, 0.3f, 0.5f, 0.7f);
-                    board.attachChild(actor);
-                }
-                group.attachChild(board);
-                group.setOnKeyEventListener(new JActorKeyEventListener () {
-
-                    @Override
-                    public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
-                        // TODO Auto-generated method stub
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
-                        // TODO Auto-generated method stub
-                        return board.onEvent("", evt, tpf);
-                        
-                    }
-                    
-                });
+                addTestPanel(group);
+                
                 rollerCoaster.attachChild(group);
             }
+            */
         }
 
         rollerCoaster.requestKeyFocus();

@@ -557,7 +557,7 @@ public class JDesktopLayout extends JActorGroup {
     }
     
     @Override
-    public boolean onEvent(String name, TouchEvent evt, float tpf) {
+    public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf) {
         if (evt.getType() == TouchEvent.Type.KEY_DOWN) {
             switch (evt.getKeyCode()) {
                 case KeyInput.KEY_LEFT:
@@ -568,6 +568,6 @@ public class JDesktopLayout extends JActorGroup {
                     return true;
             }
         }
-        return super.onEvent(name, evt, tpf);
+        return super.onEvent(name, evt, bubble, tpf);
     }
 }

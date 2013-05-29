@@ -37,43 +37,53 @@ public class JBoard extends JActorGroup {
     }
 
     @Override
-    public boolean onEvent(String name, TouchEvent evt, float tpf) {
+    public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf) {
         Log.d(TAG, evt.getKeyCode() + " pressed" + "type: " + evt.getType());
         
         //只关注按下事件类型
         if (evt.getType() != TouchEvent.Type.KEY_DOWN)
             return false;
         
-        // JBoard在动画的初始位置，回车键运行动画
-        if (rotateKeyPressed(evt.getKeyCode()) && pauseAtBeginState()) {
-            channel.play();//运行动画
-            return true;
-        }
-        else if (escKeyPressed(evt.getKeyCode())) {
-            if (isPlayAnimation())
-                channel.reverse();//动画运行状态下，按ESC，动画反向
+        if (pauseAtBeginState()) {//动画停在初始状态
+//            Spatial child = this.getChild(0);
+//            if (child instanceof JActorGene) {
+//                if (((JActorGene) child).onEvent(name, evt, false, tpf) == true) {
+//                    return true;
+//                }
+//            }
             
-            // 不需要再调用reverse(),channel判断当前到达结束位置，自动将speed反向。
-            // 不能采用LoopMode.DontLoop, LoopMode.Loop, 因为无法得到动画运动到开始或结束位置时的信息
-            if (pauseAtEndState()){
-                //channel.reverse();
+            if (rotateKeyPressed(evt.getKeyCode())) {//回车键按下
                 channel.play();
-            }
-            return true;
-        }
-
-        // 左右方向键按下
-        // 只有当动画停在初始状态时，才允许向上传递它的父结点处理此事件 
-        if (arrowKeyPressed(evt.getKeyCode())) {
-            if (pauseAtBeginState())
-                return false;
-            else
                 return true;
+            } else {
+                return false;
+            }
+        } else if (pauseAtEndState()) {//动画停在结束状态
+            Spatial child = this.getChild(1);
+            if (child instanceof JActorGene) {
+                if (((JActorGene) child).onEvent(name, evt, false, tpf) == true) {
+                    return true;
+                }
+            }
+            
+            if (escKeyPressed(evt.getKeyCode())) {
+                // 不需要再调用reverse(),channel判断当前到达结束位置，自动将speed反向。
+                // 不能采用LoopMode.DontLoop, LoopMode.Loop, 因为无法得到动画运动到开始或结束位置时的信息
+                channel.play();
+                return true;
+            }
+        } else if (isPlayAnimation()) {//动画正在运行
+            if (escKeyPressed(evt.getKeyCode())) {
+                channel.reverse();//动画运行状态下，按ESC，动画反向
+                return true;
+            }
         }
+        
+        
         // 由于JBoard经常套在另一个JActorGroup里使用， Event由它传下来，
         // 如果再返回 super.onEvent，会造成死循环
         //return super.onEvent(name, evt, tpf);
-        return false;
+        return true;
     }
 
     @Override
@@ -143,30 +153,31 @@ public class JBoard extends JActorGroup {
         return false;
     }
     
-    private boolean arrowKeyPressed(int key) {
+    // Left/Right arrow key was pressed
+    private boolean lrArrowKeyPressed(int key) {
         if (key == KeyInput.KEY_LEFT || key == KeyInput.KEY_RIGHT)
             return true;
         return false;
     }
-    
+       
     // 因为当动画暂停时，getTime的时间并不刚好等于{0, channel.getAnimMaxTime()},
     // 且由于此动画只会停在动画两端，所以只要动画处于暂停，且时间大于动画时长的一半
     // 即认为动画停在结束处，此时按ESC键，动画将反向动画到动画开始处
-    private boolean pauseAtBeginState() {
+    public boolean pauseAtBeginState() {
         if (channel != null && channel.getPlayState() != PlayState.Playing &&
                 channel.getTime() < channel.getAnimMaxTime()/2)
             return true;
         return false;
     }
     
-    private boolean pauseAtEndState() {
+    public boolean pauseAtEndState() {
         if (channel != null && channel.getPlayState() != PlayState.Playing &&
                 channel.getTime() > channel.getAnimMaxTime()/2)
             return true;
         return false;     
     }
     
-    private boolean isPlayAnimation() {
+    public boolean isPlayAnimation() {
         if (channel != null && channel.getPlayState() == PlayState.Playing)
             return true;
         return false;

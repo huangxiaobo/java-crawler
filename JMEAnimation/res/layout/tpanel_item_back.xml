@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mframelayout"
+    android:layout_width="256dp"
+    android:layout_height="256dp" >
+
+    <FrameLayout
+        android:id="@+id/panelFrame"
+        android:layout_width="fill_parent"
+        android:layout_height="256dp" >
+
+        <ImageView
+            android:id="@+id/imagepanelView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <FrameLayout
+            android:layout_width="250dp"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp" >
+
+            <!-- <ListView -->
+            <!-- android:id="@+id/m_ListView" -->
+            <!-- android:layout_width="fill_parent" -->
+            <!-- android:layout_height="220dp" -->
+            <!-- android:fadeScrollbars="true" -->
+            <!-- android:focusable="true" /> -->
+
+            <TgalleryBackPanelChildView
+                android:layout_width="fill_parent"
+                android:layout_height="220dp" >
+
+                <!-- 背景栏 -->
+
+                <LinearLayout
+                    android:id="@+id/menulistBackground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- 选择框 -->
+                <!-- android:alpha="0.6" -->
+
+                <ImageView
+                    android:id="@+id/menuFocus"
+                    android:layout_width="fill_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/desktop_focus" />
+
+                <!-- 菜单项 -->
+
+                <LinearLayout
+                    android:id="@+id/menuList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </TgalleryBackPanelChildView>
+
+            <TextView
+                android:id="@+id/m_OriginView"
+                android:layout_width="fill_parent"
+                android:layout_height="33dp"
+                android:layout_marginTop="220dp" />
+        </FrameLayout>
+    </FrameLayout>   
+</FrameLayout>

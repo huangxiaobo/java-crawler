@@ -82,20 +82,12 @@ public class JDroidView extends JActor {
 			updateDroidViewMaterial();
 		}
 	}
-
-	@Override
-	public void requestKeyFocus() {
-		super.requestKeyFocus();
-		
-		// Android View needs focus to make dispatch(Key/Touch/...)Event works
-		droidView.setFocusable(true);
-		droidView.requestFocus();
-	}
 	
 	@Override
-	public boolean onEvent(String name, TouchEvent evt, float tpf) {
+	public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf) {
 		// dispatch event to Android View first
 		boolean evtDone = false;
+		Log.d(TAG, "onEvent");
 		try {
 			evtDone = dispatch2DroidView(evt);
 		}
@@ -103,17 +95,24 @@ public class JDroidView extends JActor {
 			e.printStackTrace();
 		}
 		
-		return evtDone ? evtDone : super.onEvent(name, evt, tpf);
+		return evtDone ? evtDone : super.onEvent(name, evt, bubble, tpf);
 	}
 	
 	private boolean dispatch2DroidView(TouchEvent evt) {
 		Object droidEvent = evt.getBackendEvent();
 		
+		// Android View needs focus to make dispatch(Key/Touch/...)Event works
+		droidView.setFocusable(true);
+		droidView.requestFocus();
+				
 		if (droidEvent == null) {
 			return false;
 		}
 		else if (droidEvent instanceof KeyEvent) {
-			return droidView.dispatchKeyEvent((KeyEvent) droidEvent);
+		    Log.d(TAG, "dispatch2DroidView");
+			boolean ret = droidView.dispatchKeyEvent((KeyEvent) droidEvent);
+			Log.d(TAG, "dispatch2DroidView ret: " + ret);
+			return ret;
 		}
 		else if (droidEvent instanceof MotionEvent) {
 			return droidView.dispatchTouchEvent((MotionEvent) droidEvent);

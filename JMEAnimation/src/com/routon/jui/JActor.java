@@ -183,8 +183,8 @@ public class JActor extends Geometry implements JActorGene {
 	}
 	
 	@Override
-	public boolean onEvent(String name, TouchEvent evt, float tpf) {
-		return jActorOnEvent(this, name, evt, tpf);
+	public boolean onEvent(String name, TouchEvent evt, boolean bubble, float tpf) {
+		return jActorOnEvent(this, name, evt, bubble, tpf);
 	}
 	
 	@Override
@@ -215,7 +215,7 @@ public class JActor extends Geometry implements JActorGene {
 		return (JActorGene)parent;
 	}
 	
-	static public boolean jActorOnEvent(JActorGene actor, String name, TouchEvent evt, float tpf) {
+	static public boolean jActorOnEvent(JActorGene actor, String name, TouchEvent evt, boolean bubble, float tpf) {
 		TouchEvent.Type evtType = evt.getType();
 		
 		boolean evtDone = false;
@@ -234,7 +234,7 @@ public class JActor extends Geometry implements JActorGene {
 					evtDone = listener.onKeyUp(actor, evt, tpf);
 				}
 			}
-		} while (evtDone == false && (actor = actor.getJActorParent()) != null);
+		} while (evtDone == false && bubble == true && (actor = actor.getJActorParent()) != null);
 		
 		return evtDone;
 	}
