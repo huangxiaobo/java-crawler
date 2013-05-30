@@ -50,39 +50,21 @@ import com.routon.jme_droid.R;
 
 class TgalleryBackPanelListView extends FrameLayout {
     private final static String TAG = "TgalleryBackPanelListView";
+    private final static String TIME_DEBUG_TAG = "TimeDebug";
     private Context mContext;
-    private FrameLayout mLayout;
+    private View mFrameLayout;
 
-    public TgalleryBackPanelListView(Context context) {
-        super(context);
-        // TODO Auto-generated constructor stub
-    }
+    private ImageView mMenuFoucs;
+    private LinearLayout mMenuList, mMenuBackgorund;
+    private Tpanel mPanelData;
+    private MenuListAdapter mListAdapter = null;
     
-};
-
-/*
- * Display Android View class
- * Each TgallerypanelView is a item attach with Gallery, 
- */
-class TgalleryBackPanelView  extends FrameLayout{
-    private final static String TAG = "TgalleryBackPanelView";
-    private Context mContext;
-	private View m_FrameLayout = null;
-	private FrameLayout mPanelWithoutReflection;
-	private TextView m_OriginView = null;
-	private ImageView  m_imageView1;
-	private ImageView mMenuFoucs;
-	private LinearLayout mMenuList, mMenuBackgorund;
-	private Tpanel mPanelData;
-	private Bitmap mBitmapBack = null;
-	private MenuListAdapter mListAdapter = null;
-	
-	private int mItemCount = 0;
-	private int mMenuListY = 0, mFocusY = 0;
-	private int mSelectedIndex = 0, mFirstIndex = 0;
-	private int mMaxVisibleItems = 5, mCenterIndex = 2;
+    private int mItemCount = 0;
+    private int mMenuListY = 0, mFocusY = 0;
+    private int mSelectedIndex = 0, mFirstIndex = 0;
+    private int mMaxVisibleItems = 5, mCenterIndex = 2;
     private Scroller mListScroller, mFocusScroller = null;
-    private int SCROLL_DURATION = 0;
+    private int SCROLL_DURATION = 600;
         
     public static final int ROTATE_FRONT_TO_BACK = 1;
     public static final int ROTATE_BACK_TO_FRONT = -1;
@@ -94,63 +76,43 @@ class TgalleryBackPanelView  extends FrameLayout{
     public static final int TEXT_SIZE = 24;
     public static final int PANEL_TEXT_SIZE = 28;
     
-    private boolean needUpdate = false;
+    public TgalleryBackPanelListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+        mPanelData = null;
+        
+        initialize();
+    }
     
-	public TgalleryBackPanelView(Context hostActivity, Tpanel panel) {
-		super(hostActivity);
-		mContext = hostActivity;
-		mPanelData = panel;
-		
-		m_FrameLayout = LayoutInflater.from(hostActivity).inflate(R.layout.tpanel_item_back, this);
-		mPanelWithoutReflection = (FrameLayout)m_FrameLayout.findViewById(R.id.panelFrame);
-		m_imageView1 = (ImageView)m_FrameLayout.findViewById(R.id.imagepanelView);
-		m_OriginView = (TextView)m_FrameLayout.findViewById(R.id.m_OriginView);
-		m_OriginView.setTextSize(PANEL_TEXT_SIZE);
-		m_OriginView.setGravity(Gravity.BOTTOM | Gravity.CENTER);
-        m_OriginView.setTextColor(Color.WHITE);
+    public TgalleryBackPanelListView(Context context, Tpanel panel) {
+        super(context, null, 0);
         
-        mMenuList =  (LinearLayout)m_FrameLayout.findViewById(R.id.menuList);
-        mMenuBackgorund = (LinearLayout)m_FrameLayout.findViewById(R.id.menulistBackground);
-        mMenuFoucs =  (ImageView)m_FrameLayout.findViewById(R.id.menuFocus);
-        mListScroller = new Scroller(hostActivity);
-        mFocusScroller = new Scroller(hostActivity);
+        initialize();
+        setPanelData(panel);
+    }
+   
+    private void initialize() {
         
-        Drawable draw = Drawable.createFromPath(mPanelData.getAnimationPic());
-        if (draw != null)
-            mBitmapBack = ((BitmapDrawable)draw).getBitmap();
+        mFrameLayout = LayoutInflater.from(mContext).inflate(R.layout.tpanel_item_back_listview, this);
+       
+        mMenuList =  (LinearLayout)mFrameLayout.findViewById(R.id.menuList);
+        mMenuBackgorund = (LinearLayout)mFrameLayout.findViewById(R.id.menulistBackground);
+        mMenuFoucs =  (ImageView)mFrameLayout.findViewById(R.id.menuFocus);
+        mListScroller = new Scroller(mContext);
+        mFocusScroller = new Scroller(mContext);
+    }
+    
+    public void setPanelData(Tpanel panel) {
+        mPanelData = panel;
+   
         
         ArrayList<panelmenu> menu_list = mPanelData.getmenulist();
         if (menu_list != null && menu_list.size() != 0) {
             mListAdapter = new MenuListAdapter(mContext, menu_list);
             updateListAdapter();
         }
-        
-        switchToBackView();
-        
-        mPanelWithoutReflection.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-        mPanelWithoutReflection.layout(0, 0, 
-                mPanelWithoutReflection.getMeasuredWidth(), 
-                mPanelWithoutReflection.getMeasuredHeight());
-       
-        this.setOnKeyListener(new OnKeyListener () {
-
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // TODO Auto-generated method stub
-                Log.d(TAG, "view: " + v + " keyCode: " + keyCode + " event: " + event);
-               if (keyCode == KeyInput.KEY_DOWN) {
-                   setNext();
-                   return true;
-               } else if (keyCode == KeyInput.KEY_UP) {
-                   setPrev();
-                   return true;
-               }
-               return false;
-            }
-        });
-	}
-	
+    }
+    
     @Override
     public void computeScroll() {
         Log.d(TAG, "computeScroll");
@@ -171,23 +133,12 @@ class TgalleryBackPanelView  extends FrameLayout{
         }
     }
     
-
-    
-    public void setMask(float alpha) {
-        //alphaImage.setAlpha(alpha);   // Commented by hxb
-    }
-    
     public void setSelection(int position) {
         int scrollCount = 0, scrollDistance = 0, scrollDirection = 0;
         int i = 0;
         View child;
         
-        Log.d(TAG, mPanelData.getName() + ": " + 
-        "setSelection: " + position + 
-        " mItemCount: " + mItemCount +
-        " mSelectedIndex: " + mSelectedIndex +
-        " mFocusY: " + mFocusY
-        );
+        Log.d(TAG, mPanelData.getName() + ": " + "setSelection: " + position );
         
         if (mListAdapter == null || mItemCount <= 0)
             return;
@@ -257,17 +208,7 @@ class TgalleryBackPanelView  extends FrameLayout{
             mFocusScroller.startScroll(0, mFocusY, 0, scrollDistance, SCROLL_DURATION);
             mFocusY += scrollDistance;
         }
-        mSelectedIndex += scrollCount;
-        
-        Log.d(TAG, mPanelData.getName());
-        Log.d(TAG, "mFirstIndex: " + mFirstIndex);
-        Log.d(TAG, "scrollDistance: " + scrollDistance);
-        Log.d(TAG, "scrollDirection: " + scrollDirection);
-        Log.d(TAG, "mSelectedIndex: " + mSelectedIndex);
-        Log.d(TAG, "mFocusScroller.getFinalY(): " + mFocusScroller.getFinalY());
-        Log.d(TAG, "mFocusScroller.getCurrY(): " + mFocusScroller.getCurrY());
-        Log.d(TAG, "mFocusY: " + mFocusY);
-        
+        mSelectedIndex += scrollCount;   
         invalidate();
         
         return;
@@ -287,6 +228,7 @@ class TgalleryBackPanelView  extends FrameLayout{
         return mSelectedIndex;
     }
 
+    
     public void updateListAdapter() {
         if (mListAdapter == null)
             return;
@@ -355,27 +297,9 @@ class TgalleryBackPanelView  extends FrameLayout{
     }
     
     public View getDataView() {
-        return m_FrameLayout;
+        return mFrameLayout;
     }
     
-    private void setImageBitmap(Bitmap bitmap) {
-        if (bitmap != null) {
-            m_imageView1.setImageBitmap(bitmap);
-            m_imageView1.setLayoutParams(new LayoutParams(PANEL_WIDTH, PANEL_HEIGHT));
-        }
-    }
-    
-    private void switchToBackView() {
-        setImageBitmap(mBitmapBack);
-        mMenuList.setVisibility(VISIBLE);
-        mMenuBackgorund.setVisibility(VISIBLE);
-        mMenuFoucs.setVisibility(VISIBLE);
-        m_OriginView.setText(mPanelData.getName());
-        m_OriginView.setTextColor(Color.WHITE);
-
-        invalidate();
-    }
-
     public void updateicons(int menunum,String icons){
         if (mListAdapter == null)
             return;
@@ -480,6 +404,141 @@ class TgalleryBackPanelView  extends FrameLayout{
             return mImageList.get(position);
         }
     }
+    
+
+};
+
+/******************************TgalleryBackPanelView**************************/
+/*
+ * Display Android View class
+ * Each TgallerypanelView is a item attach with Gallery, 
+ */
+class TgalleryBackPanelView  extends FrameLayout{
+    private final static String TAG = "TgalleryBackPanelView";
+    private final static String TIME_DEBUG_TAG = "TimeDebug";
+    private Context mContext;
+	private View m_FrameLayout = null;
+	private FrameLayout mPanelWithoutReflection;
+	private TextView m_OriginView = null;
+	private ImageView  m_imageView1;
+	private Tpanel mPanelData;
+	private Bitmap mBitmapBack = null;
+	private TgalleryBackPanelListView m_ListView;
+    
+    public static final int PANEL_WIDTH = 256;
+    public static final int PANEL_HEIGHT = 256;
+    public static final int PIC_WIDTH = 250;
+    public static final int PIC_HEIGHT = 44;
+    public static final int TEXT_SIZE = 24;
+    public static final int PANEL_TEXT_SIZE = 28;
+    
+    private boolean needUpdate = false;
+    
+	public TgalleryBackPanelView(Context hostActivity, Tpanel panel) {
+		super(hostActivity);
+		mContext = hostActivity;
+		mPanelData = panel;
+		
+		long t1 = System.currentTimeMillis();
+		m_FrameLayout = LayoutInflater.from(mContext).inflate(R.layout.tpanel_item_back, this);
+		mPanelWithoutReflection = (FrameLayout)m_FrameLayout.findViewById(R.id.panelFrame);
+		m_imageView1 = (ImageView)m_FrameLayout.findViewById(R.id.imagepanelView);
+		m_ListView = (TgalleryBackPanelListView)m_FrameLayout.findViewById(R.id.listView);
+		m_ListView.setPanelData(panel);
+		m_OriginView = (TextView)m_FrameLayout.findViewById(R.id.m_OriginView);
+		m_OriginView.setTextSize(PANEL_TEXT_SIZE);
+		m_OriginView.setGravity(Gravity.BOTTOM | Gravity.CENTER);
+        m_OriginView.setTextColor(Color.WHITE);
+        
+        long t2 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "布局初始化时间: " + (t2 - t1));
+        
+        Drawable draw = Drawable.createFromPath(mPanelData.getAnimationPic());
+        if (draw != null)
+            mBitmapBack = ((BitmapDrawable)draw).getBitmap();   
+    
+        switchToBackView();
+        
+        long t3 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "绘制背景时间 : " + (t3 - t2));
+        
+        mPanelWithoutReflection.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        mPanelWithoutReflection.layout(0, 0, 
+                mPanelWithoutReflection.getMeasuredWidth(), 
+                mPanelWithoutReflection.getMeasuredHeight());
+        
+        long t4 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "调整布局时间 : " + (t4 - t3));
+       
+        this.setOnKeyListener(new OnKeyListener () {
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // TODO Auto-generated method stub
+                Log.d(TAG, "view: " + v + " keyCode: " + keyCode + " event: " + event);
+               if (keyCode == KeyInput.KEY_DOWN) {
+                   setNext();
+                   return true;
+               } else if (keyCode == KeyInput.KEY_UP) {
+                   setPrev();
+                   return true;
+               }
+               return false;
+            }
+        });
+	}
+	   
+    public void setSelection(int position) {
+        m_ListView.setSelection(position);
+        
+        return;
+    }
+    
+    public void setNext() {
+        m_ListView.setNext();
+        return;
+    }
+
+    public void setPrev() {
+        m_ListView.setPrev();
+        return;
+    }
+    
+    public int getSelection() {
+        return m_ListView.getSelection();
+    }
+
+    public void updateicons(int menunum,String icons){
+        m_ListView.updateicons(menunum, icons);
+    }
+   
+    
+    private void setImageBitmap(Bitmap bitmap) {
+        if (bitmap != null) {
+            m_imageView1.setImageBitmap(bitmap);
+            m_imageView1.setLayoutParams(new LayoutParams(PANEL_WIDTH, PANEL_HEIGHT));
+        }
+    }
+    
+    private void switchToBackView() {
+        setImageBitmap(mBitmapBack);
+        m_OriginView.setText(mPanelData.getName());
+        m_OriginView.setTextColor(Color.WHITE);
+
+        invalidate();
+    }
+
+    public int getItemCount() {
+        return m_ListView.getItemCount();
+    }
+    
+    public View getDataView() {
+        return m_FrameLayout;
+    }
+    
+    
+   
     
     @Override
     protected void onDraw(Canvas canvas) {
@@ -608,6 +667,7 @@ class TgalleryBackPanelView  extends FrameLayout{
 }
 
 public class TgalleryBackPanelAdapter<MiddleImageView> extends TImageAdapter{
+    private final static String TIME_DEBUG_TAG = "TimeDebug";
 	private Context mContext;
     private  List<Tpanel> panels;
     private TgalleryBackPanelData mImageData;
@@ -691,7 +751,11 @@ public class TgalleryBackPanelAdapter<MiddleImageView> extends TImageAdapter{
 				panels.remove(panel_idx);
 				continue;
 			} else {
+			    long t1 = System.currentTimeMillis();
 				m_TgallerypanelViews.add(new TgalleryBackPanelView(mContext, panels.get(panel_idx)));
+				long t2 = System.currentTimeMillis();
+                Log.d(TIME_DEBUG_TAG, "增加一个挡板的时间: " + (t2 - t1));
+                
 				panel_idx++;
 			}
 		}

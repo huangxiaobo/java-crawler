@@ -111,7 +111,7 @@ public class JBoard extends JActorGroup {
         channel = control.createChannel();
         channel.setAnim("flip", 0);
         channel.setLoopMode(LoopMode.Cycle);
-        channel.setSpeed(2f);
+        channel.setSpeed(4f);
         control.addListener(new AnimEventListener() {
 
             @Override

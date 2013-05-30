@@ -66,7 +66,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class JmeDesktop extends JStage {
-    static private String TAG = "JmeDesktop";
+    private final static String TAG = "JmeDesktop";
+    private final static String TIME_DEBUG_TAG = "TimeDebug";
 
     private Vector3f lightTarget = new Vector3f(0, -1.5f, 0);
 
@@ -91,6 +92,8 @@ public class JmeDesktop extends JStage {
     private static final int RECOMMAND_NUM = 10;
 
     private static final int PANEL_NUM = 10;
+    
+    private static final ColorRGBA grayColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1);
 
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
@@ -105,6 +108,7 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void simpleInitApp() {
+        long t0 = System.currentTimeMillis();
         //viewPort.setBackgroundColor(ColorRGBA.Blue);
         rootNode.setShadowMode(ShadowMode.Off);
         /*
@@ -161,19 +165,39 @@ public class JmeDesktop extends JStage {
         AnimationFactory af = new AnimationFactory(12, "scale-anim");
         af.addTimeScale(0, new Vector3f(1f, 1f, 1f));
         af.addTimeScale(3, new Vector3f(1f, 1f, 1f));
-        af.addTimeScale(6, new Vector3f(1.2f, 1.2f, 1.2f));
+        af.addTimeScale(6, new Vector3f(1.08f, 1.08f, 1.08f));
         af.addTimeScale(9, new Vector3f(1f, 1f, 1f));
         af.addTimeScale(12, new Vector3f(1f, 1f, 1f));
+      
+        af.addTimeColorGlass(0, new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
+        af.addTimeColorGlass(3, new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
+        af.addTimeColorGlass(6, new ColorRGBA(1f, 1f, 1f, 1f));
+        af.addTimeColorGlass(9, new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
+        af.addTimeColorGlass(12, new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
+       
         Animation scale_anim = af.buildAnimation();
         scale_track = scale_anim.getTracks()[0];
-
+        
+        long t1 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "t1 - t0: " + (t1 - t0));
         showRecommendation();
+        
+        long t2 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "t2 - t1: " + (t2 - t1));
+        
+        
         showRollerCoaster();
+        
+        long t3 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "t3 - t2: " + (t3 - t2));
+        
         rollerCoasterGetFocus();
         recomPanelLoseFocus();
 
         //FlipTest();
         // setupBg();
+        long t4 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "simpleInitApp总时间: " + (t4 - t0));
     }
     
     private void setupBg() {
@@ -198,6 +222,7 @@ public class JmeDesktop extends JStage {
     }
 
     private void showRollerCoaster() {
+        long t10 = System.currentTimeMillis();
         assetManager.registerLoader("com.routon.jui.JAnimLoader", "anim");
         JAnimLoader loader = new JAnimLoader();
         
@@ -208,11 +233,11 @@ public class JmeDesktop extends JStage {
                     0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
             },
             new ColorRGBA[] {
-                    new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f),
-                    new ColorRGBA(0.6f, 0.6f, 0.6f, 0.6f),
-                    new ColorRGBA(0.678f, 0.678f, 0.678f, 0.7f), 
-                    new ColorRGBA(0.81f, 0.81f, 0.81f, 0.8f),
-                    new ColorRGBA(0.87f, 0.87f, 0.87f, 0.9f), 
+                    new ColorRGBA(0.1f, 0.1f, 0.1f, 1f),
+                    new ColorRGBA(0.2f, 0.2f, 0.2f, 1f),
+                    new ColorRGBA(0.3f, 0.3f, 0.3f, 1f), 
+                    new ColorRGBA(0.4f, 0.4f, 0.4f, 1f),
+                    new ColorRGBA(0.5f, 0.5f, 0.5f, 1f),
                     
                     new ColorRGBA(1, 1, 1, 1),
                     
@@ -229,6 +254,8 @@ public class JmeDesktop extends JStage {
             e.printStackTrace();
             return;
         }
+        long t11 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "动画加载时间: " + (t11 - t10));
         //List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-8.anim");
         rollerCoasterFocusStrategy = new JFocusStrategy(5, new float[] {
                 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
@@ -241,13 +268,19 @@ public class JmeDesktop extends JStage {
                 (Context) JmeAndroidSystem.getActivity());
         TgalleryBackPanelAdapter adpter_b = new TgalleryBackPanelAdapter(
                 (Context) JmeAndroidSystem.getActivity());
-
+        long t12 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "创建roller对象以及PanelAdapter时间: " + (t12 - t11));
         for (int i = 0; i < PANEL_NUM; i++) {
             JActorGroup group = new JActorGroup("");
             final JBoard board = new JBoard("");
             
+            long t110 = System.currentTimeMillis();
             View panelFrontView = (View) adpter_f.getView(i, null, null);
+            long t111 = System.currentTimeMillis();
+            Log.d(TIME_DEBUG_TAG, "创建一个Android挡板的的时间：" + (t111 - t110));
             JDroidView rcChild = new JDroidView("panel_front_" + i, panelFrontView);
+            long t112 = System.currentTimeMillis();
+            Log.d(TIME_DEBUG_TAG, "创建一个jme结点的时间: " + (t112 - t111));
             rcChild.setEnableLighting(false);
             rcChild.setReflection(true, 0.3f, 0.5f,0.7f);
             board.attachChild(rcChild);
@@ -285,6 +318,8 @@ public class JmeDesktop extends JStage {
             }
             */
         }
+        long t13 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "创建挡板时间: " + (t13 - t12));
 
         rollerCoaster.requestKeyFocus();
         rollerCoaster.setLocalTranslation(0, -1.5f, 0);
@@ -316,6 +351,8 @@ public class JmeDesktop extends JStage {
             }
             
         });
+        long t14 = System.currentTimeMillis();
+        Log.d(TIME_DEBUG_TAG, "设置事件监听时间: " + (t14 - t13));
     }
     
     private void rollerCoasterGetFocus() {
@@ -413,24 +450,35 @@ public class JmeDesktop extends JStage {
     }
     
     private void recomPanelGetFocus () {
-        recomTimer.pause(); //recomPanel不再自动播放
-        recomPanel.requestKeyFocus();   //recomPanel得到键盘事件
-        recomPanel.onCancel();
-        if (recomPanelFocusStrategy.isFocused()) {
-            Spatial s = recomPanel.getChild(recomPanelFocusStrategy.getFocus());
-            s.setLocalScale(1.2f);
+        try {
+            recomTimer.pause(); // recomPanel不再自动播放
+            recomPanel.requestKeyFocus(); // recomPanel得到键盘事件
+            recomPanel.onCancel();
+            if (recomPanelFocusStrategy.isFocused()) {
+                Spatial s = recomPanel.getChild(recomPanelFocusStrategy.getFocus());
+                s.setLocalScale(1.08f);
+                s.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
+            }
+            //recomPanel.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
+            recomPanelAnim.addTrack(scale_track);
+        } catch (Exception ex) {
+            Log.e(TAG, ex.getMessage());
         }
-        recomPanel.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
-        recomPanelAnim.addTrack(scale_track);
     }
     private void recomPanelLoseFocus() {
+        try {
         if (1 == 1 || recomPanelFocusStrategy.isFocused()) {//有焦点
-            for (Spatial s : recomPanel.getChildren())
+            for (Spatial s : recomPanel.getChildren()) {
                 s.setLocalScale(1);
+                s.setColorGlass(grayColor);
+            }
+         
         }
-        recomPanel.setColorGlass(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
         recomPanelAnim.removeTrack(scale_track);
         recomTimer.start();
+        } catch (Exception ex) {
+            Log.e(TAG, ex.getMessage());
+        }
     }
     
     //////////////////////////////////////////////////////
