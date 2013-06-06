@@ -12,7 +12,7 @@ public class JmeDroid extends AndroidHarness {
 		Log.d("TIME TRACE : ", Thread.currentThread().getStackTrace()[2].getFileName() + ":" + Thread.currentThread().getStackTrace()[2].getLineNumber() + " --- " + SystemClock.uptimeMillis());
 		
 		// Set the application class to run
-		appClass = "com.routon.jme_droid.TestFlyInEffect";
+		appClass = "com.routon.jme_droid.JmeDesktop";
 		
 		// Try ConfigType.FASTEST; or ConfigType.LEGACY if you have problems
 		eglConfigType = ConfigType.BEST;

@@ -15,6 +15,7 @@ import com.jme3.animation.AnimControl;
 import com.jme3.animation.Animation;
 import com.jme3.animation.AnimationFactory;
 import com.jme3.animation.LoopMode;
+import com.jme3.animation.SpatialTrack;
 import com.jme3.animation.Track;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetKey;
@@ -68,7 +69,6 @@ import java.util.List;
 
 public class JmeDesktop extends JStage {
     private final static String TAG = "JmeDesktop";
-    private final static String TIME_DEBUG_TAG = "TimeDebug";
 
     private Vector3f lightTarget = new Vector3f(0, -1.5f, 0);
 
@@ -112,32 +112,9 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void simpleInitApp() {
-        /****************显示帧率*************************/
-        droidTxt = new TextView((Context)JmeAndroidSystem.getActivity());
-        droidTxt.setText("FPS");
-        droidTxt.setTextSize(38);
-        
-        droid = new JDroidView("a droid view", droidTxt);
-        droid.setFixOnLT(10, 620, true);
-        droid.setReflection(true);
-        droid.setColorGlass(ColorRGBA.Pink);
-        rootNode.attachChild(droid);
-        
-        JTimer fpsTimer = new JTimer(1000, 0);
-        fpsTimer.setLocalTask(new JTimerTask() {
-
-            @Override
-            public boolean task() {
-                // TODO Auto-generated method stub
-                droidTxt.setText("FPS: " + (int)getTimer().getFrameRate());
-                return false;
-            }
-            
-        });
-        fpsTimer.start();
+        showFpsInfo();
         /************************************************/
         
-        long t0 = System.currentTimeMillis();
         //viewPort.setBackgroundColor(ColorRGBA.Blue);
         rootNode.setShadowMode(ShadowMode.Off);
         /*
@@ -207,26 +184,46 @@ public class JmeDesktop extends JStage {
         Animation scale_anim = af.buildAnimation();
         scale_track = scale_anim.getTracks()[0];
         
-        long t1 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "t1 - t0: " + (t1 - t0));
         showRecommendation();
-        
-        long t2 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "t2 - t1: " + (t2 - t1));
         
         
         showRollerCoaster();
-        
-        long t3 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "t3 - t2: " + (t3 - t2));
-        
+                
         rollerCoasterGetFocus();
         recomPanelLoseFocus();
-
+        
+        showFlyInGroup();
+        
         //FlipTest();
         // setupBg();
-        long t4 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "simpleInitApp总时间: " + (t4 - t0));
+    }
+    
+    private void showFpsInfo() {
+        /****************显示帧率*************************/
+        droidTxt = new TextView((Context)JmeAndroidSystem.getActivity());
+        droidTxt.setText("FPS");
+        droidTxt.setTextSize(38);
+        
+        droid = new JDroidView("a droid view", droidTxt);
+        droid.setFixOnLT(10, 620, true);
+        droid.setReflection(true);
+        droid.setColorGlass(ColorRGBA.Pink);
+        //增加水波纹
+        Material mat = new Material(assetManager, "MatDefs/Misc/ripple.j3md");
+        droid.setMaterial(mat);
+        rootNode.attachChild(droid);
+        
+        JTimer fpsTimer = new JTimer(1000, 0);
+        fpsTimer.setLocalTask(new JTimerTask() {
+            @Override
+            public boolean task() {
+                // TODO Auto-generated method stub
+                droidTxt.setText("FPS: " + (int)getTimer().getFrameRate());
+                return false;
+            }
+            
+        });
+        fpsTimer.start();
     }
     
     private void setupBg() {
@@ -283,8 +280,6 @@ public class JmeDesktop extends JStage {
             e.printStackTrace();
             return;
         }
-        long t11 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "动画加载时间: " + (t11 - t10));
         //List<Animation> anim = (List<Animation>) assetManager.loadAsset("Anims/plane-8.anim");
         rollerCoasterFocusStrategy = new JFocusStrategy(5, new float[] {
                 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
@@ -298,19 +293,13 @@ public class JmeDesktop extends JStage {
                 (Context) JmeAndroidSystem.getActivity());
         TgalleryBackPanelAdapter adpter_b = new TgalleryBackPanelAdapter(
                 (Context) JmeAndroidSystem.getActivity());
-        long t12 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "创建roller对象以及PanelAdapter时间: " + (t12 - t11));
         for (int i = 0; i < PANEL_NUM; i++) {
             JActorGroup group = new JActorGroup("");
             final JBoard board = new JBoard("");
             
             long t110 = System.currentTimeMillis();
             View panelFrontView = (View) adpter_f.getView(i, null, null);
-            long t111 = System.currentTimeMillis();
-            Log.d(TIME_DEBUG_TAG, "创建一个Android挡板的的时间：" + (t111 - t110));
             JDroidView rcChild = new JDroidView("panel_front_" + i, panelFrontView);
-            long t112 = System.currentTimeMillis();
-            Log.d(TIME_DEBUG_TAG, "创建一个jme结点的时间: " + (t112 - t111));
             rcChild.setEnableLighting(false);
             rcChild.setReflection(true, 0.3f, 0.5f,0.7f);
             board.attachChild(rcChild);
@@ -338,18 +327,7 @@ public class JmeDesktop extends JStage {
                 }
                 
             });
-            
-            /*
-            if (i == 5) {
-                JActorGroup group = new JActorGroup("");
-                addTestPanel(group);
-                
-                rollerCoaster.attachChild(group);
-            }
-            */
         }
-        long t13 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "创建挡板时间: " + (t13 - t12));
 
         rollerCoaster.requestKeyFocus();
         rollerCoaster.setLocalTranslation(0, -1.5f, 0);
@@ -381,8 +359,6 @@ public class JmeDesktop extends JStage {
             }
             
         });
-        long t14 = System.currentTimeMillis();
-        Log.d(TIME_DEBUG_TAG, "设置事件监听时间: " + (t14 - t13));
     }
     
     private void rollerCoasterGetFocus() {
@@ -513,23 +489,22 @@ public class JmeDesktop extends JStage {
         }
     }
     
-    //////////////////////////////////////////////////////
-    private boolean playing = false;
-    String jps[] = {"1_1.png", "1.jpg"};
-
-    private void FlipTest() {    
-        JBoard board = new JBoard("board");
-        for (int j = 0; j < 2; ++j) {
-            Texture tex_ml = assetManager.loadTexture("Textures/" + jps[j]);
-            JActor actor = new JActor("anonymous_" + j);
-            actor.setupTexture(tex_ml);
-            actor.setupMesh(256, 256);
-            actor.setEnableLighting(false);
-            actor.setReflection(true, 0.3f, 0.5f, 0.7f);
-            board.attachChild(actor);
+    
+    private void showFlyInGroup() {
+        JFlyInGroup flyInGroup = new JFlyInGroup("");
+        //String trackFiles = {"Anims/Plane006_NA_1.j3o"};
+        for (int i = 1; i <= 4; ++i) {
+        SpatialTrack t = assetManager.loadAsset(new AssetKey("Anims/anim-" + i + ".j3o"));
+        flyInGroup.addTrack(t);
         }
-        rootNode.attachChild(board);
-        board.requestKeyFocus();
-       
+        
+        for (int i = 0; i < 4; ++i) {
+            JActor actor = new JActor("anonymous_" + i);
+            actor.setupTexture(assetManager.loadTexture("Textures/Monkey.jpg"));
+            actor.setupMesh(100, 100);
+            actor.setEnableLighting(false);            
+            flyInGroup.attachChild(actor); 
+        }
+        
     }
 }

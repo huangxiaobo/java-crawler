@@ -5,8 +5,8 @@ MaterialDef My MaterialDef {
     }
 
     Technique {
-        VertexShader GLSL100:   Shaders/ripple2.vert
-        FragmentShader GLSL100: Shaders/ripple22.frag
+        VertexShader GLSL100:   MatDefs/Misc/ripple.vert
+        FragmentShader GLSL100: MatDefs/Misc/ripple.frag
 
         WorldParameters {
             WorldViewProjectionMatrix
