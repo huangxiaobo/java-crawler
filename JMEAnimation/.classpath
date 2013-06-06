@@ -8,5 +8,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jME3-android.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jME3-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jME3-plugins.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

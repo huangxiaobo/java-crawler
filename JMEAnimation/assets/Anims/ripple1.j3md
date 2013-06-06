@@ -1,0 +1,17 @@
+MaterialDef My MaterialDef {
+
+    MaterialParameters {
+        Texture2D ColorMap
+    }
+
+    Technique {
+        VertexShader GLSL100:   Shaders/ripple2.vert
+        FragmentShader GLSL100: Shaders/ripple22.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            Time
+        }
+    }
+
+}

@@ -24,7 +24,7 @@
                 android:id="@+id/m_OriginView"
                 android:layout_width="fill_parent"
                 android:layout_height="33dp"
-                android:layout_marginTop="220dp" />
+                android:layout_marginTop="217dp" />
         </FrameLayout>
     </FrameLayout>   
 </FrameLayout>

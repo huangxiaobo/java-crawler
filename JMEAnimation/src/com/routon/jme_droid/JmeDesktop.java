@@ -8,6 +8,7 @@ import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -95,6 +96,9 @@ public class JmeDesktop extends JStage {
     
     private static final ColorRGBA grayColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1);
 
+    private TextView droidTxt = null;
+    private JDroidView droid = null;
+    
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
         if (evt.getType() == TouchEvent.Type.KEY_DOWN) {
@@ -108,6 +112,31 @@ public class JmeDesktop extends JStage {
 
     @Override
     public void simpleInitApp() {
+        /****************显示帧率*************************/
+        droidTxt = new TextView((Context)JmeAndroidSystem.getActivity());
+        droidTxt.setText("FPS");
+        droidTxt.setTextSize(38);
+        
+        droid = new JDroidView("a droid view", droidTxt);
+        droid.setFixOnLT(10, 620, true);
+        droid.setReflection(true);
+        droid.setColorGlass(ColorRGBA.Pink);
+        rootNode.attachChild(droid);
+        
+        JTimer fpsTimer = new JTimer(1000, 0);
+        fpsTimer.setLocalTask(new JTimerTask() {
+
+            @Override
+            public boolean task() {
+                // TODO Auto-generated method stub
+                droidTxt.setText("FPS: " + (int)getTimer().getFrameRate());
+                return false;
+            }
+            
+        });
+        fpsTimer.start();
+        /************************************************/
+        
         long t0 = System.currentTimeMillis();
         //viewPort.setBackgroundColor(ColorRGBA.Blue);
         rootNode.setShadowMode(ShadowMode.Off);
@@ -263,6 +292,7 @@ public class JmeDesktop extends JStage {
         rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
                 rollerCoasterFocusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
+        rollerCoaster.setSpeed(2, 4);
 
         TgalleryFrontPanelAdapter adpter_f = new TgalleryFrontPanelAdapter(
                 (Context) JmeAndroidSystem.getActivity());
@@ -365,8 +395,8 @@ public class JmeDesktop extends JStage {
         rollerCoaster.setColorGlass(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         return;
     }
-
-    private void showRecommendation() {
+    
+    private void showRecommendation() {        
         AnimationFactory animationFactory = new AnimationFactory(12f, "anim", 1);
         animationFactory.addTimeTranslation(0, new Vector3f(-15f, 0f, 0.0f));
         animationFactory.addTimeTranslation(12, new Vector3f(15f, 0f, 0.0f));
@@ -378,6 +408,7 @@ public class JmeDesktop extends JStage {
         recomPanel = new JRollerCoaster("Recommendation", recomPanelAnim, 
                 recomPanelFocusStrategy);
         recomPanel.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_CYCLE);
+        recomPanel.setSpeed(4, 4);
 
         TgalleryrecommendAdapter adapter = new TgalleryrecommendAdapter(
                 (Context) JmeAndroidSystem.getActivity());
@@ -436,6 +467,7 @@ public class JmeDesktop extends JStage {
             @Override
             public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
                 // TODO Auto-generated method stub
+                
                 if (evt.getKeyCode() == KeyInput.KEY_DOWN) {
                     if (rollerCoaster != null) {
                       rollerCoasterGetFocus();
@@ -455,7 +487,7 @@ public class JmeDesktop extends JStage {
             recomPanel.requestKeyFocus(); // recomPanel得到键盘事件
             recomPanel.onCancel();
             if (recomPanelFocusStrategy.isFocused()) {
-                Spatial s = recomPanel.getChild(recomPanelFocusStrategy.getFocus());
+                JDroidView s = (JDroidView) recomPanel.getChild(recomPanelFocusStrategy.getFocus());
                 s.setLocalScale(1.08f);
                 s.setColorGlass(new ColorRGBA(1f, 1f, 1f, 1.0f));
             }

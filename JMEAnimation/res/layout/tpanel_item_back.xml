@@ -21,26 +21,17 @@
             android:layout_marginLeft="3dp"
             android:layout_marginTop="3dp" >
 
-            <!-- <ListView -->
-            <!-- android:id="@+id/m_ListView" -->
-            <!-- android:layout_width="fill_parent" -->
-            <!-- android:layout_height="220dp" -->
-            <!-- android:fadeScrollbars="true" -->
-            <!-- android:focusable="true" /> -->
-
             <com.routon.T.Launcher.TgalleryBackPanelListView
                 android:id="@+id/listView"
                 android:layout_width="fill_parent"
-                android:layout_height="220dp" >
-
-                
+                android:layout_height="220dp" >                
             </com.routon.T.Launcher.TgalleryBackPanelListView>
 
             <TextView
                 android:id="@+id/m_OriginView"
                 android:layout_width="fill_parent"
                 android:layout_height="33dp"
-                android:layout_marginTop="220dp" />
+                android:layout_marginTop="217dp" />
         </FrameLayout>
     </FrameLayout>   
 </FrameLayout>

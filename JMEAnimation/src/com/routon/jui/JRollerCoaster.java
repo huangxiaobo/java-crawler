@@ -31,10 +31,10 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 	private int[] rKeys = {KeyInput.KEY_LEFT};
 	
 	private int rcHead = 0;	
-	private float rcSpeed = 2.0f;
+	private float rcSpeed = 1.0f;
 	
-	private float rcSpeedBaseline = 3.0f;
-	private float rcSpeedFactor = 3.918f;
+	private float rcSpeedBaseline = 1.0f;
+	private float rcSpeedFactor = 0.918f;
 	
 	private int rcLoop = ROLLER_COASTER_LOOP_NON;
 	
@@ -64,6 +64,11 @@ public class JRollerCoaster extends JActorGroup implements TimeCheckListener {
 			rcLoop = loop;
 		}
 	}
+
+    public void setSpeed(float speedBaseline, float speedFactor) {
+        this.rcSpeedBaseline = speedBaseline;
+        this.rcSpeedFactor = speedFactor;
+    }
 	
 	public int getLoopMode() {
 		return rcLoop;
