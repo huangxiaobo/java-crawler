@@ -77,7 +77,7 @@ public class JActor extends Geometry implements JActorGene {
 	
 	public void setupMesh(float width, float height, boolean flipCoords, boolean isCameraSpace) {
 		setupSize(width, height, isCameraSpace);
-		
+		try {
 		if (reflection == true) {
 			setMesh(new JQuad(this.width, this.height, 0.0f, 0.0f, reflectionHeight, reflectionBrightness, reflectionTransparency, flipCoords));
 			getMaterial().setBoolean("VertexColor", true);
@@ -86,7 +86,9 @@ public class JActor extends Geometry implements JActorGene {
 			setMesh(new JQuad(this.width, this.height, flipCoords));
 			getMaterial().setBoolean("VertexColor", false);
 		}
-		
+		} catch(Exception e) {
+		    Log.d(TAG, e.toString());
+		}
 		this.meshTexFlip = flipCoords;
 		
 		updateFixOnLT();

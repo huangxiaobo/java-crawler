@@ -93,7 +93,11 @@ public class JTimer {
 		status = JTimer_ACTIVE;
 		
 		Log.i(TAG, "start timer : " + delay + " " + period);
+		try {
 		timer.scheduleAtFixedRate(task, delay, period);
+		} catch (Exception e) {
+		    ;
+		}
 	}
 	
 	public void pause() {

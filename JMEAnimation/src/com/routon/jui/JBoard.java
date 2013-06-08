@@ -19,6 +19,8 @@ import com.jme3.scene.Spatial;
 
 public class JBoard extends JActorGroup {
     private static final String TAG = "JBoard";
+    
+    private float ANIMATE_SPEED = 6f;
 
     private int[] rotateKey = {
         KeyInput.KEY_RETURN
@@ -111,7 +113,7 @@ public class JBoard extends JActorGroup {
         channel = control.createChannel();
         channel.setAnim("flip", 0);
         channel.setLoopMode(LoopMode.Cycle);
-        channel.setSpeed(4f);
+        channel.setSpeed(ANIMATE_SPEED);
         control.addListener(new AnimEventListener() {
 
             @Override
