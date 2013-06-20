@@ -108,6 +108,7 @@ public class FlyInEffectDemo implements ShowHide{
                 if (arg1.getAnimationName() == "hide") {
                     arg1.stop();
                     nextToShow.show();
+                    parent.detachChild(selfRoot);
                 }
             }
             

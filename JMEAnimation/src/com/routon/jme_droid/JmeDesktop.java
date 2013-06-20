@@ -91,11 +91,14 @@ public class JmeDesktop extends JStage {
                     case KeyInput.KEY_0:
                         Log.d(TAG, "demo");
                         //演示飞入菜单
-                        FlyInEffectDemo demo = new FlyInEffectDemo(assetManager, rootNode, mainStage);
-                        mainStage.setNextToShow(demo);
+                        FlyInEffectDemo demo0 = new FlyInEffectDemo(assetManager, rootNode, mainStage);
+                        mainStage.setNextToShow(demo0);
                         mainStage.hide();
                         break;
                     case KeyInput.KEY_1:
+                        HorizontalTileDemo demo1 = new HorizontalTileDemo(assetManager, rootNode, mainStage);
+                        mainStage.setNextToShow(demo1);
+                        mainStage.hide();
                         break;
                 }
             } catch (Exception e) {
