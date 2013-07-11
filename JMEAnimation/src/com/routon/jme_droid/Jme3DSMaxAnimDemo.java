@@ -4,7 +4,12 @@ package com.routon.jme_droid;
 import com.jme3.animation.Animation;
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetKey;
+import com.jme3.input.KeyInput;
 import com.jme3.input.event.TouchEvent;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Quad;
 import com.routon.jui.JActor;
 import com.routon.jui.JActorGene;
 import com.routon.jui.JActorGroup;
@@ -20,17 +25,18 @@ import java.util.List;
 public class Jme3DSMaxAnimDemo extends JStage {
     private final static String TAG = "Jme3DSMaxAnimDemo";
     
-    private JRollerCoaster rollerCoaster;
+    private  JmeScene1Widget widget;
     
-    private JFocusStrategy rollerCoasterFocusStrategy;
-
-    private static final int PANEL_NUM = 25;
-
     @Override
     public void onEvent(String name, TouchEvent evt, float tpf) {
         if (evt.getType() == TouchEvent.Type.KEY_DOWN) {
             try {
-                ;
+                switch(evt.getKeyCode()) {
+                    case KeyInput.KEY_0:
+                        break;
+                    case KeyInput.KEY_1:
+                        break;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -39,64 +45,19 @@ public class Jme3DSMaxAnimDemo extends JStage {
 
     @Override
     public void simpleInitApp() {
-      showRollerCoaster();
+        /*
+        //添加背景
+        String bgTex = "Textures/diagonal-lines-abstract-wallpaper-1171.jpg";
+        JActor background = new JActor("background");
+        //actor.setupMesh(420, 250); scene-1
+        background.setupMesh(1024, 960);
+        background.setupTexture(assetManager.loadTexture(bgTex)); 
+        rootNode.attachChild(background);
+        */
+        viewPort.setBackgroundColor(new ColorRGBA(29/255.0f, 22/255.0f, 38/255.0f, 1.0f));
+        widget = new JmeScene1Widget("widget1", assetManager, rootNode, null);
+        rootNode.attachChild(widget);
+        widget.show();
     }
-    
-    private void showRollerCoaster() {
-        assetManager.registerLoader("com.routon.jui.JAnimLoader", "anim");
-        JAnimLoader loader = new JAnimLoader();
-
-        List<Animation> anim = null;
-        try {
-            AssetInfo info = assetManager.locateAsset(new AssetKey("Anims/xx.anim"));
-            anim = (List<Animation>) loader.load(info);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
-        }
-        int N = 15;
-        float[] timePos = new float[N+1];
-        float t = 0, delta = 20.0f / N;
-        for (int i = 0; i <= N; i++)
-            timePos[i] = i * delta;
-        
-        rollerCoasterFocusStrategy = new JFocusStrategy(5, timePos);
-        rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
-                rollerCoasterFocusStrategy);
-        rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
-
-        for (int i = 0; i < PANEL_NUM; i++) {
-            JActorGroup group = new JActorGroup("");
-            JActor actor = new JActor("");
-            actor.setupMesh(350, 250);
-            actor.setupTexture(assetManager.loadTexture("Textures/1_1.png"));
-            actor.setReflection(true, 0.3f, 0.5f, 0.7f);
-            group.attachChild(actor);
-            rollerCoaster.attachChild(group);
-        }
-
-        rollerCoaster.requestKeyFocus();
-        rollerCoaster.setLocalTranslation(0, 0, 0);
-        //rollerCoaster.setUpExchange(new Vector3f(0.0f, 1.0f, 0.0f)/* normal */, new Vector3f(0.0f,
-        //        0.0f, -1.0f)/* up vector */);
-        rootNode.attachChild(rollerCoaster);     
-        
-        // 增加按键回调
-        rollerCoaster.setOnKeyEventListener(new JActorKeyEventListener () {
-
-            @Override
-            public boolean onKeyUp(JActorGene actor, TouchEvent evt, float tpf) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public boolean onKeyDown(JActorGene actor, TouchEvent evt, float tpf) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-            
-        });
-    }
+  
 }

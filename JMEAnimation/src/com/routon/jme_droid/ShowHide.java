@@ -4,4 +4,5 @@ public interface ShowHide {
     public  void show();
 
     public void hide();
+    
 }
