@@ -174,16 +174,16 @@ public class JmeScene2Widget extends JActorGroup implements ShowHide{
         rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
                 rollerCoasterFocusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
-        rollerCoaster.setSpeed(4, 4);
+        rollerCoaster.setSpeed(10, 4);
         rollerCoaster.setAdvanceKeys(new int[]{KeyInput.KEY_DOWN});
         rollerCoaster.setRetreatKeys(new int[]{KeyInput.KEY_UP});
 
         String images[] = {
-          "zenvo-st1-11179-1920x1080.jpg",
-          "wyndham_avengers_Robert_Downey-Jr_Iron_Man.jpg",
-          "halo-4-17909-1920x1080.jpg",
-          "Crystal_Airplane_Model.jpg",
-          "bounty-hunter-solo.jpg"
+          "zenvo-st1-11179-960x540.jpg",
+          "wyndham_avengers_Robert_Downey-Jr_Iron_Man_960x540.jpg",
+          "halo-4-17909-960x540.jpg",
+          "Crystal_Airplane_Model_960x600.jpg",
+          "bounty-hunter-solo-960x600.jpg"
         };
         
         for (int i = 0; i < PANEL_NUM; i++) {

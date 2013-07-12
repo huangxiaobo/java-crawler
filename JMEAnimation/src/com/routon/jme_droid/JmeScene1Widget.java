@@ -178,7 +178,7 @@ public class JmeScene1Widget extends JActorGroup implements ShowHide{
         rollerCoaster = new JRollerCoaster("roller coaster", anim.get(0),
                 rollerCoasterFocusStrategy);
         rollerCoaster.setLoopMode(JRollerCoaster.ROLLER_COASTER_LOOP_REVERSE);
-        rollerCoaster.setSpeed(2, 4);
+        rollerCoaster.setSpeed(10, 4);
         
         String images[] = {
           "g1.jpg",
@@ -197,7 +197,7 @@ public class JmeScene1Widget extends JActorGroup implements ShowHide{
             //actor.setupMesh(420, 250); scene-1
             actor.setupMesh(400, 250);
             actor.setupTexture(assetManager.loadTexture("Textures/" + images[i % images.length]));
-            actor.setReflection(true, 0.3f, 0.5f, 0.7f);
+            actor.setReflection(true, 0.3f, 0.5f, 0.0f);
             group.attachChild(actor);
             rollerCoaster.attachChild(group);
         }
