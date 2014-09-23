@@ -1,0 +1,3 @@
+confirm.doc	243c351d2eca23b46b61ac3fbb1c267f
+IPMSG.rar	09437501e33d7197ec58e19a0bff6051
+test/stdin	3b5bee43a60d112b38a234a2f9de4fdb
