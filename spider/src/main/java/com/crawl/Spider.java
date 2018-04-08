@@ -1,20 +1,18 @@
 package com.crawl;
 
+import com.crawl.element.User;
 import com.crawl.monitor.UserPersistenceTaskMonitor;
+import com.crawl.pipeline.PipelineManager;
+import com.crawl.pipeline.UserPersistencePipeline;
+import com.crawl.pipeline.UserPrintPipeline;
 import com.crawl.proxy.ProxyHttpClient;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.task.UserDetailTask;
-import com.crawl.zhihu.ZhihuUserDetailParser;
-import com.crawl.task.UserPersistenceTask;
-import com.crawl.zhihu.ZhihuUserQueue;
 import com.crawl.zhihu.ZhihuUserUrlTokenQueue;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +50,9 @@ public class Spider {
     public ThreadPoolExecutor pool = null;
 
     public ThreadPoolExecutor persistencePool = null;
+
+    public PipelineManager<User> userPipelineManager = null;
+
 
     /**
      * request　header
@@ -133,6 +134,12 @@ public class Spider {
 
         // 创建监视线程
         new Thread(new UserPersistenceTaskMonitor(persistencePool)).start();
+    }
+
+    private void initPipeline() {
+        userPipelineManager=  new PipelineManager<>();
+        userPipelineManager.addPipeline(new UserPrintPipeline());
+        userPipelineManager.addPipeline(new UserPersistencePipeline());
     }
 
     public boolean login() {
@@ -220,6 +227,7 @@ public class Spider {
 
     public void start() {
         initThreadPool();
+        initPipeline();
 
         // 代理
         ProxyHttpClient proxyHttpClient = ProxyHttpClient.getInstance();

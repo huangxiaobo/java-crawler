@@ -30,13 +30,12 @@ public class UserDetailTask extends Task {
         }
         User user = (User) ZhihuUserDetailParser.getInstance().parse(urlToken, page);
 
-        spider.persistencePool.execute(new UserPersistenceTask(user));
+//        spider.persistencePool.execute(new UserPersistenceTask(user));
+        spider.userPipelineManager.process(user);
 
-        logger.info(
-            "userToken: " + urlToken + " followees: " + user.getFollowees() + " detail: " + user
-                .toString());
+        logger.info("userToken: " + urlToken + " followees: " + user.getFollowees() + " detail: " + user.toString());
+
         for (int j = 0; j < user.getFollowees() / 20 + 1; j++) {
-
             String nextUrl = String.format(Constants.USER_FOLLOWEES_URL, urlToken, j * 20);
 
             HttpGet request = new HttpGet(nextUrl);

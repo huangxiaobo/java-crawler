@@ -36,66 +36,42 @@ abstract class Task implements Runnable {
         this.url = url;
         this.proxyFlag = proxyFlag;
     }
- 
+
     public Task(HttpRequestBase request, boolean proxyFlag) {
         this.request = request;
         this.proxyFlag = proxyFlag;
     }
 
     public void run() {
-        long requestStartTime = 0L;
-        HttpGet tempRequest = null;
         try {
-            Page page = null;
             if (url != null) {
-                if (proxyFlag) {
-                    tempRequest = new HttpGet(url);
-                    currentProxy = ProxyPool.proxyQueue.take();
-                    if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        tempRequest.setConfig(
-                            HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
-                    }
-                    requestStartTime = System.currentTimeMillis();
-                    page = spider.getWebPage(tempRequest);
-                } else {
-                    requestStartTime = System.currentTimeMillis();
-                    page = spider.getWebPage(url);
-                }
-            } else if (request != null) {
-                if (proxyFlag) {
-                    currentProxy = ProxyPool.proxyQueue.take();
-                    if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        request.setConfig(
-                            HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
-                    }
-                    requestStartTime = System.currentTimeMillis();
-                    page = spider.getWebPage(request);
-                } else {
-                    requestStartTime = System.currentTimeMillis();
-                    page = spider.getWebPage(request);
-                }
-            } else {
-                logger.error("url and request are null");
-                return;
+                request = new HttpGet(url);
             }
+
+            if (proxyFlag) {
+                currentProxy = ProxyPool.proxyQueue.take();
+                if (!(currentProxy instanceof Direct)) {
+                    HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
+                    request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
+                }
+            }
+            long requestStartTime = System.currentTimeMillis();
+            Page page = spider.getWebPage(request);
             long requestEndTime = System.currentTimeMillis();
-            logger.info("page: " + page + " url:" + url + " request: " + request);
+            long requestCostTime = requestEndTime - requestStartTime;
             page.setProxy(currentProxy);
             int status = page.getStatusCode();
+
             String logStr = Thread.currentThread().getName() + " " + currentProxy +
                 "  executing request " + page.getUrl() + " response statusCode:" + status +
-                "  request cost time:" + (requestEndTime - requestStartTime) + "ms";
+                "  request cost time:" + requestCostTime + "ms";
+
             if (status == HttpStatus.SC_OK) {
                 if (page.getHtml().contains("zhihu") && !page.getHtml().contains("安全验证")) {
                     logger.debug(logStr);
                     currentProxy.setSuccessfulTimes(currentProxy.getSuccessfulTimes() + 1);
-                    currentProxy.setSuccessfulTotalTime(
-                        currentProxy.getSuccessfulTotalTime() + (requestEndTime
-                            - requestStartTime));
-                    double aTime = (currentProxy.getSuccessfulTotalTime() + 0.0) / currentProxy
-                        .getSuccessfulTimes();
+                    currentProxy.setSuccessfulTotalTime(currentProxy.getSuccessfulTotalTime() + requestCostTime);
+                    double aTime = (currentProxy.getSuccessfulTotalTime() + 0.0) / currentProxy.getSuccessfulTimes();
                     currentProxy.setSuccessfulAverageTime(aTime);
                     currentProxy.setLastSuccessfulTime(System.currentTimeMillis());
                     parse(page);
@@ -126,9 +102,6 @@ abstract class Task implements Runnable {
         } finally {
             if (request != null) {
                 request.releaseConnection();
-            }
-            if (tempRequest != null) {
-                tempRequest.releaseConnection();
             }
             if (currentProxy != null && !currentProxy.isDiscardProxy()) {
                 currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
