@@ -1,8 +1,6 @@
-package com.crawl.pipeline;
+package com.crawl.zhihu.pipeline;
 
-import com.crawl.element.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.crawl.zhihu.element.User;
 
 /**
  * Created by hxb on 2018/4/8.

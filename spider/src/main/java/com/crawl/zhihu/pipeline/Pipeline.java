@@ -1,4 +1,4 @@
-package com.crawl.pipeline;
+package com.crawl.zhihu.pipeline;
 
 /**
  * Created by hxb on 2018/4/8.

@@ -1,6 +1,4 @@
-package com.crawl.element;
-
-import java.util.List;
+package com.crawl.zhihu.element;
 
 /**
  * 知乎话题类别

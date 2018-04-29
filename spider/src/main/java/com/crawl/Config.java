@@ -9,10 +9,6 @@ import java.util.Properties;
 public class Config {
 
     /**
-     * 是否持久化到数据库
-     */
-    public static boolean dbEnable;
-    /**
      * 是否使用代理抓取
      */
     public static boolean isProxy;
@@ -25,14 +21,6 @@ public class Config {
      */
     public static String verificationCodePath;
     /**
-     * 知乎注册手机号码或有限
-     */
-    public static String emailOrPhoneNum;
-    /**
-     * 知乎密码
-     */
-    public static String password;
-    /**
      * 爬虫入口
      */
     public static String startURL;
@@ -43,32 +31,6 @@ public class Config {
      */
     public static int downloadPageCount;
     /**
-     * db.name
-     */
-    public static String dbName;
-    /**
-     * db.username
-     */
-    public static String dbUsername;
-    /**
-     * db.host
-     */
-    public static String dbHost;
-    /**
-     * db.password
-     */
-    public static String dbPassword;
-    /**
-     * 创建Url表语句
-     */
-    public static String createUrlTable;
-
-    /**
-     * 创建user表语句
-     */
-    public static String createUserTable;
-
-    /**
      * cookie路径
      */
     public static String cookiePath;
@@ -76,11 +38,10 @@ public class Config {
      * proxyPath
      */
     public static String proxyPath;
-
     /**
      * user 保存路径
      */
-    public static String userPath;
+    public static String savePath;
 
     static {
         Properties p = new Properties();
@@ -89,24 +50,14 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        dbEnable = Boolean.parseBoolean(p.getProperty("db.enable"));
         verificationCodePath = p.getProperty("verificationCodePath");
-        emailOrPhoneNum = p.getProperty("zhiHu.emailOrPhoneNum");
-        password = p.getProperty("zhiHu.password");
         startURL = p.getProperty("startURL");
         startUserToken = p.getProperty("startUserToken");
         downloadPageCount = Integer.valueOf(p.getProperty("downloadPageCount"));
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));
         cookiePath = p.getProperty("cookiePath");
         proxyPath = p.getProperty("proxyPath");
+        savePath = p.getProperty("savePath");
         isProxy = Boolean.valueOf(p.getProperty("isProxy"));
-        if (dbEnable) {
-            dbName = p.getProperty("db.name");
-            dbHost = p.getProperty("db.host");
-            dbUsername = p.getProperty("db.username");
-            dbPassword = p.getProperty("db.password");
-            createUrlTable = p.getProperty("createUrlTable");
-            createUserTable = p.getProperty("createUserTable");
-        }
     }
 }

@@ -1,7 +1,9 @@
-package com.crawl; /**
+package com.crawl.utils;
+/**
  * Created by hxb on 2018/3/31.
  */
 
+import com.crawl.Constants;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -64,13 +66,9 @@ public class HttpClientUtil {
 
     private static void init() {
         try {
-            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(KeyStore.getInstance(KeyStore.getDefaultType()),
-                    new TrustStrategy() {
-                        public boolean isTrusted(X509Certificate[] x509Certificates, String s)
-                            throws CertificateException {
-                            return true;
-                        }
-                    }).build();
+            SSLContext sslContext = SSLContexts.custom()
+                .loadTrustMaterial(KeyStore.getInstance(KeyStore.getDefaultType()),
+                    (TrustStrategy) (x509Certificates, s) -> true).build();
 
             SSLConnectionSocketFactory sslSFactory = new SSLConnectionSocketFactory(sslContext);
             Registry<ConnectionSocketFactory> socketFactoryRegistry =
@@ -93,31 +91,27 @@ public class HttpClientUtil {
             connManager.setDefaultConnectionConfig(connectionConfig);
             connManager.setMaxTotal(500);
             connManager.setDefaultMaxPerRoute(300);
-            HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
-                //                @Override
-                public boolean retryRequest(IOException exception, int executionCount,
-                    HttpContext context) {
-                    if (executionCount > 2) {
-                        return false;
-                    }
-                    if (exception instanceof InterruptedIOException) {
-                        return true;
-                    }
-                    if (exception instanceof ConnectTimeoutException) {
-                        return true;
-                    }
-                    if (exception instanceof UnknownHostException) {
-                        return true;
-                    }
-                    if (exception instanceof SSLException) {
-                        return true;
-                    }
-                    HttpRequest request = HttpClientContext.adapt(context).getRequest();
-                    if (!(request instanceof HttpEntityEnclosingRequest)) {
-                        return true;
-                    }
+            HttpRequestRetryHandler retryHandler = (IOException exception, int executionCount, HttpContext context) -> {
+                if (executionCount > 2) {
                     return false;
                 }
+                if (exception instanceof InterruptedIOException) {
+                    return true;
+                }
+                if (exception instanceof ConnectTimeoutException) {
+                    return true;
+                }
+                if (exception instanceof UnknownHostException) {
+                    return true;
+                }
+                if (exception instanceof SSLException) {
+                    return true;
+                }
+                HttpRequest request = HttpClientContext.adapt(context).getRequest();
+                if (!(request instanceof HttpEntityEnclosingRequest)) {
+                    return true;
+                }
+                return false;
             };
             HttpClientBuilder httpClientBuilder =
                 HttpClients.custom().setConnectionManager(connManager)
@@ -160,10 +154,8 @@ public class HttpClientUtil {
      * @param encoding 字符编码
      * @return 网页内容
      */
-    public static String getWebPage(HttpRequestBase request
-        , String encoding) throws IOException {
-        CloseableHttpResponse response = null;
-        response = getResponse(request);
+    public static String getWebPage(HttpRequestBase request, String encoding) throws IOException {
+        CloseableHttpResponse response = getResponse(request);
 //        logger.info("status---" + response.getStatusLine().getStatusCode());
         String content = EntityUtils.toString(response.getEntity(), encoding);
         request.releaseConnection();
@@ -195,7 +187,7 @@ public class HttpClientUtil {
      * 序列化对象
      */
     public static void serializeObject(Object object, String filePath) {
-        OutputStream fos = null;
+        OutputStream fos;
         try {
             fos = new FileOutputStream(filePath, false);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -217,14 +209,27 @@ public class HttpClientUtil {
     public static Object deserializeObject(String path) throws Exception {
 //		InputStream fis = HttpClientUtil.class.getResourceAsStream(name);
         File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
         InputStream fis = new FileInputStream(file);
         ObjectInputStream ois = null;
-        Object object = null;
-        ois = new ObjectInputStream(fis);
-        object = ois.readObject();
-        fis.close();
-        ois.close();
-        return object;
+        Object object;
+        try {
+            ois = new ObjectInputStream(fis);
+            object = ois.readObject();
+            return object;
+        } catch (EOFException e) {
+            logger.warn("serialize file may be empty.");
+            return null;
+        } finally {
+            if (fis != null) {
+                fis.close();
+            }
+            if (ois != null) {
+                ois.close();
+            }
+        }
     }
 
     /**
@@ -347,10 +352,5 @@ public class HttpClientUtil {
             setConnectTimeout(Constants.TIMEOUT).
             setConnectionRequestTimeout(Constants.TIMEOUT).
             setCookieSpec(CookieSpecs.STANDARD);
-    }
-
-    public static void main(String args[]) {
-        String s = "{    \"r\": 1,    \"errcode\": 100000,        \"data\": {\"account\":\"\\u5e10\\u53f7\\u6216\\u5bc6\\u7801\\u9519\\u8bef\"},            \"msg\": \"\\u8be5\\u624b\\u673a\\u53f7\\u5c1a\\u672a\\u6ce8\\u518c\\u77e5\\u4e4e";
-        logger.info(decodeUnicode(s));
     }
 }

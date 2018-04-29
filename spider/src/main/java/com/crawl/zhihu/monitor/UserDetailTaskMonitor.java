@@ -1,24 +1,24 @@
-package com.crawl.monitor;
+package com.crawl.zhihu.monitor;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 监视用户信息持久化线程池的状态
+ * Created by hxb on 2018/4/14.
  */
-public class UserPersistenceTaskMonitor implements Runnable {
+public class UserDetailTaskMonitor implements Runnable{
+    private Logger logger = LoggerFactory.getLogger(UserDetailTaskMonitor.class);
 
-    private Logger logger = LoggerFactory.getLogger(UserPersistenceTaskMonitor.class);
     private ThreadPoolExecutor executor;
 
-
-    public UserPersistenceTaskMonitor(ThreadPoolExecutor executor) {
+    public UserDetailTaskMonitor(ThreadPoolExecutor executor) {
         this.executor = executor;
     }
 
+
     public void run() {
-        while (executor != null) {
+        while (executor != null && !executor.isShutdown() && !executor.isTerminated()) {
             logger.info(String.format(
                 "[monitor] [%d/%d] active: %d completed: %s queueSize: %s task: %s isShutdown: %s isTerminated: %s",
                 executor.getPoolSize(),

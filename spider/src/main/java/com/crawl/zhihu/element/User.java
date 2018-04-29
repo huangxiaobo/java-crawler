@@ -1,26 +1,148 @@
-package com.crawl.element;
+package com.crawl.zhihu.element;
 
 /**
  * Created by hxb on 2018/4/1.
  */
 public class User {
 
-    public String name;                 // 呢称
-    public String id;                   // id
-    public String avatarUrl;            // 头像
-    public String urlToken;             // 用户标识
-    public String userType;             // 用户类型
-    public String headline;             // 用户简介
-    public String url;                  // 个人主页
-    public int gender;                  // 性别
-    public int voteupCount = 0;         // 赞同次数
-    public int thankedCount = 0;        // 感谢次数
-    public int followerCount = 0;       // 被关注人数
-    public int followingCount = 0;      // 关注人数
-    public int answerCount = 0;         // 回答次数
-    public int articlesCount = 0;       // 文章数
+    boolean isFollowed = false;
 
-    public int getFollowees() {
+    class Education {
+
+        String educationType;
+        String inroducation;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
+    }
+
+    Education[] educations;
+
+    private int followingCount;         // 关注数
+    private int voteFromCount;
+    private String userType;
+    private String includedText;
+    private String pinsCount;
+    private boolean isFollowing;
+    private boolean isPrivacyProtected;
+
+    class AccountStatus {
+        int createdAt;
+        int expiredAt;
+        String reason;
+        String name;
+    }
+
+    private AccountStatus[] accountStatus;
+    private int includedArticlesCount;
+    private boolean isForceRenamed;
+    private String id;
+    private int favoriteCount;
+    private int voteupCount;
+    private int commercialQuestionCount;
+    private boolean isBlocking;
+    private int followingColumnsCount;
+    private String headline;
+    public String urlToken;
+    private int participatedLiveCount;
+    private boolean isAdvertiser;
+    private int followingFavlistsCount;
+    private int favoritedCount;
+    private boolean isOrg;
+    private int followerCount;          // 被关注数
+
+    class Employment {
+
+        private String avatarUrl;
+        private String excerpt;
+        private String id;
+        private String introduction;
+        private String name;
+        private String type;
+        private String url;
+    }
+
+    private Employment[] employments;
+    private String type;
+    private String avatarHue;
+    private String avatarUrlTemplate;
+    private int followingTopicCount;
+    private String description;
+
+
+    class Business {
+
+        String introduction;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
+    }
+
+    private Business business;
+
+    private String avatarUrl;
+    private int columnsCount;
+    private int hostedLiveCount;
+    private int isActive;
+    private int thankToCount = 0;
+    private int mutualFolloweesCount = 0;
+    private String coverUrl;
+    private int thankFromCount = 0;
+    private int voteToCount = 0;
+    private boolean isBlocked = false;
+    private int answerCount = 0;
+    private boolean allowMessage = false;
+    private int articlesCount = 0;
+    private String name;
+    private int questionCount = 0;
+
+
+    class Location {
+
+        String introduction;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
+    }
+
+    private Location[] locations;
+
+    class Badge {
+
+        class Topic {
+
+            String avatarUrl;
+            String excerpt;
+            String id;
+            String introduction;
+            String name;
+            String type;
+            String url;
+        }
+
+        String description;
+        Topic[] topics;
+    }
+
+    private Badge[] badge;
+    private int includedAnswersCount = 0;
+    private String url;
+    private String messageThreadToken;
+    private int logsCount = 0;
+    private int followingQuestionCount = 0;
+    private int thankedCount = 0;
+    private int gender;
+
+    public int getFollowingCount() {
         return followingCount;
     }
 

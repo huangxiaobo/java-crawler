@@ -1,13 +1,9 @@
-package com.crawl.task;
+package com.crawl.zhihu.task;
 
-import com.crawl.element.Page;
-import com.crawl.HttpClientUtil;
+import com.crawl.zhihu.element.Page;
 import com.crawl.Spider;
-import com.crawl.proxy.Direct;
-import com.crawl.proxy.Proxy;
 import com.jayway.jsonpath.JsonPath;
 import java.util.List;
-import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +24,7 @@ public class UserFollowingTask extends Task {
         // json 格式
 
         List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
-        logger.info("url token list: " + urlTokenList.toString());
+        // logger.info("url token list: " + urlTokenList.toString());
         for (String s : urlTokenList) {
             if (s == null) {
                 continue;

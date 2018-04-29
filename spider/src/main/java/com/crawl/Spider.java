@@ -1,50 +1,38 @@
 package com.crawl;
 
-import com.crawl.element.User;
-import com.crawl.monitor.UserPersistenceTaskMonitor;
-import com.crawl.pipeline.PipelineManager;
-import com.crawl.pipeline.UserPersistencePipeline;
-import com.crawl.pipeline.UserPrintPipeline;
 import com.crawl.proxy.ProxyHttpClient;
-import com.crawl.proxy.ProxyPool;
-import com.crawl.task.UserDetailTask;
+import com.crawl.utils.HttpClientUtil;
 import com.crawl.zhihu.ZhihuUserUrlTokenQueue;
+import com.crawl.zhihu.bloomfilter.BloomFilter;
+import com.crawl.zhihu.bloomfilter.MemoryBloomFilter;
+import com.crawl.zhihu.element.Page;
+import com.crawl.zhihu.element.User;
+import com.crawl.zhihu.monitor.UserDetailTaskMonitor;
+import com.crawl.zhihu.monitor.UserPersistenceTaskMonitor;
+import com.crawl.zhihu.pipeline.PipelineManager;
+import com.crawl.zhihu.pipeline.UserPrintPipeline;
+import com.crawl.zhihu.pipeline.UserToDiskPipeline;
+import com.crawl.zhihu.task.UserDetailTask;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import com.crawl.element.Page;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Spider {
 
     private static Logger logger = LoggerFactory.getLogger(Spider.class);
-    //邮箱登录地址
-    final private static String EMAIL_LOGIN_URL = "https://www.zhihu.com/login/email";
-    //登录验证码地址
-    final private static String YZM_URL = "https://www.zhihu.com/captcha.gif?type=login";
 
     private static Spider instance = null;
 
     public static ZhihuUserUrlTokenQueue zhihuUserUrlTokenQueue = ZhihuUserUrlTokenQueue
         .getInstance();
-
-    public static ProxyPool proxyPool = new ProxyPool();
-//    public static ProxyPool proxy;
 
     //创建线程池，池中保存的线程数为3，允许的最大线程数为5
     public ThreadPoolExecutor pool = null;
@@ -53,6 +41,7 @@ public class Spider {
 
     public PipelineManager<User> userPipelineManager = null;
 
+    public BloomFilter bloomFilter = null;
 
     /**
      * request　header
@@ -75,8 +64,8 @@ public class Spider {
      * 初始化authorization
      */
     private static void initAuthorization() {
-        logger.info("初始化authoriztion中...");
-        String content = null;
+        logger.info("初始化authorization中...");
+        String content;
 
         try {
             content = HttpClientUtil.getWebPage(Config.startURL);
@@ -88,7 +77,7 @@ public class Spider {
         Pattern pattern = Pattern
             .compile("https://static\\.zhihu\\.com/heifetz/main\\.app\\.([0-9]|[a-z])*\\.js");
         Matcher matcher = pattern.matcher(content);
-        String jsSrc = null;
+        String jsSrc;
         if (matcher.find()) {
             jsSrc = matcher.group(0);
         } else {
@@ -106,7 +95,7 @@ public class Spider {
         matcher = pattern.matcher(jsContent);
         if (matcher.find()) {
             String a = matcher.group(1);
-            logger.info("初始化authoriztion完成");
+            logger.info("初始化authorization完成");
             authorization = a;
         } else {
             throw new RuntimeException("not get authorization");
@@ -134,73 +123,27 @@ public class Spider {
 
         // 创建监视线程
         new Thread(new UserPersistenceTaskMonitor(persistencePool)).start();
+        new Thread(new UserDetailTaskMonitor(pool)).start();
     }
 
     private void initPipeline() {
-        userPipelineManager=  new PipelineManager<>();
+        userPipelineManager = new PipelineManager<>();
         userPipelineManager.addPipeline(new UserPrintPipeline());
-        userPipelineManager.addPipeline(new UserPersistencePipeline());
+        userPipelineManager.addPipeline(new UserToDiskPipeline());
     }
 
-    public boolean login() {
-        String loginState = null;
-        Map<String, String> postParams = new HashMap();
-
-        String yzm = yzm(YZM_URL);//肉眼识别验证码
-
-        postParams.put("captcha", yzm);
-        postParams.put("_xsrf", "464d07628dc5d61f9dfb9b4ae5d33838");
-        postParams.put("password", "huang7818!");
-        postParams.put("remember_me", "true");
-        postParams.put("email", "767806886@qq.com"); //通过邮箱登录
-        try {
-            loginState = HttpClientUtil.postRequest(EMAIL_LOGIN_URL, postParams);//登录
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(" " + loginState);
-        JSONObject jo = (JSONObject) JSONValue.parse(loginState);
-        if (jo.get("r").toString().equals("0")) {
-            logger.info("登录知乎成功");
-            /**
-             * 序列化Cookies
-             */
-            HttpClientUtil.serializeObject(HttpClientUtil.getCookieStore(), Config.cookiePath);
-            return true;
-        } else {
-            logger.info("登录知乎失败");
-            throw new RuntimeException(HttpClientUtil.decodeUnicode(loginState));
-        }
-    }
-
-    /**
-     * 肉眼识别验证码
-     *
-     * @param url 验证码地址
-     */
-    public String yzm(String url) {
-        String verificationCodePath = Config.verificationCodePath;
-        System.out.println(" " + verificationCodePath);
-        String path = verificationCodePath.substring(0, verificationCodePath.lastIndexOf("/") + 1);
-        String fileName = verificationCodePath.substring(verificationCodePath.lastIndexOf("/") + 1);
-        HttpClientUtil.downloadFile(url, path, fileName, true);
-        logger.info("请输入 " + verificationCodePath + " 下的验证码：");
-        Scanner sc = new Scanner(System.in);
-        String yzm = sc.nextLine();
-        return yzm;
-    }
 
     public Page getWebPage(String url) throws IOException {
         return getWebPage(url, "UTF-8");
     }
+
     public Page getWebPage(String url, String charset) throws IOException {
         Page page = new Page();
-        CloseableHttpResponse response = null;
-        response = HttpClientUtil.getResponse(url);
+        CloseableHttpResponse response = HttpClientUtil.getResponse(url);
         page.setStatusCode(response.getStatusLine().getStatusCode());
         page.setUrl(url);
         try {
-            if(page.getStatusCode() == 200){
+            if (page.getStatusCode() == 200) {
                 page.setHtml(EntityUtils.toString(response.getEntity(), charset));
             }
         } catch (IOException e) {
@@ -229,47 +172,17 @@ public class Spider {
         initThreadPool();
         initPipeline();
 
+        bloomFilter = new MemoryBloomFilter();
         // 代理
         ProxyHttpClient proxyHttpClient = ProxyHttpClient.getInstance();
         proxyHttpClient.start();
-
         // 用户信息
         pool.execute(new UserDetailTask(Config.startUserToken));
-
-
-
-//        ZhihuTopicCategoryParser zhihuTopicCategoryParser = ZhihuTopicCategoryParser.getInstance();
-//        zhihuTopicCategoryParser.ProxParser();
-//
-//        ZhihuTopicParser zhihuTopicParser = ZhihuTopicParser.getInstance();
-//        zhihuTopicParser.ProxParser();
-
-//        if (false) {
-//
-//            try {
-//                Page page = new Page(HttpClientUtil.getWebPage("https://www.zhihu.com/topics"));
-//                crawlTopicCategory(page);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            StringBuffer sb = new StringBuffer();
-//            try {
-//                FileUtils.readToBuffer(sb,
-//                    "D:\\workspace\\java\\spider\\src\\main\\resources\\topic.html");
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            Page page = new Page(sb.toString());
-//            crawlTopicCategory(page);
-//        }
     }
 
 
     public static void main(String[] argv) {
         Spider spider = Spider.getInstance();
-
-//        spider.login();
         spider.start();
     }
 }

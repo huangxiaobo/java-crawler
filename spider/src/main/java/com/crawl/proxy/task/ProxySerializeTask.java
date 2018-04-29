@@ -1,7 +1,7 @@
 package com.crawl.proxy.task;
 
 import com.crawl.Config;
-import com.crawl.HttpClientUtil;
+import com.crawl.utils.HttpClientUtil;
 import com.crawl.proxy.Proxy;
 import com.crawl.proxy.ProxyPool;
 

@@ -1,10 +1,12 @@
 package com.crawl.proxy;
 
+import static com.crawl.Constants.TIME_INTERVAL;
+
 import com.crawl.Config;
-import com.crawl.element.Page;
-import com.crawl.HttpClientUtil;
 import com.crawl.proxy.task.ProxyParseTask;
 import com.crawl.proxy.task.ProxySerializeTask;
+import com.crawl.utils.HttpClientUtil;
+import com.crawl.zhihu.element.Page;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -14,7 +16,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.crawl.Constants.TIME_INTERVAL;
 
 /**
  * Created by hxb on 2018/4/6.
@@ -52,12 +53,17 @@ public class ProxyHttpClient {
     }
 
     public void initProxy() {
-        Proxy[] proxyArray = null;
+        Proxy[] proxyArray;
 
-        try{
+        try {
             int availableProxyCount = 0;
-            proxyArray =  (Proxy[])HttpClientUtil.deserializeObject(Config.proxyPath);
-            for(Proxy p:proxyArray) {
+            Object deserializeObject = HttpClientUtil.deserializeObject(Config.proxyPath);
+            if (deserializeObject != null) {
+                proxyArray = (Proxy[]) deserializeObject;
+            } else {
+                proxyArray = new Proxy[0];
+            }
+            for (Proxy p : proxyArray) {
                 if (p == null) {
                     continue;
                 }
@@ -82,23 +88,20 @@ public class ProxyHttpClient {
 
     public void start() {
         new Thread(
-            new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        for (String url : ProxyPool.proxyMap.keySet()) {
-                            proxyExecutor.execute(new ProxyParseTask(url, false));
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+            () -> {
+                while (true) {
+                    for (String url : ProxyPool.proxyMap.keySet()) {
+                        proxyExecutor.execute(new ProxyParseTask(url, false));
                         try {
-                            Thread.sleep(1000 * 60 * 60);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    }
+                    try {
+                        Thread.sleep(1000 * 60 * 60);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }).start();

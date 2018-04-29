@@ -1,6 +1,5 @@
-package com.crawl.pipeline;
+package com.crawl.zhihu.pipeline;
 
-import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**

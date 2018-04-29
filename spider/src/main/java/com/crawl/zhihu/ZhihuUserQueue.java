@@ -1,6 +1,6 @@
 package com.crawl.zhihu;
 
-import com.crawl.element.User;
+import com.crawl.zhihu.element.User;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

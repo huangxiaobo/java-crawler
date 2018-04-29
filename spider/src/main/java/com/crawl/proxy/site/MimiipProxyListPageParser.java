@@ -4,6 +4,7 @@ package com.crawl.proxy.site;
 import com.crawl.proxy.parser.ProxyListPageParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import static com.crawl.Constants.TIME_INTERVAL;

@@ -1,6 +1,4 @@
 package com.crawl;
-
-
 public class Constants {
     public final static String DIRECT_CRAWL_STRATEGY = "direct";
     public final static String PROXY_CRAWL_STRATEGY = "proxy";

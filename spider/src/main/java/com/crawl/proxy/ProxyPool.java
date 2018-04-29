@@ -1,20 +1,17 @@
 package com.crawl.proxy;
 
+import static com.crawl.Constants.TIME_INTERVAL;
+
+import com.crawl.proxy.site.Ip181ProxyListPageParser;
+import com.crawl.proxy.site.Ip66ProxyListPageParser;
+import com.crawl.proxy.site.MimiipProxyListPageParser;
+import com.crawl.proxy.site.XicidailiProxyListPageParser;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.crawl.proxy.site.XicidailiProxyListPageParser;
-import com.crawl.proxy.site.MimiipProxyListPageParser;
-import com.crawl.proxy.site.Ip181ProxyListPageParser;
-import com.crawl.proxy.site.Ip66ProxyListPageParser;
-
-import static com.crawl.Constants.TIME_INTERVAL;
 
 /**
  *

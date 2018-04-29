@@ -1,7 +1,7 @@
-package com.crawl.zhihu;
+package com.crawl.zhihu.parser;
 
-import com.crawl.element.Page;
-import com.crawl.element.TopicCategory;
+import com.crawl.zhihu.element.Page;
+import com.crawl.zhihu.element.TopicCategory;
 import com.crawl.utils.FileUtils;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,21 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ZhihuTopicCategoryParser extends Thread{
+public class TopicCategoryParser extends Thread{
 
-    private Logger logger = LoggerFactory.getLogger(ZhihuTopicCategoryParser.class);
+    private Logger logger = LoggerFactory.getLogger(TopicCategoryParser.class);
 
-    private static ZhihuTopicCategoryParser zhihuTopicCategoryParser = null;
+    private static TopicCategoryParser topicCategoryParser = null;
 
-    public static ZhihuTopicCategoryParser getInstance() {
-        if (zhihuTopicCategoryParser == null) {
-            synchronized (ZhihuTopicCategoryParser.class) {
-                if (zhihuTopicCategoryParser == null) {
-                    zhihuTopicCategoryParser = new ZhihuTopicCategoryParser();
+    public static TopicCategoryParser getInstance() {
+        if (topicCategoryParser == null) {
+            synchronized (TopicCategoryParser.class) {
+                if (topicCategoryParser == null) {
+                    topicCategoryParser = new TopicCategoryParser();
                 }
             }
         }
-        return zhihuTopicCategoryParser;
+        return topicCategoryParser;
     }
 
     @Override
@@ -36,12 +36,8 @@ public class ZhihuTopicCategoryParser extends Thread{
         Page page = getPage();
 
         List<TopicCategory> topicCategoryList = parsePage(page);
-
-        logger.info("====================================");
-
-
         for (TopicCategory topicCategory : topicCategoryList) {
-            ZhihuTopicParser.getInstance().addTopicCategory(topicCategory);
+            TopicParser.getInstance().addTopicCategory(topicCategory);
         }
     }
 

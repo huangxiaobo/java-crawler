@@ -1,9 +1,9 @@
-package com.crawl.zhihu;
+package com.crawl.zhihu.parser;
 
-import com.crawl.element.Topic;
-import com.crawl.element.Page;
-import com.crawl.element.TopicCategory;
-import com.crawl.HttpClientUtil;
+import com.crawl.utils.HttpClientUtil;
+import com.crawl.zhihu.element.Page;
+import com.crawl.zhihu.element.Topic;
+import com.crawl.zhihu.element.TopicCategory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by hxb on 2018/4/1.
  */
-public class ZhihuTopicParser extends Thread{
-    private Logger logger = LoggerFactory.getLogger(ZhihuTopicParser.class);
-    private static ZhihuTopicParser instance = null;
+public class TopicParser extends Thread {
+
+    private Logger logger = LoggerFactory.getLogger(TopicParser.class);
+    private static TopicParser instance = null;
 
     private final LinkedBlockingQueue<TopicCategory> topicCategoryList = new LinkedBlockingQueue<TopicCategory>();
 
-    public static ZhihuTopicParser getInstance() {
+    public static TopicParser getInstance() {
         if (instance == null) {
-            instance = new ZhihuTopicParser();
+            instance = new TopicParser();
         }
         return instance;
     }
@@ -39,11 +40,9 @@ public class ZhihuTopicParser extends Thread{
                 Page page = getTopicPage(topicCategory);
 
                 parsePage(page);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -72,9 +71,6 @@ public class ZhihuTopicParser extends Thread{
         Document doc = Jsoup.parse(page.getHtml());
         System.out.println(page.getHtml());
 
-
-
         return topicList;
     }
-
 }

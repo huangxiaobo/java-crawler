@@ -1,9 +1,9 @@
-package com.crawl.task;
+package com.crawl.zhihu.task;
 
 import com.crawl.Constants;
-import com.crawl.HttpClientUtil;
+import com.crawl.utils.HttpClientUtil;
 import com.crawl.Spider;
-import com.crawl.element.Page;
+import com.crawl.zhihu.element.Page;
 import com.crawl.proxy.Direct;
 import com.crawl.proxy.Proxy;
 import com.crawl.proxy.ProxyPool;
@@ -31,6 +31,7 @@ abstract class Task implements Runnable {
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
     protected static Spider spider = Spider.getInstance();
+
 
     public Task(String url, boolean proxyFlag) {
         this.url = url;

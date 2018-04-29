@@ -1,7 +1,7 @@
 package com.crawl.proxy.task;
 
 import com.crawl.Constants;
-import com.crawl.element.Page;
+import com.crawl.zhihu.element.Page;
 import com.crawl.Spider;
 import com.crawl.proxy.Proxy;
 import com.crawl.proxy.ProxyPool;

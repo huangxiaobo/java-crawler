@@ -1,6 +1,6 @@
-package com.crawl.task;
+package com.crawl.zhihu.task;
 
-import com.crawl.element.User;
+import com.crawl.zhihu.element.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import org.slf4j.Logger;

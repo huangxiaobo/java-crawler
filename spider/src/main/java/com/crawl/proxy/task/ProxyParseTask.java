@@ -1,7 +1,8 @@
 package com.crawl.proxy.task;
 
-import com.crawl.element.Page;
-import com.crawl.HttpClientUtil;
+import com.crawl.proxy.task.ProxyTestTask;
+import com.crawl.zhihu.element.Page;
+import com.crawl.utils.HttpClientUtil;
 import com.crawl.proxy.Direct;
 import com.crawl.proxy.Proxy;
 import com.crawl.proxy.ProxyHttpClient;
