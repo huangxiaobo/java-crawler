@@ -1,7 +1,7 @@
 package com.crawler.zhihu.task;
 
 import com.crawler.zhihu.element.Page;
-import com.crawler.Spider;
+import com.crawler.Crawler;
 import com.jayway.jsonpath.JsonPath;
 
 import java.util.List;
@@ -17,8 +17,8 @@ public class UserFollowingTask extends Task {
 
     private Logger logger = LoggerFactory.getLogger(UserFollowingTask.class);
 
-    public UserFollowingTask(Spider spider, HttpRequestBase request) {
-        super(spider, request, true);
+    public UserFollowingTask(Crawler crawler, HttpRequestBase request) {
+        super(crawler, request, true);
     }
 
 
@@ -31,12 +31,12 @@ public class UserFollowingTask extends Task {
             if (s == null) {
                 continue;
             }
-            spider.pool.execute(new UserDetailTask(this.spider, s));
+            crawler.pool.execute(new UserDetailTask(this.crawler, s));
         }
     }
 
 
     public void retry() {
-        Spider.getInstance().pool.execute(new UserFollowingTask(this.spider, request));
+        Crawler.getInstance().pool.execute(new UserFollowingTask(this.crawler, request));
     }
 }

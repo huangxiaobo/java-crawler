@@ -1,14 +1,13 @@
 package com.crawler.zhihu.task;
 
 import com.crawler.Constants;
-import com.crawler.Spider;
+import com.crawler.Crawler;
 import com.crawler.zhihu.element.Page;
 import com.crawler.zhihu.element.User;
 import com.crawler.zhihu.parser.UserDetailParser;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.ConfigFile;
 
 /**
  * Created by hxb on 2018/4/6.
@@ -19,15 +18,15 @@ public class UserDetailTask extends Task {
 
     private String urlToken;
 
-    public UserDetailTask(Spider spider, String urlToken) {
-        super(spider,"https://www.zhihu.com/people/" + urlToken, true);
+    public UserDetailTask(Crawler crawler, String urlToken) {
+        super(crawler,"https://www.zhihu.com/people/" + urlToken, true);
         this.urlToken = urlToken;
     }
 
     public void addUserId(String urlToken) {
         logger.info("add user urlToken: " + urlToken);
-//        this.spider.zhihuUserUrlTokenQueue.add(urlToken);
-        this.spider.bloomFilter.add(urlToken);
+//        this.crawler.zhihuUserUrlTokenQueue.add(urlToken);
+        this.crawler.bloomFilter.add(urlToken);
     }
 
 
@@ -41,8 +40,8 @@ public class UserDetailTask extends Task {
             return;
         }
 
-        logger.info("userPipeManage----------> " + this.spider.userPipelineManager);
-        this.spider.userPipelineManager.process(user);
+        logger.info("userPipeManage----------> " + this.crawler.userPipelineManager);
+        this.crawler.userPipelineManager.process(user);
 
         addUserId(user.urlToken);
         logger.info("userToken: " + urlToken + " detail: " + user.toString());
@@ -51,12 +50,12 @@ public class UserDetailTask extends Task {
             String nextUrl = String.format(Constants.USER_FOLLOWEES_URL, urlToken, j * 20);
 
             HttpGet request = new HttpGet(nextUrl);
-//            request.setHeader("authorization", "oauth " + this.spider.getAuthorization());
-            this.spider.pool.execute(new UserFollowingTask(this.spider, request));
+//            request.setHeader("authorization", "oauth " + this.crawler.getAuthorization());
+            this.crawler.pool.execute(new UserFollowingTask(this.crawler, request));
         }
     }
 
     public void retry() {
-        Spider.getInstance().pool.execute(new UserDetailTask(this.spider, this.urlToken));
+        Crawler.getInstance().pool.execute(new UserDetailTask(this.crawler, this.urlToken));
     }
 }

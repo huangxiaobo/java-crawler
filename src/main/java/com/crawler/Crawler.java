@@ -31,11 +31,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Spider implements ApplicationRunner {
+public class Crawler implements ApplicationRunner {
 
-    private static Logger logger = LoggerFactory.getLogger(Spider.class);
+    private static Logger logger = LoggerFactory.getLogger(Crawler.class);
 
-    private static Spider instance = null;
+    private static Crawler instance = null;
 
     public static ZhihuUserUrlTokenQueue zhihuUserUrlTokenQueue = ZhihuUserUrlTokenQueue
             .getInstance();
@@ -55,11 +55,11 @@ public class Spider implements ApplicationRunner {
      */
     private static String authorization;
 
-    public static Spider getInstance() {
+    public static Crawler getInstance() {
         if (instance == null) {
-            synchronized (Spider.class) {
+            synchronized (Crawler.class) {
                 if (instance == null) {
-                    instance = new Spider();
+                    instance = new Crawler();
                 }
             }
         }
@@ -191,7 +191,7 @@ public class Spider implements ApplicationRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(Spider.class);
+        SpringApplication app = new SpringApplication(Crawler.class);
         app.setBannerMode(Banner.Mode.OFF);
         app.run(args);
     }

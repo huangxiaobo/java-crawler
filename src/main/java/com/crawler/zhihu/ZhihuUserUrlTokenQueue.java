@@ -1,6 +1,6 @@
 package com.crawler.zhihu;
 
-import com.crawler.Spider;
+import com.crawler.Crawler;
 import com.crawler.zhihu.bloomfilter.BloomFilter;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class ZhihuUserUrlTokenQueue {
     private static ZhihuUserUrlTokenQueue instance = null;
 
     private ArrayBlockingQueue<String> urlTokenList = new ArrayBlockingQueue<String>(1 << 10);
-    private BloomFilter bloomFilter = Spider.getInstance().bloomFilter;
+    private BloomFilter bloomFilter = Crawler.getInstance().bloomFilter;
 
     public static ZhihuUserUrlTokenQueue getInstance() {
         if (instance == null) {

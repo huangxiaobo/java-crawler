@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
-    <artifactId>spider</artifactId>
+    <artifactId>crawler</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>spider</name>
+    <name>crawler</name>
     <description>Spider project for Spring Boot</description>
 
     <parent>
@@ -27,7 +27,7 @@
     </properties>
 
     <build>
-        <finalName>spider</finalName>
+        <finalName>crawler</finalName>
         <plugins>
             <!-- 编码和编译和JDK版本 -->
             <plugin>

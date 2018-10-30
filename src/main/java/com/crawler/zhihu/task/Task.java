@@ -1,8 +1,8 @@
 package com.crawler.zhihu.task;
 
 import com.crawler.Constants;
+import com.crawler.Crawler;
 import com.crawler.utils.HttpClientUtil;
-import com.crawler.Spider;
 import com.crawler.zhihu.element.Page;
 import com.crawler.proxy.Direct;
 import com.crawler.proxy.Proxy;
@@ -30,17 +30,17 @@ abstract class Task implements Runnable {
     protected HttpRequestBase request;
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
-    protected static Spider spider = Spider.getInstance();
+    protected static Crawler crawler = Crawler.getInstance();
 
 
-    public Task(Spider spider, String url, boolean proxyFlag) {
-        this.spider = spider;
+    public Task(Crawler crawler, String url, boolean proxyFlag) {
+        this.crawler = crawler;
         this.url = url;
         this.proxyFlag = proxyFlag;
     }
 
-    public Task(Spider spider, HttpRequestBase request, boolean proxyFlag) {
-        this.spider = spider;
+    public Task(Crawler crawler, HttpRequestBase request, boolean proxyFlag) {
+        this.crawler = crawler;
         this.request = request;
         this.proxyFlag = proxyFlag;
     }
@@ -59,7 +59,7 @@ abstract class Task implements Runnable {
                 }
             }
             long requestStartTime = System.currentTimeMillis();
-            Page page = spider.getWebPage(request);
+            Page page = crawler.getWebPage(request);
             long requestEndTime = System.currentTimeMillis();
             long requestCostTime = requestEndTime - requestStartTime;
             page.setProxy(currentProxy);
@@ -99,7 +99,7 @@ abstract class Task implements Runnable {
                 // 该代理可用，将该代理继续添加到proxyQueue
                 currentProxy.setFailureTimes(currentProxy.getFailureTimes() + 1);
             }
-            if (!spider.pool.isShutdown()) {
+            if (!crawler.pool.isShutdown()) {
                 retry();
             }
         } finally {

@@ -46,7 +46,7 @@ public class TopicCategoryParser extends Thread{
         StringBuffer sb = new StringBuffer();
         try {
             FileUtils.readToBuffer(sb,
-                "D:\\workspace\\java\\spider\\src\\main\\resources\\topic.html");
+                "D:\\workspace\\java\\crawler\\src\\main\\resources\\topic.html");
         } catch (IOException e) {
             e.printStackTrace();
         }

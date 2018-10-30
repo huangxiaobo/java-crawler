@@ -2,7 +2,7 @@ package com.crawler.proxy.task;
 
 import com.crawler.Constants;
 import com.crawler.zhihu.element.Page;
-import com.crawler.Spider;
+import com.crawler.Crawler;
 import com.crawler.proxy.Proxy;
 import com.crawler.proxy.ProxyPool;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class ProxyTestTask implements Runnable{
                 setCookieSpec(CookieSpecs.STANDARD).
                 build();
             request.setConfig(requestConfig);
-            Page page = Spider.getInstance().getWebPage(request);
+            Page page = Crawler.getInstance().getWebPage(request);
 
             long endTime = System.currentTimeMillis();
 
