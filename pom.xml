@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
-    <artifactId>crawler</artifactId>
+    <artifactId>scheduler</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>crawler</name>
+    <name>scheduler</name>
     <description>Spider project for Spring Boot</description>
 
     <parent>
@@ -27,7 +27,7 @@
     </properties>
 
     <build>
-        <finalName>crawler</finalName>
+        <finalName>scheduler</finalName>
         <plugins>
             <!-- 编码和编译和JDK版本 -->
             <plugin>
@@ -43,6 +43,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+
+                    <fork>true</fork>
+
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -50,7 +55,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -122,12 +127,6 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>2.9.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.6.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>

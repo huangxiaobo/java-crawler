@@ -154,7 +154,7 @@ public class HttpClientUtil {
      */
     public static String getWebPage(HttpRequestBase request, String encoding) throws IOException {
         CloseableHttpResponse response = getResponse(request);
-        logger.debug("status---" + response.getStatusLine().getStatusCode());
+        logger.debug(String.format("get %s status---%s", request.getURI(), response.getStatusLine().getStatusCode()) );
         String content = EntityUtils.toString(response.getEntity(), encoding);
         request.releaseConnection();
         return content;

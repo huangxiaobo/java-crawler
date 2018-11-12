@@ -1,198 +1,37 @@
 package com.crawler;
 
-import com.crawler.proxy.ProxyHttpClient;
-import com.crawler.utils.HttpClientUtil;
-import com.crawler.zhihu.ZhihuUserUrlTokenQueue;
-import com.crawler.zhihu.bloomfilter.BloomFilter;
-import com.crawler.zhihu.bloomfilter.MemoryBloomFilter;
-import com.crawler.zhihu.element.Page;
-import com.crawler.zhihu.element.User;
-import com.crawler.zhihu.monitor.UserDetailTaskMonitor;
-import com.crawler.zhihu.monitor.UserPersistenceTaskMonitor;
-import com.crawler.zhihu.pipeline.PipelineManager;
-import com.crawler.zhihu.pipeline.UserPrintPipeline;
-import com.crawler.zhihu.pipeline.UserToDiskPipeline;
-import com.crawler.zhihu.task.UserDetailTask;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-public class Crawler implements ApplicationRunner {
+@SpringBootApplication
+public class Crawler {
 
-    private static Logger logger = LoggerFactory.getLogger(Crawler.class);
+    //@Override
+    //protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    //    return application.sources(Crawler.class);
+    //}
 
-    private static Crawler instance = null;
-
-    public static ZhihuUserUrlTokenQueue zhihuUserUrlTokenQueue = ZhihuUserUrlTokenQueue
-            .getInstance();
-
-    //创建线程池，池中保存的线程数为3，允许的最大线程数为5
-    public ThreadPoolExecutor pool = null;
-
-    public ThreadPoolExecutor persistencePool = null;
-
-    public PipelineManager<User> userPipelineManager = null;
-
-    public BloomFilter bloomFilter = null;
-
-    /**
-     * request　header
-     * 获取列表页时，必须带上
-     */
-    private static String authorization;
-
-    public static Crawler getInstance() {
-        if (instance == null) {
-            synchronized (Crawler.class) {
-                if (instance == null) {
-                    instance = new Crawler();
-                }
-            }
-        }
-        return instance;
+    @Bean
+    public CrawlerRunner crawlerRunner() {
+        return new CrawlerRunner();
     }
 
-    /**
-     * 初始化authorization
-     */
-    private static void initAuthorization() {
-        logger.info("初始化authorization中...");
-        String content;
-
-        try {
-            content = HttpClientUtil.getWebPage(Config.startURL);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("get ProxParser url failed.");
-        }
-
-        Pattern pattern = Pattern
-                .compile("https://static\\.zhihu\\.com/heifetz/main\\.app\\.([0-9]|[a-z])*\\.js");
-        Matcher matcher = pattern.matcher(content);
-        String jsSrc;
-        if (matcher.find()) {
-            jsSrc = matcher.group(0);
-        } else {
-            throw new RuntimeException("not find javascript url");
-        }
-        String jsContent = null;
-        try {
-            jsContent = HttpClientUtil.getWebPage(jsSrc);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("get javascript content failed.");
-        }
-
-        pattern = Pattern.compile("oauth (([0-9]|[a-z])+)");
-        matcher = pattern.matcher(jsContent);
-        if (matcher.find()) {
-            String a = matcher.group(1);
-            logger.info("初始化authorization完成");
-            authorization = a;
-        } else {
-            throw new RuntimeException("not get authorization");
-        }
+    public static void main(String[] args) throws Exception
+    {
+        SpringApplication.run(Crawler.class, args);
     }
 
-    public static String getAuthorization() {
-        if (authorization == null) {
-            initAuthorization();
-        }
-        return authorization;
+    @RequestMapping("/")
+    String hello()
+    {
+        return "Hello World! JavaInterviewPoint2222222";
     }
 
-    private void initThreadPool() {
-        pool = new ThreadPoolExecutor(30, 50, 0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingDeque<>()
-        );
-
-        persistencePool = new ThreadPoolExecutor(30, 50, 0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingDeque<>(1000),
-                new ThreadPoolExecutor.DiscardPolicy()
-        );
-
-        // 创建监视线程
-        new Thread(new UserPersistenceTaskMonitor(persistencePool)).start();
-        new Thread(new UserDetailTaskMonitor(pool)).start();
-    }
-
-    private void initPipeline() {
-        userPipelineManager = new PipelineManager<>();
-        userPipelineManager.addPipeline(new UserPrintPipeline());
-        userPipelineManager.addPipeline(new UserToDiskPipeline());
-    }
-
-
-    public Page getWebPage(String url) throws IOException {
-        return getWebPage(url, "UTF-8");
-    }
-
-    public Page getWebPage(String url, String charset) throws IOException {
-        Page page = new Page();
-        CloseableHttpResponse response = HttpClientUtil.getResponse(url);
-        page.setStatusCode(response.getStatusLine().getStatusCode());
-        page.setUrl(url);
-        try {
-            if (page.getStatusCode() == 200) {
-                page.setHtml(EntityUtils.toString(response.getEntity(), charset));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return page;
-    }
-
-    public Page getWebPage(HttpRequestBase request) throws IOException {
-        CloseableHttpResponse response = null;
-        response = HttpClientUtil.getResponse(request);
-        Page page = new Page();
-        page.setStatusCode(response.getStatusLine().getStatusCode());
-        page.setHtml(EntityUtils.toString(response.getEntity()));
-        page.setUrl(request.getURI().toString());
-        return page;
-    }
-
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-
-
-        initThreadPool();
-        initPipeline();
-
-        bloomFilter = new MemoryBloomFilter();
-        // 代理
-        ProxyHttpClient proxyHttpClient = ProxyHttpClient.getInstance();
-        proxyHttpClient.start();
-        // 用户信息
-        pool.execute(new UserDetailTask(this, Config.startUserToken));
-    }
-
-
-    public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(Crawler.class);
-        app.setBannerMode(Banner.Mode.OFF);
-        app.run(args);
-    }
 }

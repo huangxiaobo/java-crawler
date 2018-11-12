@@ -1,6 +1,6 @@
 package com.crawler.proxy.task;
 
-import com.crawler.zhihu.element.Page;
+import com.crawler.element.Page;
 import com.crawler.utils.HttpClientUtil;
 import com.crawler.proxy.Direct;
 import com.crawler.proxy.Proxy;

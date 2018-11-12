@@ -3,11 +3,10 @@ package com.crawler.proxy;
 import static com.crawler.Constants.TIME_INTERVAL;
 
 import com.crawler.Config;
-import com.crawler.proxy.Proxy;
 import com.crawler.proxy.task.ProxyParseTask;
 import com.crawler.proxy.task.ProxySerializeTask;
 import com.crawler.utils.HttpClientUtil;
-import com.crawler.zhihu.element.Page;
+import com.crawler.element.Page;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
