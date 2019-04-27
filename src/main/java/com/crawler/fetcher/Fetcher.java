@@ -1,18 +1,19 @@
 package com.crawler.fetcher;
 
 import com.crawler.Constants;
-import com.crawler.utils.HttpClientUtil;
 import com.crawler.element.Page;
 import com.crawler.proxy.Direct;
 import com.crawler.proxy.Proxy;
 import com.crawler.proxy.ProxyPool;
-import java.io.IOException;
+import com.crawler.utils.HttpClientUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 
 /**
@@ -126,19 +127,4 @@ public abstract class Fetcher implements Runnable {
     protected abstract void parse(Page page);
 
 
-    /**
-     * 发送到管道
-     */
-
-    protected void sendPipeline(Object object) {
-
-    }
-
-    /**
-     *
-     */
-
-    protected void sendScheduler(String url) {
-
-    }
 }

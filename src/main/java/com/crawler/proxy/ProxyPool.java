@@ -3,7 +3,6 @@ package com.crawler.proxy;
 import static com.crawler.Constants.TIME_INTERVAL;
 
 import com.crawler.proxy.site.Ip181ProxyListPageParser;
-import com.crawler.proxy.site.Ip66ProxyListPageParser;
 import com.crawler.proxy.site.MimiipProxyListPageParser;
 import com.crawler.proxy.site.XicidailiProxyListPageParser;
 import java.util.HashMap;
@@ -35,10 +34,10 @@ public class ProxyPool {
             proxyMap.put("http://www.ip181.com/daili/" + i + ".html", Ip181ProxyListPageParser.class);
             proxyMap.put("http://www.mimiip.com/gngao/" + i, MimiipProxyListPageParser.class);//高匿
             proxyMap.put("http://www.mimiip.com/gnpu/" + i, MimiipProxyListPageParser.class);//普匿
-            proxyMap.put("http://www.66ip.cn/" + i + ".html", Ip66ProxyListPageParser.class);
-            for (int j = 1; j < 34; j++) {
-                proxyMap.put("http://www.66ip.cn/areaindex_" + j + "/" + i + ".html", Ip66ProxyListPageParser.class);
-            }
+            //proxyMap.put("http://www.66ip.cn/" + i + ".html", Ip66ProxyListPageParser.class);
+            //for (int j = 1; j < 34; j++) {
+            //    proxyMap.put("http://www.66ip.cn/areaindex_" + j + "/" + i + ".html", Ip66ProxyListPageParser.class);
+            //}
         }
         proxyQueue.add(new Direct(TIME_INTERVAL));
     }

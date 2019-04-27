@@ -2,10 +2,7 @@ package com.crawler.fetcher;
 
 import com.crawler.element.Page;
 import com.jayway.jsonpath.JsonPath;
-
 import java.util.List;
-
-import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +22,13 @@ public class UserFollowingFetcher extends Fetcher {
         // json 格式
 
         List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
-         logger.info("url token list: " + urlTokenList.toString());
+        logger.info("url token list: " + urlTokenList.toString());
         for (String s : urlTokenList) {
             if (s == null) {
                 continue;
             }
             String url = "https://www.zhihu.com/people/" + s;
-            fetcherManager.pool.execute(new UserDetailFetcher(this.fetcherManager, url, true));
+            this.fetcherManager.addTask(new FetcherTask(url, true, UserDetailFetcher.class.getName()));
         }
     }
 

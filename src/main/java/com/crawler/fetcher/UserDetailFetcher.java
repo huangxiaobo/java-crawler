@@ -19,7 +19,7 @@ public class UserDetailFetcher extends Fetcher {
     private String url;
 
     public UserDetailFetcher(FetcherManager fetcherManager, String url, boolean proxyFlag) {
-        super(fetcherManager,  url, true);
+        super(fetcherManager, url, proxyFlag);
         this.url = url;
     }
 
@@ -34,20 +34,20 @@ public class UserDetailFetcher extends Fetcher {
             return;
         }
 
-        for (User user: users) {
-            //String urlToken = user.urlToken;
-
-            this.fetcherManager.scheduler.pipelineManager.process(user);
+        for (User user : users) {
+            this.fetcherManager.scheduler.processorManager.process(user);
 
             logger.info("userToken: " + user.urlToken + " detail: " + user.toString());
 
-            for (int j = 0; j < user.getFollowingCount() / 20 + 1; j++) {
-                String url = String.format(Constants.USER_FOLLOWEES_URL, user.urlToken, j * 20);
+            // 抓取关注他的人的所有用户详情
+            String url = "https://www.zhihu.com/people/" + user.urlToken;
+            this.fetcherManager.addTask(new FetcherTask(url, true, UserDetailFetcher.class.getName()));
 
-                //HttpGet request = new HttpGet(nextUrl);
-                ////request.setHeader("authorization", "oauth " + this.scheduler.getAuthorization());
-                //this.fetcherManager.pool.execute(new UserFollowingTask(this.fetcherManager, request));
-                this.fetcherManager.addTask(new FetcherTask(url, true, UserFollowingFetcher.class));
+            // 抓取用户的关注者信息
+            for (int j = 0; j < user.getFollowingCount() / 20 + 1; j++) {
+                String followeesUrl = String.format(Constants.USER_FOLLOWEES_URL, user.urlToken, j * 20);
+
+                this.fetcherManager.addTask(new FetcherTask(followeesUrl, true, UserFollowingFetcher.class.getName()));
             }
         }
     }

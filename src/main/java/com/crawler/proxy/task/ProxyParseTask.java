@@ -1,13 +1,16 @@
 package com.crawler.proxy.task;
 
+import static com.crawler.Constants.TIME_INTERVAL;
+import static com.crawler.proxy.ProxyPool.proxyQueue;
+
 import com.crawler.element.Page;
-import com.crawler.utils.HttpClientUtil;
 import com.crawler.proxy.Direct;
 import com.crawler.proxy.Proxy;
 import com.crawler.proxy.ProxyHttpClient;
-import com.crawler.proxy.parser.ProxyListPageParser;
 import com.crawler.proxy.ProxyListPageParserFactory;
 import com.crawler.proxy.ProxyPool;
+import com.crawler.proxy.parser.ProxyListPageParser;
+import com.crawler.utils.HttpClientUtil;
 import java.io.IOException;
 import java.util.List;
 import org.apache.http.HttpHost;
@@ -15,9 +18,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.crawler.proxy.ProxyPool.proxyQueue;
-import static com.crawler.Constants.TIME_INTERVAL;
 
 /**
  *
@@ -65,7 +65,7 @@ public class ProxyParseTask implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             if (currentProxy != null) {
                 currentProxy.setTimeInterval(TIME_INTERVAL);

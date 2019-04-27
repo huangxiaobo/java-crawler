@@ -65,27 +65,27 @@ public class HttpClientUtil {
     private static void init() {
         try {
             SSLContext sslContext = SSLContexts.custom()
-                    .loadTrustMaterial(KeyStore.getInstance(KeyStore.getDefaultType()),
-                            (TrustStrategy) (x509Certificates, s) -> true).build();
+                .loadTrustMaterial(KeyStore.getInstance(KeyStore.getDefaultType()),
+                    (TrustStrategy) (x509Certificates, s) -> true).build();
 
             SSLConnectionSocketFactory sslSFactory = new SSLConnectionSocketFactory(sslContext);
             Registry<ConnectionSocketFactory> socketFactoryRegistry =
-                    RegistryBuilder.<ConnectionSocketFactory>create()
-                            .register("http", PlainConnectionSocketFactory.INSTANCE)
-                            .register("https", sslSFactory)
-                            .build();
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                    .register("http", PlainConnectionSocketFactory.INSTANCE)
+                    .register("https", sslSFactory)
+                    .build();
 
             PoolingHttpClientConnectionManager connManager =
-                    new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 
             SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Constants.TIMEOUT)
-                    .setTcpNoDelay(true).build();
+                .setTcpNoDelay(true).build();
             connManager.setDefaultSocketConfig(socketConfig);
 
             ConnectionConfig connectionConfig =
-                    ConnectionConfig.custom().setMalformedInputAction(CodingErrorAction.IGNORE)
-                            .setUnmappableInputAction(CodingErrorAction.IGNORE).setCharset(Consts.UTF_8)
-                            .build();
+                ConnectionConfig.custom().setMalformedInputAction(CodingErrorAction.IGNORE)
+                    .setUnmappableInputAction(CodingErrorAction.IGNORE).setCharset(Consts.UTF_8)
+                    .build();
             connManager.setDefaultConnectionConfig(connectionConfig);
             connManager.setMaxTotal(500);
             connManager.setDefaultMaxPerRoute(300);
@@ -112,19 +112,19 @@ public class HttpClientUtil {
                 return false;
             };
             HttpClientBuilder httpClientBuilder =
-                    HttpClients.custom().setConnectionManager(connManager)
-                            .setRetryHandler(retryHandler)
-                            .setDefaultCookieStore(new BasicCookieStore()).setUserAgent(userAgent);
+                HttpClients.custom().setConnectionManager(connManager)
+                    .setRetryHandler(retryHandler)
+                    .setDefaultCookieStore(new BasicCookieStore()).setUserAgent(userAgent);
             if (proxy != null) {
                 httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy)).build();
             }
             httpClient = httpClientBuilder.build();
 
             requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                    setConnectTimeout(Constants.TIMEOUT).
-                    setConnectionRequestTimeout(Constants.TIMEOUT).
-                    setCookieSpec(CookieSpecs.STANDARD).
-                    build();
+                setConnectTimeout(Constants.TIMEOUT).
+                setConnectionRequestTimeout(Constants.TIMEOUT).
+                setCookieSpec(CookieSpecs.STANDARD).
+                build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,7 +142,7 @@ public class HttpClientUtil {
     }
 
     public static String postRequest(String postUrl, Map<String, String> params)
-            throws IOException {
+        throws IOException {
         HttpPost post = new HttpPost(postUrl);
         setHttpPostParams(post, params);
         return getWebPage(post, "utf-8");
@@ -154,7 +154,7 @@ public class HttpClientUtil {
      */
     public static String getWebPage(HttpRequestBase request, String encoding) throws IOException {
         CloseableHttpResponse response = getResponse(request);
-        logger.debug(String.format("get %s status---%s", request.getURI(), response.getStatusLine().getStatusCode()) );
+        logger.debug(String.format("get %s status---%s", request.getURI(), response.getStatusLine().getStatusCode()));
         String content = EntityUtils.toString(response.getEntity(), encoding);
         request.releaseConnection();
         return content;
@@ -164,14 +164,13 @@ public class HttpClientUtil {
         if (request.getConfig() == null) {
             request.setConfig(requestConfig);
         }
-        request.setHeader("User-Agent",
-                Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
+        request.setHeader("User-Agent", Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
         HttpClientContext httpClientContext = HttpClientContext.create();
         httpClientContext.setCookieStore(cookieStore);
         CloseableHttpResponse response = httpClient.execute(request, httpClientContext);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != 200) {
-            throw new IOException("status code is:" + statusCode);
+            throw new IOException("request url: " + request.getURI() + ",status code is:" + statusCode);
         }
         return response;
     }
@@ -233,22 +232,22 @@ public class HttpClientUtil {
     /**
      * 下载图片
      *
-     * @param fileURL       文件地址
-     * @param path          保存路径
-     * @param saveFileName  文件名，包括后缀名
+     * @param fileURL 文件地址
+     * @param path 保存路径
+     * @param saveFileName 文件名，包括后缀名
      * @param isReplaceFile 若存在文件时，是否还需要下载文件
      */
     public static void downloadFile(String fileURL,
-                                    String path,
-                                    String saveFileName,
-                                    Boolean isReplaceFile) {
+        String path,
+        String saveFileName,
+        Boolean isReplaceFile) {
         downloadFile(new HttpGet(fileURL), path, saveFileName, isReplaceFile);
     }
 
     public static void downloadFile(HttpRequestBase requestBase,
-                                    String path,
-                                    String saveFileName,
-                                    Boolean isReplaceFile) {
+        String path,
+        String saveFileName,
+        Boolean isReplaceFile) {
         try {
             CloseableHttpResponse response = getResponse(requestBase);
             logger.info("status:" + response.getStatusLine().getStatusCode());
@@ -303,8 +302,7 @@ public class HttpClientUtil {
     }
 
     /**
-     * 有bug 慎用
-     * unicode转化String
+     * 有bug 慎用 unicode转化String
      */
     public static String decodeUnicode(String dataStr) {
         int start = 0;
@@ -347,8 +345,8 @@ public class HttpClientUtil {
 
     public static org.apache.http.client.config.RequestConfig.Builder getRequestConfigBuilder() {
         return RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                setConnectTimeout(Constants.TIMEOUT).
-                setConnectionRequestTimeout(Constants.TIMEOUT).
-                setCookieSpec(CookieSpecs.STANDARD);
+            setConnectTimeout(Constants.TIMEOUT).
+            setConnectionRequestTimeout(Constants.TIMEOUT).
+            setCookieSpec(CookieSpecs.STANDARD);
     }
 }

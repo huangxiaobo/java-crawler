@@ -1,4 +1,0 @@
-package com.crawler.bean;
-
-public class UserBean {
-}

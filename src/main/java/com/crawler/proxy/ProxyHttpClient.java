@@ -1,21 +1,22 @@
 package com.crawler.proxy;
 
-import static com.crawler.Constants.TIME_INTERVAL;
-
 import com.crawler.Config;
+import com.crawler.element.Page;
 import com.crawler.proxy.task.ProxyParseTask;
 import com.crawler.proxy.task.ProxySerializeTask;
 import com.crawler.utils.HttpClientUtil;
-import com.crawler.element.Page;
-import java.io.IOException;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static com.crawler.Constants.TIME_INTERVAL;
 
 /**
  * Created by hxb on 2018/4/6.
@@ -118,10 +119,12 @@ public class ProxyHttpClient {
         CloseableHttpResponse response = null;
         Page page = new Page();
 
-        response = HttpClientUtil.getResponse(url);
-        page.setStatusCode(response.getStatusLine().getStatusCode());
-        page.setUrl(url);
+
         try {
+            response = HttpClientUtil.getResponse(url);
+            page.setStatusCode(response.getStatusLine().getStatusCode());
+            page.setUrl(url);
+
             if (page.getStatusCode() == 200) {
                 page.setHtml(EntityUtils.toString(response.getEntity(), charset));
             }
