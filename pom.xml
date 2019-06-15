@@ -1,101 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <artifactId>crawler</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
 
-  <groupId>groupId</groupId>
-  <artifactId>spider</artifactId>
-  <version>1.0-SNAPSHOT</version>
+            <!-- 排除jackson依赖 -->
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
 
-  <build>
-    <finalName>spider</finalName>
-    <plugins>
-      <!-- 编码和编译和JDK版本 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <encoding>utf8</encoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+        <dependency>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <scope>test</scope>
+        </dependency>
 
-  <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.5</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.6</version>
-    </dependency>
 
-    <!-- https://mvnrepository.com/artifact/net.minidev/json-smart -->
-    <dependency>
-      <groupId>net.minidev</groupId>
-      <artifactId>json-smart</artifactId>
-      <version>2.3</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-      <version>2.4.0</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.11.2</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.7</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.directory.studio/org.apache.commons.pool -->
-    <dependency>
-      <groupId>org.apache.directory.studio</groupId>
-      <artifactId>org.apache.commons.pool</artifactId>
-      <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.8.2</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
-    <dependency>
-      <groupId>org.mybatis</groupId>
-      <artifactId>mybatis</artifactId>
-      <version>3.4.6</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.13</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
-    <dependency>
-      <groupId>com.rabbitmq</groupId>
-      <artifactId>amqp-client</artifactId>
-      <version>5.5.0</version>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>gson</artifactId>
+            <groupId>com.google.code.gson</groupId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <dependency>
+            <artifactId>jsoup</artifactId>
+            <groupId>org.jsoup</groupId>
+            <version>1.12.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>httpcore</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <version>4.4.9</version>
+        </dependency>
+        <dependency>
+            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <version>4.5.5</version>
+        </dependency>
+        <dependency>
+            <artifactId>json-path</artifactId>
+            <groupId>com.jayway.jsonpath</groupId>
+            <version>2.4.0</version>
+        </dependency>
+
+        <dependency>
+            <artifactId>lombok</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <version>1.18.8</version>
+        </dependency>
+
+
+    </dependencies>
+    <description>Demo project for Spring Boot</description>
+    <groupId>com.hibo</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <name>crawler</name>
+
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <relativePath/>
+        <version>2.1.5.RELEASE</version> <!-- lookup parent from repository -->
+    </parent>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <version>0.0.1-SNAPSHOT</version>
+
 </project>

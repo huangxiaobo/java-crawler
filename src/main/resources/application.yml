@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: Crawler
+    savePath: /tmp/users
+    startUrl: https://www.zhihu.com/people/huang-liao-57
+
+  proxy:
+    useProxy: true
+    proxyPath: /tmp/proxies.csv
+    proxyInterval: 1000
+
+  fetch:
+    threadSize: 1000
+
+  parse:
+    threadSize: 1000
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
