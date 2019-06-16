@@ -8,7 +8,7 @@ workspace
 
 ## 中间件部署使用docker
 
-docker-compose配置文件如下
+#### docker-compose配置文件如下
 
 ```yaml
 version: '3'
@@ -59,4 +59,46 @@ volumes:
         driver: local
 
 
+```
+
+---
+
+#### 数据库初始化
+- 登录docker
+- 切换到postgres用户
+```
+  su - postgres
+```
+- 登录postgres
+```shell
+postgres@da608447a836:/$ psql -s postgres
+psql (11.3 (Debian 11.3-1.pgdg90+1))
+Type "help" for help.
+
+postgres=#
+
+```
+- 创建数据库
+```sql
+postgres=# CREATE DATABASE zhihu;
+CREATE DATABASE
+postgres=#
+```
+
+- 切换到上一步创建的数据
+```
+# \c 命令
+postgres=# \c zhihu
+postgres=# 
+```
+
+- 创建表
+```sql
+CREATE TABLE users (
+    id         varchar(100) CONSTRAINT firstkey PRIMARY KEY,
+    name       varchar(500),
+    gender     varchar(500),
+    headline   varchar(1000),
+    url        varchar(500)
+);
 ```

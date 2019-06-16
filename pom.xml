@@ -2,92 +2,138 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <artifactId>crawler</artifactId>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <groupId>org.springframework.boot</groupId>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
-        <dependency>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
-
-            <!-- 排除jackson依赖 -->
-            <groupId>org.springframework.boot</groupId>
-        </dependency>
-
-        <dependency>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <groupId>org.springframework.boot</groupId>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-            <groupId>org.springframework.boot</groupId>
-        </dependency>
-
-        <dependency>
-            <artifactId>gson</artifactId>
-            <groupId>com.google.code.gson</groupId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-        <dependency>
-            <artifactId>jsoup</artifactId>
-            <groupId>org.jsoup</groupId>
-            <version>1.12.1</version>
-        </dependency>
-        <dependency>
-            <artifactId>httpcore</artifactId>
-            <groupId>org.apache.httpcomponents</groupId>
-            <version>4.4.9</version>
-        </dependency>
-        <dependency>
-            <artifactId>httpclient</artifactId>
-            <groupId>org.apache.httpcomponents</groupId>
-            <version>4.5.5</version>
-        </dependency>
-        <dependency>
-            <artifactId>json-path</artifactId>
-            <groupId>com.jayway.jsonpath</groupId>
-            <version>2.4.0</version>
-        </dependency>
-
-        <dependency>
-            <artifactId>lombok</artifactId>
-            <groupId>org.projectlombok</groupId>
-            <version>1.18.8</version>
-        </dependency>
-
-
-    </dependencies>
-    <description>Demo project for Spring Boot</description>
-    <groupId>com.hibo</groupId>
-    <modelVersion>4.0.0</modelVersion>
-    <name>crawler</name>
-
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
+  <artifactId>crawler</artifactId>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
         <groupId>org.springframework.boot</groupId>
-        <relativePath/>
-        <version>2.1.5.RELEASE</version> <!-- lookup parent from repository -->
-    </parent>
+      </plugin>
+    </plugins>
+    <!-- 添加资源 -->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <!-- src/main/resources下的指定资源放行 -->
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.yml</include>
+          <include>**/*.xml</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+  <dependencies>
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-databind</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
+      <!-- 排除jackson依赖 -->
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
 
-    <version>0.0.1-SNAPSHOT</version>
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <artifactId>spring-boot-starter-amqp</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+
+    <dependency>
+      <artifactId>gson</artifactId>
+      <groupId>com.google.code.gson</groupId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+    <dependency>
+      <artifactId>jsoup</artifactId>
+      <groupId>org.jsoup</groupId>
+      <version>1.12.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>httpcore</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <version>4.4.9</version>
+    </dependency>
+    <dependency>
+      <artifactId>httpclient</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <version>4.5.5</version>
+    </dependency>
+    <dependency>
+      <artifactId>json-path</artifactId>
+      <groupId>com.jayway.jsonpath</groupId>
+      <version>2.4.0</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <version>1.18.8</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+      <version>42.2.5</version>
+    </dependency>
+
+
+    <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+    <dependency>
+      <artifactId>mybatis-spring-boot-starter</artifactId>
+      <groupId>org.mybatis.spring.boot</groupId>
+      <version>2.0.1</version>
+    </dependency>
+
+
+    <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+    <dependency>
+      <artifactId>mybatis</artifactId>
+      <groupId>org.mybatis</groupId>
+      <version>3.5.1</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+    <dependency>
+      <artifactId>mybatis-spring</artifactId>
+      <groupId>org.mybatis</groupId>
+      <version>2.0.1</version>
+    </dependency>
+
+
+  </dependencies>
+
+
+  <description>Demo project for Spring Boot</description>
+  <groupId>com.crawler</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>crawler</name>
+
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>2.1.5.RELEASE</version> <!-- lookup parent from repository -->
+  </parent>
+
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
+
+  <version>0.0.1-SNAPSHOT</version>
 
 </project>
