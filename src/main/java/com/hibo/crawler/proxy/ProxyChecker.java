@@ -17,50 +17,48 @@ import org.slf4j.LoggerFactory;
 public class ProxyChecker implements Runnable {
 
   private Logger logger = LoggerFactory.getLogger(ProxyChecker.class);
-    private Proxy proxy;
+  private Proxy proxy;
   private ProxyPoolManager pool;
 
   public ProxyChecker(ProxyPoolManager pool, Proxy proxy) {
     this.pool = pool;
-        this.proxy = proxy;
+    this.proxy = proxy;
+  }
+
+  public void run() {
+
+    long startTime = System.currentTimeMillis();
+    HttpGet request = new HttpGet(Constants.INDEX_URL);
+    try {
+      RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
+          setConnectionRequestTimeout(Constants.TIMEOUT).
+          setConnectTimeout(Constants.TIMEOUT).
+          setProxy(new HttpHost(proxy.getIp(), proxy.getPort())).
+          setCookieSpec(CookieSpecs.STANDARD).
+          build();
+      request.setConfig(requestConfig);
+      Page page = new Page(HttpClientUtil.getWebPage(request));
+
+      long endTime = System.currentTimeMillis();
+
+      String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
+          "  executing request " + page.getUrl() + " response statusCode:" + page.getStatusCode() +
+          "  request cost time:" + (endTime - startTime) + "ms";
+
+      if (page == null || page.getStatusCode() != 200) {
+        logger.warn(logStr);
+        return;
+      }
+      logger.info("available proxy: " + proxy.toString());
+
+      request.releaseConnection();
+      pool.addProxy(proxy);
+    } catch (IOException e) {
+      // e.printStackTrace();
+    } finally {
+      if (request != null) {
+        request.releaseConnection();
+      }
     }
-
-    public void run() {
-
-        long startTime = System.currentTimeMillis();
-        HttpGet request = new HttpGet(Constants.INDEX_URL);
-        try{
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                setConnectionRequestTimeout(Constants.TIMEOUT).
-                setConnectTimeout(Constants.TIMEOUT).
-                setProxy(new HttpHost(proxy.getIp(), proxy.getPort())).
-                setCookieSpec(CookieSpecs.STANDARD).
-                build();
-            request.setConfig(requestConfig);
-            Page page = new Page(HttpClientUtil.getWebPage(request));
-
-            long endTime = System.currentTimeMillis();
-
-            String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
-                "  executing request " + page.getUrl()  + " response statusCode:" + page.getStatusCode() +
-                "  request cost time:" + (endTime - startTime) + "ms";
-
-            if (page == null|| page.getStatusCode() != 200) {
-                logger.warn(logStr);
-                return;
-            }
-            logger.info("available proxy: " + proxy.toString());
-
-            request.releaseConnection();
-          pool.addProxy(proxy);
-
-        } catch (IOException e) {
-            // e.printStackTrace();
-        } finally {
-            if (request != null) {
-                request.releaseConnection();
-            }
-        }
-    }
-
+  }
 }

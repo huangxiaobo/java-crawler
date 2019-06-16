@@ -56,30 +56,24 @@ public class ParserManager {
     try {
       Class<?> clazz = Class.forName(parseTask.getParserName());
 
-      Class[] classes = new Class[]{};
+      Class[] classes = new Class[]{ParseTask.class};
       Constructor constructor = clazz.getDeclaredConstructor(classes);
       constructor.setAccessible(true);
 
-      Parser cls = (Parser) constructor.newInstance();
-      cls.setParserManager(this);
-      cls.setFetcherManager(fetcherManager);
+      Parser parser = (Parser) constructor.newInstance(parseTask);
+      parser.setParserManager(this);
+      parser.setFetcherManager(fetcherManager);
 
-      fetchTaskExecutor.execute(() -> cls.parse(parseTask));
+      fetchTaskExecutor.execute(parser);
     } catch (Exception e) {
       e.printStackTrace();
       logger.error("start do parse task failed:" + e);
     }
   }
 
-  public void addProcessTasks(List<User> userList) {
-    for (User user : userList) {
-      addProcessTask(user);
-    }
-  }
 
-  public void addProcessTask(User user) {
-    String s = new Gson().toJson(user);
-    rabbitmqClient.sendProcessTask(s);
+  public void addProcessTask(String userJson) {
+    rabbitmqClient.sendProcessTask(userJson);
   }
 
   public void addFetchTask(FetcherTask task) {

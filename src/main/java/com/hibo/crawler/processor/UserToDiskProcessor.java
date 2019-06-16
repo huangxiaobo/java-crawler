@@ -11,29 +11,27 @@ import org.slf4j.LoggerFactory;
  */
 public class UserToDiskProcessor extends Processor<User> {
 
-    private Logger logger = LoggerFactory.getLogger(UserPrintProcessor.class);
+  private Logger logger = LoggerFactory.getLogger(UserPrintProcessor.class);
 
   private PrintWriter out;
 
-
-    public UserToDiskProcessor() {
-      String savePath = "./target/users";
-      logger.info("user info save path: " + savePath);
-        try {
-          out = new PrintWriter(savePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            out = null;
-        }
-
+  public UserToDiskProcessor() {
+    String savePath = "./target/users";
+    logger.info("user info save path: " + savePath);
+    try {
+      out = new PrintWriter(savePath);
+    } catch (IOException e) {
+      e.printStackTrace();
+      out = null;
     }
+  }
 
-    public void process(User user) {
-        out.println(user.toString());
-        out.flush();
+  public void process(User user) {
+    out.println(user.toString());
+    out.flush();
 
-        if (next != null) {
-            next.process(user);
-        }
+    if (next != null) {
+      next.process(user);
     }
+  }
 }

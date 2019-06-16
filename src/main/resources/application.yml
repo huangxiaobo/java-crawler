@@ -1,12 +1,12 @@
 spring:
   application:
     name: Crawler
-    savePath: /tmp/users
+    savePath: /home/users
     startUrl: https://www.zhihu.com/people/huang-liao-57
 
   proxy:
     useProxy: true
-    proxyPath: /tmp/proxies.csv
+    proxyPath: /home/proxies.csv
     proxyInterval: 1000
 
   fetch:

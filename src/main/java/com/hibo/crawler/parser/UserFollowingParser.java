@@ -3,15 +3,18 @@ package com.hibo.crawler.parser;
 import com.hibo.crawler.fetcher.FetcherTask;
 import com.hibo.crawler.fetcher.UserDetailFetcher;
 import com.jayway.jsonpath.JsonPath;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class UserFollowingParser extends Parser {
     private Logger logger = LoggerFactory.getLogger(UserDetailParser.class);
 
-    public Object parse(ParseTask task) {
+    public UserFollowingParser(ParseTask task) {
+        super(task);
+    }
+
+    public void parse(ParseTask task) {
         // json 格式
 
 
@@ -25,6 +28,5 @@ public class UserFollowingParser extends Parser {
             getParserManager().addFetchTask(new FetcherTask(url, UserDetailFetcher.class.getName(), UserDetailParser.class.getName()));
         }
 
-        return null;
     }
 }

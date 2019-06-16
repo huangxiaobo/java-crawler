@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FetcherManager {
 
+  @Autowired
   public MemoryBloomFilter bloomFilter;
   private Logger logger = LoggerFactory.getLogger(FetcherManager.class);
   @Autowired
@@ -41,7 +42,7 @@ public class FetcherManager {
   从mq中获取任务，然后抓取用户详情
    */
   public FetcherManager() {
-    bloomFilter = new MemoryBloomFilter();
+//    bloomFilter = new MemoryBloomFilter();
   }
 
   public void start() {
@@ -69,12 +70,12 @@ public class FetcherManager {
       Constructor constructor = clazz.getDeclaredConstructor(classes);
       constructor.setAccessible(true);
 
-      Fetcher cls = (Fetcher) constructor.newInstance(fetcherTask);
-      cls.setFetcherManager(fetcherManager);
-      cls.setProxyPoolManager(proxyPoolManager);
-      cls.setProcessorManager(processorManager);
+      Fetcher fetcher = (Fetcher) constructor.newInstance(fetcherTask);
+      fetcher.setFetcherManager(fetcherManager);
+      fetcher.setProxyPoolManager(proxyPoolManager);
+      fetcher.setProcessorManager(processorManager);
 
-      fetchTaskExecutor.execute(cls);
+      fetchTaskExecutor.execute(fetcher);
     } catch (Exception e) {
       e.printStackTrace();
     }

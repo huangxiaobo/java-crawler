@@ -1,17 +1,19 @@
 package com.hibo.crawler.parser;
 
 import com.hibo.crawler.fetcher.FetcherManager;
+import com.hibo.crawler.fetcher.FetcherTask;
 
 /**
  * Created by hxb on 2018/4/6.
  */
-public class Parser {
+public abstract class Parser implements Runnable {
 
+  protected ParseTask parseTask;
   protected ParserManager parserManager;
   protected FetcherManager fetcherManager;
 
-  public Parser() {
-
+  public Parser(ParseTask task) {
+    this.parseTask = task;
   }
 
   public ParserManager getParserManager() {
@@ -22,9 +24,7 @@ public class Parser {
     this.parserManager = parserManager;
   }
 
-  public Object parse(ParseTask task) {
-    return null;
-  }
+  public abstract void parse(ParseTask task) ;
 
   public FetcherManager getFetcherManager() {
     return fetcherManager;
@@ -32,5 +32,10 @@ public class Parser {
 
   public void setFetcherManager(FetcherManager fetcherManager) {
     this.fetcherManager = fetcherManager;
+  }
+
+  @Override
+  public void run() {
+    parse(parseTask);
   }
 }

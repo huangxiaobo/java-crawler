@@ -24,29 +24,15 @@ public class ProcessorManager {
 
   private Logger logger = LoggerFactory.getLogger(UserDetailParser.class);
 
-    private ConcurrentHashMap<String, Processor> clsProcessorMap = new ConcurrentHashMap<>();
+  private ConcurrentHashMap<String, Processor> clsProcessorMap = new ConcurrentHashMap<>();
 
   @Autowired
   private FetcherManager fetcherManager;
 
-  public void start() {
-    setupProcessors();
-  }
-  //  @Bean
-  //  public ProcessorManager processorManagerTemplate() {
-  //      ProcessorManager pm = new ProcessorManager();
-  //      pm.setupProcessors();
-  //      return pm;
-  //  }
-
-    public void registerProcessor(String clsName, Processor processor) {
-        clsProcessorMap.put(clsName, processor);
-    }
-
-  public void setupProcessors() {
+  public void ProcessorManager() {
 
     Processor<User> userPrintProcessor = new UserPrintProcessor();
-    registerProcessor("User", userPrintProcessor);
+    clsProcessorMap.put("User", userPrintProcessor);
 
     UserToDiskProcessor userToDiskProcessor = new UserToDiskProcessor();
     userPrintProcessor.next = userToDiskProcessor;
@@ -64,33 +50,17 @@ public class ProcessorManager {
       return;
     }
 
-    logger.info("start download url: " + user);
+    logger.info("start process user: " + user.getUrl());
 
     process(user);
   }
 
-    public void process(Object obj) {
-      User user = (User) obj;
-      // 抓取关注他的人的所有用户详情
-      String url = "https://www.zhihu.com/people/" + user.urlToken;
-      this.fetcherManager.addFetchTask(
-          new FetcherTask(url, UserDetailFetcher.class.getName(),
-              UserDetailParser.class.getName()));
+  public void process(Object obj) {
 
-      // 抓取用户的关注者信息
-      for (int j = 0; j < user.getFollowingCount() / 20 + 1; j++) {
-        String followeesUrl = String.format(Constants.USER_FOLLOWEES_URL, user.urlToken, j * 20);
 
-        this.fetcherManager.addFetchTask(
-            new FetcherTask(
-                followeesUrl,
-                UserFollowingFetcher.class.getName(),
-                UserFollowingParser.class.getName()));
-      }
-
-      if (clsProcessorMap.containsKey(obj.getClass().getSimpleName())) {
-            Processor processor = clsProcessorMap.get(obj.getClass().getSimpleName());
-            processor.process(obj);
-        }
+    if (clsProcessorMap.containsKey(obj.getClass().getSimpleName())) {
+      Processor processor = clsProcessorMap.get(obj.getClass().getSimpleName());
+      processor.process(obj);
     }
+  }
 }

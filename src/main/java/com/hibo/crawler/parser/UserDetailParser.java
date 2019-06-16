@@ -1,12 +1,12 @@
 package com.hibo.crawler.parser;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hibo.crawler.element.User;
-import java.util.ArrayList;
-import java.util.List;
+import com.hibo.crawler.Constants;
+import com.hibo.crawler.fetcher.FetcherTask;
+import com.hibo.crawler.fetcher.UserDetailFetcher;
+import com.hibo.crawler.fetcher.UserFollowingFetcher;
 import java.util.Map;
 import java.util.Set;
 import org.jsoup.Jsoup;
@@ -20,31 +20,53 @@ import org.slf4j.LoggerFactory;
  */
 public class UserDetailParser extends Parser {
 
-    private Logger logger = LoggerFactory.getLogger(UserDetailParser.class);
+  private Logger logger = LoggerFactory.getLogger(UserDetailParser.class);
 
-  public Object parse(ParseTask task) {
+  public UserDetailParser(ParseTask task) {
+    super(task);
+  }
+
+  public void parse(ParseTask task) {
     Document doc = Jsoup.parse(task.getContent());
 
-        List<User> users = new ArrayList<User>();
-        try {
-            JsonParser parser = new JsonParser();
-            String jsonData = doc.select("#js-initialData").first().childNode(0).toString();
-            JsonObject dataObject = parser.parse(jsonData).getAsJsonObject();
+    try {
+      JsonParser parser = new JsonParser();
+      String jsonData = doc.select("#js-initialData").first().childNode(0).toString();
+      JsonObject dataObject = parser.parse(jsonData).getAsJsonObject();
 
-            JsonObject usersJson = dataObject.get("initialState").getAsJsonObject().get("entities").getAsJsonObject().get("users").getAsJsonObject();
-            Set<Map.Entry<String, JsonElement>> entries = usersJson.entrySet();//will return members of your object
-            for (Map.Entry<String, JsonElement> entry : entries) {
-                System.out.println(entry.getKey());
-                User user = new Gson().fromJson(entry.getValue().toString(), User.class);
-                users.add(user);
-            }
+      JsonObject usersJson = dataObject.get("initialState").getAsJsonObject().get("entities")
+          .getAsJsonObject().get("users").getAsJsonObject();
 
-        } catch (Exception e) {
-          logger.warn("page may be not exists.");
-            return null;
+      //will return members of your object
+      Set<Map.Entry<String, JsonElement>> entries = usersJson.entrySet();
+      for (Map.Entry<String, JsonElement> entry : entries) {
+
+        String urlToken = entry.getKey().toString();
+        System.out.println(urlToken);
+
+        String useJson = entry.getValue().toString();
+        getParserManager().addProcessTask(useJson);
+
+        // 抓取关注他的人的所有用户详情
+        String url = "https://www.zhihu.com/people/" + urlToken;
+        this.fetcherManager.addFetchTask(
+            new FetcherTask(url, UserDetailFetcher.class.getName(),
+                UserDetailParser.class.getName()));
+
+        int followingCount = entry.getValue().getAsJsonObject().get("followingCount").getAsInt();
+        // 抓取用户的关注者信息
+        for (int j = 0; j < followingCount / 20 + 1; j++) {
+          String followeesUrl = String.format(Constants.USER_FOLLOWEES_URL, urlToken, j * 20);
+
+          this.fetcherManager.addFetchTask(
+              new FetcherTask(
+                  followeesUrl,
+                  UserFollowingFetcher.class.getName(),
+                  UserFollowingParser.class.getName()));
         }
-
-    getParserManager().addProcessTasks(users);
-        return users;
+      }
+    } catch (Exception e) {
+      logger.warn("page may be not exists.");
     }
+  }
 }
