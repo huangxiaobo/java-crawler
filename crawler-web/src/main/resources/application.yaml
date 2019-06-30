@@ -1,0 +1,47 @@
+
+spring:
+  application:
+    name: Crawler
+    savePath: /home/users
+    startUrl: https://www.zhihu.com/people/huang-liao-57
+
+  proxy:
+    useProxy: true
+    proxyPath: /home/proxies.csv
+    proxyInterval: 1000
+
+  fetch:
+    threadSize: 1000
+
+  parse:
+    threadSize: 1000
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/zhihu
+    username: postgres
+    password: postgres
+    platform: POSTGRESQL
+    driver-class-name: org.postgresql.Driver
+    maxActive: 50
+    initialSize: 10
+    maxWait: 60000
+    minIdle: 6
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+
+
+
+mybatis:
+  mapperLocations: classpath:mybatis/*.xml

@@ -2,28 +2,26 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>2.1.5.RELEASE</version> <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>com.huangxiaobo</groupId>
   <artifactId>crawler</artifactId>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <groupId>org.springframework.boot</groupId>
-      </plugin>
-    </plugins>
-    <!-- 添加资源 -->
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <!-- src/main/resources下的指定资源放行 -->
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*.properties</include>
-          <include>**/*.yml</include>
-          <include>**/*.xml</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
+  <name>crawler</name>
+  <packaging>pom</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <description>Demo project for Spring Boot</description>
+
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -117,23 +115,30 @@
 
   </dependencies>
 
+  <modules>
+    <module>crawler-common</module>
+    <module>crawler-fetcher</module>
+    <module>crawler-parser</module>
+    <module>crawler-proxy</module>
+    <module>crawler-processor</module>
+    <module>crawler-web</module>
+  </modules>
 
-  <description>Demo project for Spring Boot</description>
-  <groupId>com.crawler</groupId>
-  <modelVersion>4.0.0</modelVersion>
-  <name>crawler</name>
+  <build>
+    <plugins>
+      <!-- 注意: 因为我们不需要demo-parent是一个可运行的项目，所以修改原来的打包方式为maven打包方式 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
 
-  <parent>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <groupId>org.springframework.boot</groupId>
-    <relativePath/>
-    <version>2.1.5.RELEASE</version> <!-- lookup parent from repository -->
-  </parent>
+      </plugin>
 
-  <properties>
-    <java.version>1.8</java.version>
-  </properties>
-
-  <version>0.0.1-SNAPSHOT</version>
+    </plugins>
+  </build>
 
 </project>
