@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawlerweb;
+package com.huangxiaobo.crawler.web;
 
 import com.huangxiaobo.crawler.common.dao.UserMapper;
 import com.huangxiaobo.crawler.common.User;

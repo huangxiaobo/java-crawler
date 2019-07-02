@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawlerweb;
+package com.huangxiaobo.crawler.web;
 
 import com.huangxiaobo.crawler.proxy.ProxyPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;

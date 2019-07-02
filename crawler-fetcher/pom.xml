@@ -45,6 +45,7 @@
           <!-- 指定该Main Class为全局的唯一入口 -->
           <mainClass>com.huangxiaobo.crawler.fetcher.CrawlerFetcherApplication</mainClass>
           <layout>ZIP</layout>
+          <skip>true</skip>
         </configuration>
         <executions>
           <execution>
