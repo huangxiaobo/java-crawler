@@ -1,9 +1,9 @@
 package com.huangxiaobo.crawler.proxy;
 
 import com.huangxiaobo.crawler.common.Constants;
+import com.huangxiaobo.crawler.common.HttpClientUtil;
 import com.huangxiaobo.crawler.common.Page;
 import com.huangxiaobo.crawler.common.Proxy;
-import com.huangxiaobo.crawler.common.HttpClientUtil;
 import java.io.IOException;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.CookieSpecs;

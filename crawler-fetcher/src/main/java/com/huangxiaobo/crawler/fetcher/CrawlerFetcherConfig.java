@@ -1,6 +1,5 @@
 package com.huangxiaobo.crawler.fetcher;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +11,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @Configuration
 public class CrawlerFetcherConfig {
-
-  /**
-   * 是否使用代理抓取
-   */
-  @Value("${spring.proxy.useProxy}")
-  public boolean useProxy;
-  /**
-   * 代理文件
-   */
-  @Value("${spring.proxy.proxyPath}")
-  public String proxyPath;
 
   /**
    * 下载网页线程数
@@ -47,16 +35,6 @@ public class CrawlerFetcherConfig {
    */
   @Value("${spring.application.savePath}")
   public String savePath;
-
-  @Bean
-  public TaskExecutor parseTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(4);
-    executor.setMaxPoolSize(4);
-    executor.setThreadNamePrefix("default_task_executor_thread");
-    executor.initialize();
-    return executor;
-  }
 
   @Bean
   public TaskExecutor fetchTaskExecutor() {

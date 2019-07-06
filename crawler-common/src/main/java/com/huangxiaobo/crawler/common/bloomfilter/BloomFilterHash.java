@@ -1,6 +1,6 @@
 package com.huangxiaobo.crawler.common.bloomfilter;
 
-import javax.validation.constraints.NotNull;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by hxb on 2018/4/10.

@@ -2,7 +2,6 @@ package com.huangxiaobo.crawler.parser;
 
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
-import com.huangxiaobo.crawler.fetcher.UserDetailFetcher;
 import com.jayway.jsonpath.JsonPath;
 import java.util.List;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class UserFollowingParser extends Parser {
         continue;
       }
       String url = "https://www.zhihu.com/people/" + s;
-      getParserManager().addFetchTask(new FetcherTask(url, UserDetailFetcher.class.getName(),
+      getParserManager().addFetchTask(new FetcherTask(url, "UserDetailFetcher",
           UserDetailParser.class.getName()));
     }
   }

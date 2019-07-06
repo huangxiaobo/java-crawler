@@ -1,6 +1,5 @@
 package com.huangxiaobo.crawler.common;
 
-
 public class Constants {
 
   public static final int TIMEOUT = 10000;
@@ -51,5 +50,4 @@ public class Constants {
   public static final String MQ_JSON_ROUTING_KEY = "zhihu.user.json.bindingkey";
 
   public static final String USER_DETAIL_PARSER_CLASS_NAME = "UserDetailParser";
-
 }

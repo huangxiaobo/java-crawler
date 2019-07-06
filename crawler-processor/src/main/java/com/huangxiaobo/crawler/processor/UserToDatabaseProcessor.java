@@ -1,4 +1,5 @@
 package com.huangxiaobo.crawler.processor;
+
 import com.huangxiaobo.crawler.common.User;
 
 public class UserToDatabaseProcessor extends Processor<User> {

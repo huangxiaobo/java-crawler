@@ -89,6 +89,10 @@ public class ProxyPoolManager {
     return proxyQueue.take();
   }
 
+  public Proxy getProxyNowait() {
+    return proxyQueue.poll();
+  }
+
   public void addProxy(Proxy proxy) {
     proxyQueue.add(proxy);
   }

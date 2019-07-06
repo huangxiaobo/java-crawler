@@ -1,11 +1,10 @@
 package com.huangxiaobo.crawler.parser;
 
-import com.huangxiaobo.crawler.common.Constants;
-import com.huangxiaobo.crawler.common.ParseTask;
-import com.huangxiaobo.crawler.fetcher.FetcherManager;
-import com.huangxiaobo.crawler.common.FetcherTask;
-import com.huangxiaobo.crawler.common.RabbitmqClient;
 import com.google.gson.Gson;
+import com.huangxiaobo.crawler.common.Constants;
+import com.huangxiaobo.crawler.common.FetcherTask;
+import com.huangxiaobo.crawler.common.ParseTask;
+import com.huangxiaobo.crawler.common.RabbitmqClient;
 import java.lang.reflect.Constructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +24,7 @@ public class ParserManager {
 
   @Autowired
   @Qualifier("parseTaskExecutor")
-  private TaskExecutor fetchTaskExecutor;
-
-  @Autowired
-  private FetcherManager fetcherManager;
+  private TaskExecutor parseTaskExecutor;
 
   public ParserManager() {
 
@@ -61,9 +57,8 @@ public class ParserManager {
 
       Parser parser = (Parser) constructor.newInstance(parseTask);
       parser.setParserManager(this);
-      parser.setFetcherManager(fetcherManager);
 
-      fetchTaskExecutor.execute(parser);
+      parseTaskExecutor.execute(parser);
     } catch (Exception e) {
       e.printStackTrace();
       logger.error("start do parse task failed:" + e);
@@ -75,6 +70,6 @@ public class ParserManager {
   }
 
   public void addFetchTask(FetcherTask task) {
-    fetcherManager.addFetchTask(task);
+    rabbitmqClient.sendFetchTask(new Gson().toJson(task));
   }
 }

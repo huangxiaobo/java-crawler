@@ -16,13 +16,13 @@ spring:
     threadSize: 1000
 
   rabbitmq:
-    host: 100.95.187.218
+    host: 127.0.0.1
     port: 5672
     username: rabbitmq
     password: rabbitmq
 
   datasource:
-    url: jdbc:postgresql://100.95.187.218:5432/zhihu
+    url: jdbc:postgresql://127.0.0.1:5432/zhihu
     username: postgres
     password: postgres
     platform: POSTGRESQL

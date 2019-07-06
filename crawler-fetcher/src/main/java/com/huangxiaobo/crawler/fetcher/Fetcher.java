@@ -6,7 +6,6 @@ import com.huangxiaobo.crawler.common.HttpClientUtil;
 import com.huangxiaobo.crawler.common.Page;
 import com.huangxiaobo.crawler.common.ParseTask;
 import com.huangxiaobo.crawler.common.Proxy;
-import com.huangxiaobo.crawler.proxy.ProxyPoolManager;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -16,8 +15,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * page task 下载网页并解析，具体解析由子类实现 若使用代理，从ProxyPool中取
- *
- * @see ProxyPoolManager
  */
 public class Fetcher implements Runnable {
 
@@ -28,14 +25,8 @@ public class Fetcher implements Runnable {
 
   protected FetcherManager fetcherManager;
 
-  protected ProxyPoolManager proxyPoolManager;
-
   public Fetcher(FetcherTask task) {
     this.fetcherTask = task;
-  }
-
-  public void setProxyPoolManager(ProxyPoolManager proxyPoolManager) {
-    this.proxyPoolManager = proxyPoolManager;
   }
 
   public void setFetcherManager(FetcherManager fetcherManager) {
@@ -52,7 +43,7 @@ public class Fetcher implements Runnable {
         request = new HttpGet(url);
       }
 
-      currentProxy = proxyPoolManager.getProxy();
+      currentProxy = fetcherManager.getProxy();
 
       HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
       request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
@@ -104,7 +95,7 @@ public class Fetcher implements Runnable {
       }
       if (currentProxy != null && !currentProxy.isDiscardProxy()) {
         currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
-        proxyPoolManager.addProxy(currentProxy);
+        fetcherManager.addProxy(currentProxy);
       }
     }
   }

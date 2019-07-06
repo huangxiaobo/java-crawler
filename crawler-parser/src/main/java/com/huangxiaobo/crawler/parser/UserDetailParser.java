@@ -6,8 +6,6 @@ import com.google.gson.JsonParser;
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
-import com.huangxiaobo.crawler.fetcher.UserDetailFetcher;
-import com.huangxiaobo.crawler.fetcher.UserFollowingFetcher;
 import java.util.Map;
 import java.util.Set;
 import org.jsoup.Jsoup;
@@ -49,8 +47,8 @@ public class UserDetailParser extends Parser {
 
         // 抓取关注他的人的所有用户详情
         String url = "https://www.zhihu.com/people/" + urlToken;
-        this.fetcherManager.addFetchTask(
-            new FetcherTask(url, UserDetailFetcher.class.getName(),
+        this.parserManager.addFetchTask(
+            new FetcherTask(url, "UserDetailFetcher",
                 UserDetailParser.class.getName()));
 
         int followingCount = entry.getValue().getAsJsonObject().get("followingCount").getAsInt();
@@ -58,10 +56,10 @@ public class UserDetailParser extends Parser {
         for (int j = 0; j < followingCount / 20 + 1; j++) {
           String followeesUrl = String.format(Constants.USER_FOLLOWEES_URL, urlToken, j * 20);
 
-          this.fetcherManager.addFetchTask(
+          this.parserManager.addFetchTask(
               new FetcherTask(
                   followeesUrl,
-                  UserFollowingFetcher.class.getName(),
+                  "UserFollowingFetcher",
                   UserFollowingParser.class.getName()));
         }
       }

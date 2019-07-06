@@ -1,48 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.huangxiaobo</groupId>
-        <artifactId>crawler</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
-    </parent>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>crawler-web</artifactId>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+      </plugin>
+    </plugins>
+  </build>
 
+  <dependencies>
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-databind</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
+
+      <!-- 排除jackson依赖 -->
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>crawler-common</artifactId>
+      <groupId>com.huangxiaobo</groupId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>crawler-proxy</artifactId>
+      <groupId>com.huangxiaobo</groupId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <description>Demo project for Spring Boot</description>
+  <groupId>com.huangxiaobo</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>crawler-web</name>
+  <packaging>jar</packaging>
+
+
+  <parent>
+    <artifactId>crawler</artifactId>
     <groupId>com.huangxiaobo</groupId>
-    <artifactId>crawler-web</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>crawler-web</name>
-    <packaging>jar</packaging>
-    <description>Demo project for Spring Boot</description>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.0.1-SNAPSHOT</version> <!-- lookup parent from repository -->
+  </parent>
 
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.huangxiaobo</groupId>
-            <artifactId>crawler-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.huangxiaobo</groupId>
-            <artifactId>crawler-proxy</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+  <version>0.0.1-SNAPSHOT</version>
 
 </project>

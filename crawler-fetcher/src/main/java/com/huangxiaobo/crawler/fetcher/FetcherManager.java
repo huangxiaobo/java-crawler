@@ -4,33 +4,36 @@ import com.google.gson.Gson;
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
+import com.huangxiaobo.crawler.common.Proxy;
 import com.huangxiaobo.crawler.common.RabbitmqClient;
 import com.huangxiaobo.crawler.common.bloomfilter.MemoryBloomFilter;
-import com.huangxiaobo.crawler.proxy.ProxyPoolManager;
 import java.lang.reflect.Constructor;
+import java.net.URI;
+import java.util.concurrent.DelayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class FetcherManager {
 
+  private final DelayQueue<Proxy> proxyQueue = new DelayQueue();
   @Autowired
   public MemoryBloomFilter bloomFilter;
   private Logger logger = LoggerFactory.getLogger(FetcherManager.class);
   @Autowired
   private RabbitmqClient rabbitmqClient;
-
-  @Autowired
-  private ProxyPoolManager proxyPoolManager;
-
   @Autowired
   private FetcherManager fetcherManager;
-
   @Autowired
   @Qualifier("fetchTaskExecutor")
   private TaskExecutor fetchTaskExecutor;
@@ -44,6 +47,49 @@ public class FetcherManager {
 
   public void start() {
 
+    new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        while (true) {
+
+          if (proxyQueue.size() > 0) {
+            try {
+              Thread.sleep(1000);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            continue;
+          }
+
+          try {
+            RestTemplate restTemplate = new RestTemplate();
+
+            final String baseUrl = "http://localhost:" + 8084 + "/?count=10";
+            URI uri = new URI(baseUrl);
+
+            HttpHeaders headers = new HttpHeaders();
+
+            HttpEntity<Proxy> requestEntity = new HttpEntity<>(null, headers);
+
+            ResponseEntity<Proxy[]> entity = restTemplate
+                .exchange(uri, HttpMethod.GET, requestEntity, Proxy[].class);
+
+            logger.info("" + entity.getStatusCodeValue());
+            logger.info("" + entity.getBody());
+            Proxy[] proxies = entity.getBody();
+
+            for (Proxy proxy : proxies) {
+              proxyQueue.add(proxy);
+            }
+
+            logger.info("proxy queue size: " + proxyQueue.size());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }).start();
   }
 
   @RabbitListener(queues = Constants.MQ_QUEUE_NAME)
@@ -69,12 +115,24 @@ public class FetcherManager {
 
       Fetcher fetcher = (Fetcher) constructor.newInstance(fetcherTask);
       fetcher.setFetcherManager(fetcherManager);
-      fetcher.setProxyPoolManager(proxyPoolManager);
 
       fetchTaskExecutor.execute(fetcher);
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public Proxy getProxy() {
+    try {
+      return proxyQueue.take();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public void addProxy(Proxy proxy) {
+    return;
   }
 
   public boolean addFetchTask(FetcherTask fetcherTask) {
@@ -100,7 +158,6 @@ public class FetcherManager {
 
   public boolean addParseTask(ParseTask task) {
     logger.info("add parse task:" + task.getParserName());
-    String s = new Gson().toJson(task);
     rabbitmqClient.sendParseTask(new Gson().toJson(task));
     return true;
   }
