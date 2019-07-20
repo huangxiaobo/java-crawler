@@ -46,10 +46,14 @@ public class ParserManager {
       return;
     }
 
-    logger.info("start do parse task: " + ParseTask.class);
+    logger.info("start do parse task: " + parseTask);
 
     try {
-      Class<?> clazz = Class.forName(parseTask.getParserName());
+      String parserName = parseTask.getParserName();
+      if (!parserName.startsWith("com.huangxiaobo.crawler.parser")) {
+          parserName = "com.huangxiaobo.crawler.parser." + parserName;
+      }
+      Class<?> clazz = Class.forName(parserName);
 
       Class[] classes = new Class[]{ParseTask.class};
       Constructor constructor = clazz.getDeclaredConstructor(classes);

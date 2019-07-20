@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Crawler
+    name: CrawlerFetcher
     savePath: /home/users
     startUrl: https://www.zhihu.com/people/huang-liao-57
 

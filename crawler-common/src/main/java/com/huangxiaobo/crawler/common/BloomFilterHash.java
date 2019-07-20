@@ -1,6 +1,5 @@
-package com.huangxiaobo.crawler.common.bloomfilter;
+package com.huangxiaobo.crawler.common;
 
-import com.sun.istack.internal.NotNull;
 
 /**
  * Created by hxb on 2018/4/10.
@@ -15,7 +14,7 @@ public class BloomFilterHash {
     this.seed = seed;
   }
 
-  public int hash(@NotNull String value) {
+  public int hash(String value) {
     int result = 0;
     for (int i = 0; i < value.length(); ++i) {
       result = result * seed + value.charAt(i);

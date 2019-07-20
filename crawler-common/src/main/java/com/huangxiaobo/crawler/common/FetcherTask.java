@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 @Data
 public class FetcherTask {
 
+  private String x;
+
   private static Logger logger = LoggerFactory.getLogger(FetcherTask.class);
   public String url;
   public String fetcherClassName;
@@ -20,5 +22,11 @@ public class FetcherTask {
     this.url = url;
     this.fetcherClassName = fetcherClassName;
     this.parserClassName = parserClassName;
+  }
+
+  public String toString() {
+    return String.format("FetcherTask(url=%s,fetcherClassName=%s,parserClassName=%s)",
+        url, fetcherClassName, parserClassName
+    );
   }
 }

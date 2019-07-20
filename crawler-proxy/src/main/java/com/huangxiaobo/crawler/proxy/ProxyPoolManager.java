@@ -1,7 +1,5 @@
 package com.huangxiaobo.crawler.proxy;
 
-import static com.huangxiaobo.crawler.common.Constants.TIME_INTERVAL;
-
 import com.huangxiaobo.crawler.common.Proxy;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,9 +17,12 @@ import org.springframework.stereotype.Service;
 
 /**
  * 代理管理
+ * 从代理网站上抓取代理
  */
 @Service
 public class ProxyPoolManager {
+
+  public static final long TIME_INTERVAL = 1000;
 
   private final DelayQueue<Proxy> proxyQueue = new DelayQueue();
   private final Set<Proxy> proxySet = new HashSet<Proxy>();

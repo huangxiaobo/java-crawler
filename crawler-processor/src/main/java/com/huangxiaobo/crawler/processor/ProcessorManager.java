@@ -3,7 +3,7 @@ package com.huangxiaobo.crawler.processor;
 import com.google.gson.Gson;
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.User;
-import com.huangxiaobo.crawler.common.dao.UserMapper;
+import com.huangxiaobo.crawler.common.UserMapper;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

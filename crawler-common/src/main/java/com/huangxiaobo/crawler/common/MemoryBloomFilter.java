@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.common.bloomfilter;
+package com.huangxiaobo.crawler.common;
 
 import java.util.BitSet;
 import org.springframework.stereotype.Component;

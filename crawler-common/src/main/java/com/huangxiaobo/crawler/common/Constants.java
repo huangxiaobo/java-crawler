@@ -3,10 +3,10 @@ package com.huangxiaobo.crawler.common;
 public class Constants {
 
   public static final int TIMEOUT = 10000;
-  /**
+  /**package com.huangxiaobo.crawler.common;
    * 单个ip请求间隔，单位ms
    */
-  public static final long TIME_INTERVAL = 1000;
+
   // 知乎首页
   public static final String INDEX_URL = "https://www.zhihu.com";
 

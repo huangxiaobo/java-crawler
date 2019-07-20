@@ -1,6 +1,5 @@
-package com.huangxiaobo.crawler.common.dao;
+package com.huangxiaobo.crawler.common;
 
-import com.huangxiaobo.crawler.common.User;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;

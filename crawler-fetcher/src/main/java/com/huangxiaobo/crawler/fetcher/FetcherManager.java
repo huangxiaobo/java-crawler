@@ -2,11 +2,11 @@ package com.huangxiaobo.crawler.fetcher;
 
 import com.google.gson.Gson;
 import com.huangxiaobo.crawler.common.Constants;
-import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
+import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.Proxy;
 import com.huangxiaobo.crawler.common.RabbitmqClient;
-import com.huangxiaobo.crawler.common.bloomfilter.MemoryBloomFilter;
+import com.huangxiaobo.crawler.common.MemoryBloomFilter;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.concurrent.DelayQueue;
@@ -104,10 +104,15 @@ public class FetcherManager {
       return;
     }
 
-    logger.info("start download url: " + fetcherTask.getUrl());
+    logger.info("start download url: " + fetcherTask);
 
     try {
-      Class<?> clazz = Class.forName(fetcherTask.fetcherClassName);
+      String fetcherClassName = fetcherTask.fetcherClassName;
+      if (!fetcherClassName.startsWith("com.huangxiaobo.crawler.fetcher")) {
+        fetcherClassName = "com.huangxiaobo.crawler.fetcher." + fetcherClassName;
+      }
+
+      Class<?> clazz = Class.forName(fetcherClassName);
 
       Class[] classes = new Class[]{FetcherTask.class};
       Constructor constructor = clazz.getDeclaredConstructor(classes);

@@ -1,6 +1,5 @@
 package com.huangxiaobo.crawler.fetcher;
 
-import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.HttpClientUtil;
 import com.huangxiaobo.crawler.common.Page;
@@ -94,7 +93,7 @@ public class Fetcher implements Runnable {
         request.releaseConnection();
       }
       if (currentProxy != null && !currentProxy.isDiscardProxy()) {
-        currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
+        currentProxy.setTimeInterval(180);
         fetcherManager.addProxy(currentProxy);
       }
     }

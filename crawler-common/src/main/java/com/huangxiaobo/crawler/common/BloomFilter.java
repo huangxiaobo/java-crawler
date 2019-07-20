@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.common.bloomfilter;
+package com.huangxiaobo.crawler.common;
 
 /**
  * Created by hxb on 2018/4/9.

@@ -1,7 +1,7 @@
 package com.huangxiaobo.crawler.web;
 
 import com.huangxiaobo.crawler.common.User;
-import com.huangxiaobo.crawler.common.dao.UserMapper;
+import com.huangxiaobo.crawler.common.UserMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

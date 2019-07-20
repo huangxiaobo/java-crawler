@@ -9,11 +9,6 @@ spring:
     proxyPath: /home/proxies.csv
     proxyInterval: 1000
 
-  fetch:
-    threadSize: 1000
-
-  parse:
-    threadSize: 1000
 
   rabbitmq:
     host: 127.0.0.1

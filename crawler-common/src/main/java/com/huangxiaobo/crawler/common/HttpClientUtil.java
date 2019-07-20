@@ -1,7 +1,4 @@
 package com.huangxiaobo.crawler.common;
-/**
- * Created by hxb on 2018/3/31.
- */
 
 import java.io.IOException;
 import java.io.InterruptedIOException;

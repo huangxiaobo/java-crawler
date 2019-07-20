@@ -12,4 +12,8 @@ public class ParseTask {
     this.content = content;
     this.parserName = parserName;
   }
+
+  public String toString() {
+    return String.format("ParseTask(parserName=%s)", parserName);
+  }
 }
