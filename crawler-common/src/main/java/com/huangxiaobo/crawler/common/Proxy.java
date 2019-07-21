@@ -11,8 +11,6 @@ import lombok.Data;
 @Data
 public class Proxy implements Delayed, Serializable {
 
-  private String x;
-
   private static final long serialVersionUID = -7583883432417635332L;
   private long timeInterval; // 任务间隔时间,单位ms
   private String ip;

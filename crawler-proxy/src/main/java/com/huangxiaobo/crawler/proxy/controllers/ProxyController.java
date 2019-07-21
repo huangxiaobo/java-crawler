@@ -1,7 +1,7 @@
 package com.huangxiaobo.crawler.proxy.controllers;
 
-import com.huangxiaobo.crawler.common.Proxy;
 import com.huangxiaobo.crawler.proxy.ProxyPoolManager;
+import com.huangxiaobo.crawler.common.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

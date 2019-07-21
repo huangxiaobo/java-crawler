@@ -50,8 +50,8 @@ public class ParserManager {
 
     try {
       String parserName = parseTask.getParserName();
-      if (!parserName.startsWith("com.huangxiaobo.crawler.parser")) {
-          parserName = "com.huangxiaobo.crawler.parser." + parserName;
+      if (!parserName.startsWith("com.huangxiaobo.crawler.crawler.parser")) {
+          parserName = "com.huangxiaobo.crawler.crawler.parser." + parserName;
       }
       Class<?> clazz = Class.forName(parserName);
 

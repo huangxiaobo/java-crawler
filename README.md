@@ -53,6 +53,19 @@ services:
             - db-data:/var/lib/postgresql/data
         ports:
             - 5432:5432
+    redis:
+        # 指定镜像
+        image: redis:4
+        ports:
+          # 端口映射
+          - 6379:6379
+        volumes:
+          # 目录映射
+          - "/var/lib/redis/conf:/usr/local/etc/redis"
+          - "/var/lib/redis/data:/data"
+        command:
+          # 执行的命令
+          redis-server 
 
 volumes:
     db-data:

@@ -108,8 +108,8 @@ public class FetcherManager {
 
     try {
       String fetcherClassName = fetcherTask.fetcherClassName;
-      if (!fetcherClassName.startsWith("com.huangxiaobo.crawler.fetcher")) {
-        fetcherClassName = "com.huangxiaobo.crawler.fetcher." + fetcherClassName;
+      if (!fetcherClassName.startsWith("com.huangxiaobo.crawler.crawler.fetcher")) {
+        fetcherClassName = "com.huangxiaobo.crawler.crawler.fetcher." + fetcherClassName;
       }
 
       Class<?> clazz = Class.forName(fetcherClassName);

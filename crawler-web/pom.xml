@@ -6,7 +6,7 @@
 
 
   <description>Demo project for Spring Boot</description>
-  <groupId>com.huangxiaobo</groupId>
+  <groupId>com.huangxiaobo.crawler</groupId>
   <modelVersion>4.0.0</modelVersion>
   <name>crawler-web</name>
   <packaging>jar</packaging>
@@ -14,7 +14,7 @@
 
   <parent>
     <artifactId>crawler</artifactId>
-    <groupId>com.huangxiaobo</groupId>
+    <groupId>com.huangxiaobo.crawler</groupId>
     <relativePath>../pom.xml</relativePath>
     <version>0.0.1-SNAPSHOT</version> <!-- lookup parent from repository -->
   </parent>
@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <artifactId>crawler-common</artifactId>
-      <groupId>com.huangxiaobo</groupId>
+      <groupId>com.huangxiaobo.crawler</groupId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>

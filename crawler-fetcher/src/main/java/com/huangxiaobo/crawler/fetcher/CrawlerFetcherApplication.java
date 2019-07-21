@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
-@SpringBootApplication(scanBasePackages = {"com.huangxiaobo.*"})
+@SpringBootApplication(scanBasePackages = {"com.huangxiaobo.crawler.*"})
 public class CrawlerFetcherApplication {
 
   @Autowired
@@ -22,7 +22,7 @@ public class CrawlerFetcherApplication {
   }
 
   @EventListener(ApplicationReadyEvent.class)
-  public void doSomethingAfterStartup() {
+  public void doAfterStartup() {
     System.out.println("hello world, I have just started up");
 
     fetcherManager.start();

@@ -3,7 +3,7 @@ package com.huangxiaobo.crawler.processor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"com.huangxiaobo.*"})
+@SpringBootApplication(scanBasePackages = {"com.huangxiaobo.crawler.crawler.common"})
 public class CrawlerProcessorApplication {
 
   public static void main(String[] args) {

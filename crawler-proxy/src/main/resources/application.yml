@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: Crawler
+    savePath: /home/users
+    startUrl: https://www.zhihu.com/people/huang-liao-57
+
+  proxy:
+    useProxy: true
+    proxyPath: /home/proxies.csv
+    proxyInterval: 1000
+
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: rabbitmq
+    password: rabbitmq
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: pass1234
+    pool:
+      max-active: 100
+      max-idle: 10
+      max-wait: 100000
+    timeout: 0
+
+server:
+  port: 8084

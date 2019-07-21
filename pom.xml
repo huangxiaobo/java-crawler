@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>crawler</artifactId>
-  <groupId>com.huangxiaobo</groupId>
+  <groupId>com.huangxiaobo.crawler</groupId>
   <name>crawler</name>
   <description>Demo project for Spring Boot</description>
   <packaging>pom</packaging>

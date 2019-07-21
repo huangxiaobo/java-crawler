@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class ProxyPoolManager {
 
   public static final long TIME_INTERVAL = 1000;
+  private static final String KEY = "Proxy";
 
   private final DelayQueue<Proxy> proxyQueue = new DelayQueue();
   private final Set<Proxy> proxySet = new HashSet<Proxy>();
@@ -30,6 +32,9 @@ public class ProxyPoolManager {
   private CrawlerProxyConfig config;
   private Logger logger = LoggerFactory.getLogger(ProxyPoolManager.class);
   private ThreadPoolExecutor proxyTestExecutor;
+
+  @Autowired
+  private HashOperations<String, String, Object> hashOperations;
 
   public ProxyPoolManager() {
     logger.info("proxy pool init");
@@ -73,7 +78,6 @@ public class ProxyPoolManager {
         boolean contained = proxySet.contains(proxy);
         if (!contained) {
           proxySet.add(proxy);
-          proxyQueue.add(proxy);
           proxyTestExecutor.execute(new ProxyChecker(this, proxy));
         }
 
@@ -95,7 +99,11 @@ public class ProxyPoolManager {
   }
 
   public void addProxy(Proxy proxy) {
+    logger.info("add proxy>>>>>>>>>>>>>>>>>>>.: " + proxy);
     proxyQueue.add(proxy);
+    logger.info(String.format("add proxy key=%s, ip: %s proxy: %s", KEY, proxy.getIp(), proxy));
+    hashOperations.put(KEY, proxy.getIp(), proxy);
+
   }
 
   public int getProxyCount() {

@@ -3,7 +3,7 @@ package com.huangxiaobo.crawler.common;
 public class Constants {
 
   public static final int TIMEOUT = 10000;
-  /**package com.huangxiaobo.crawler.common;
+  /**package com.huangxiaobo.crawler.crawler.common;
    * 单个ip请求间隔，单位ms
    */
 
