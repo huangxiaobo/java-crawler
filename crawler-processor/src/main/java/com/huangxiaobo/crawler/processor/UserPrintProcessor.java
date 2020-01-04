@@ -7,12 +7,12 @@ import com.huangxiaobo.crawler.common.User;
  */
 public class UserPrintProcessor extends Processor<User> {
 
-  public void process(User user) {
+    public void process(User user) {
 
-    System.out.println(">>>>>" + user.toString());
+        System.out.println(">>>>>" + user.toString());
 
-    if (next != null) {
-      next.process(user);
+        if (next != null) {
+            next.process(user);
+        }
     }
-  }
 }

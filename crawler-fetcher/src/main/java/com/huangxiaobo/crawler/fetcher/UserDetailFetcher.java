@@ -7,7 +7,7 @@ import com.huangxiaobo.crawler.common.FetcherTask;
  */
 public class UserDetailFetcher extends Fetcher {
 
-  public UserDetailFetcher(FetcherTask task) {
-    super(task);
-  }
+    public UserDetailFetcher(FetcherTask task) {
+        super(task);
+    }
 }

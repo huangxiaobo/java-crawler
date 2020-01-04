@@ -11,41 +11,41 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication(scanBasePackages = {"com.huangxiaobo.crawler.*"})
 public class CrawlerFetcherApplication {
 
-  @Autowired
-  public FetcherManager fetcherManager;
+    @Autowired
+    public FetcherManager fetcherManager;
 
-  @Autowired
-  public CrawlerFetcherConfig crawlerConfig;
+    @Autowired
+    public CrawlerFetcherConfig crawlerConfig;
 
-  public static void main(String[] args) {
-    SpringApplication.run(CrawlerFetcherApplication.class, args);
-  }
-
-  @EventListener(ApplicationReadyEvent.class)
-  public void doAfterStartup() {
-    System.out.println("hello world, I have just started up");
-
-    fetcherManager.start();
-
-    fetcherManager.addFetchTask(
-        new FetcherTask(
-            crawlerConfig.startURL,
-            UserDetailFetcher.class.getName(),
-            Constants.USER_DETAIL_PARSER_CLASS_NAME
-        )
-    );
-    String[] urls = new String[]{
-        "https://www.zhihu.com/people/gong-qing-tuan-zhong-yang-67",
-        "https://www.zhihu.com/people/cloudycity"
-    };
-    for (String url : urls) {
-      fetcherManager.addFetchTask(
-          new FetcherTask(
-              url,
-              UserDetailFetcher.class.getName(),
-              Constants.USER_DETAIL_PARSER_CLASS_NAME
-          )
-      );
+    public static void main(String[] args) {
+        SpringApplication.run(CrawlerFetcherApplication.class, args);
     }
-  }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void doAfterStartup() {
+        System.out.println("hello world, I have just started up");
+
+        fetcherManager.start();
+
+        fetcherManager.addFetchTask(
+                new FetcherTask(
+                        crawlerConfig.startURL,
+                        UserDetailFetcher.class.getName(),
+                        Constants.USER_DETAIL_PARSER_CLASS_NAME
+                )
+        );
+        String[] urls = new String[]{
+                "https://www.zhihu.com/people/gong-qing-tuan-zhong-yang-67",
+                "https://www.zhihu.com/people/cloudycity"
+        };
+        for (String url : urls) {
+            fetcherManager.addFetchTask(
+                    new FetcherTask(
+                            url,
+                            UserDetailFetcher.class.getName(),
+                            Constants.USER_DETAIL_PARSER_CLASS_NAME
+                    )
+            );
+        }
+    }
 }

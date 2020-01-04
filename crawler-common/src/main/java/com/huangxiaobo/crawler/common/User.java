@@ -8,151 +8,151 @@ import lombok.Data;
 @Data
 public class User {
 
-  public String urlToken;
-  boolean isFollowed = false;
-  Education[] educations;
+    public String urlToken;
+    boolean isFollowed = false;
+    Education[] educations;
 
-  private int followingCount; // 关注数
-  private int voteFromCount;
-  private String userType;
-  private String includedText;
-  private String pinsCount;
-  private boolean isFollowing;
-  private boolean isPrivacyProtected;
-  private AccountStatus[] accountStatus;
-  private int includedArticlesCount;
-  private boolean isForceRenamed;
-  private String id;
-  private int favoriteCount;
-  private int voteupCount;
-  private int commercialQuestionCount;
-  private boolean isBlocking;
-  private int followingColumnsCount;
-  private String headline;
-  private int participatedLiveCount;
-  private boolean isAdvertiser;
-  private int followingFavlistsCount;
-  private int favoritedCount;
-  private boolean isOrg;
-  private int followerCount; // 被关注数
-  private Employment[] employments;
-  private String type;
-  private String avatarHue;
-  private String avatarUrlTemplate;
-  private int followingTopicCount;
-  private String description;
-  private Business business;
-  private String avatarUrl;
-  private int columnsCount;
-  private int hostedLiveCount;
-  private int isActive;
-  private int thankToCount = 0;
-  private int mutualFolloweesCount = 0;
-  private String coverUrl;
-  private int thankFromCount = 0;
-  private int voteToCount = 0;
-  private boolean isBlocked = false;
-  private int answerCount = 0;
-  private boolean allowMessage = false;
-  private int articlesCount = 0;
-  private String name;
-  private int questionCount = 0;
-  private Location[] locations;
-  private Badge[] badge;
-  private int includedAnswersCount = 0;
-  private String url;
-  private String messageThreadToken;
-  private int logsCount = 0;
-  private int followingQuestionCount = 0;
-  private int thankedCount = 0;
-  private int gender;
-
-  public int getFollowingCount() {
-    return followingCount;
-  }
-
-  public String toString() {
-    return String.format(
-        "[name: %s, id: %s gender: %s, headline: %s, url: %s]",
-        name, urlToken, gender, headline, url);
-  }
-
-  @Data
-  class Education {
-
-    String educationType;
-    String inroducation;
-    String avatarUrl;
-    String name;
-    String url;
-    String type;
-    String excerpt;
-    String id;
-  }
-
-  @Data
-  class AccountStatus {
-
-    int createdAt;
-    int expiredAt;
-    String reason;
-    String name;
-  }
-
-  @Data
-  class Employment {
-
-    private String avatarUrl;
-    private String excerpt;
+    private int followingCount; // 关注数
+    private int voteFromCount;
+    private String userType;
+    private String includedText;
+    private String pinsCount;
+    private boolean isFollowing;
+    private boolean isPrivacyProtected;
+    private AccountStatus[] accountStatus;
+    private int includedArticlesCount;
+    private boolean isForceRenamed;
     private String id;
-    private String introduction;
-    private String name;
+    private int favoriteCount;
+    private int voteupCount;
+    private int commercialQuestionCount;
+    private boolean isBlocking;
+    private int followingColumnsCount;
+    private String headline;
+    private int participatedLiveCount;
+    private boolean isAdvertiser;
+    private int followingFavlistsCount;
+    private int favoritedCount;
+    private boolean isOrg;
+    private int followerCount; // 被关注数
+    private Employment[] employments;
     private String type;
+    private String avatarHue;
+    private String avatarUrlTemplate;
+    private int followingTopicCount;
+    private String description;
+    private Business business;
+    private String avatarUrl;
+    private int columnsCount;
+    private int hostedLiveCount;
+    private int isActive;
+    private int thankToCount = 0;
+    private int mutualFolloweesCount = 0;
+    private String coverUrl;
+    private int thankFromCount = 0;
+    private int voteToCount = 0;
+    private boolean isBlocked = false;
+    private int answerCount = 0;
+    private boolean allowMessage = false;
+    private int articlesCount = 0;
+    private String name;
+    private int questionCount = 0;
+    private Location[] locations;
+    private Badge[] badge;
+    private int includedAnswersCount = 0;
     private String url;
-  }
+    private String messageThreadToken;
+    private int logsCount = 0;
+    private int followingQuestionCount = 0;
+    private int thankedCount = 0;
+    private int gender;
 
-  @Data
-  class Business {
+    public int getFollowingCount() {
+        return followingCount;
+    }
 
-    String introduction;
-    String avatarUrl;
-    String name;
-    String url;
-    String type;
-    String excerpt;
-    String id;
-  }
-
-  @Data
-  class Location {
-
-    String introduction;
-    String avatarUrl;
-    String name;
-    String url;
-    String type;
-    String excerpt;
-    String id;
-  }
-
-  @Data
-  class Badge {
-
-    String description;
-    Topic[] topics;
+    public String toString() {
+        return String.format(
+                "[name: %s, id: %s gender: %s, headline: %s, url: %s]",
+                name, urlToken, gender, headline, url);
+    }
 
     @Data
-    class Topic {
+    class Education {
 
-      String avatarUrl;
-      String excerpt;
-      String id;
-      String introduction;
-      String name;
-      String type;
-      String url;
+        String educationType;
+        String inroducation;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
     }
-  }
+
+    @Data
+    class AccountStatus {
+
+        int createdAt;
+        int expiredAt;
+        String reason;
+        String name;
+    }
+
+    @Data
+    class Employment {
+
+        private String avatarUrl;
+        private String excerpt;
+        private String id;
+        private String introduction;
+        private String name;
+        private String type;
+        private String url;
+    }
+
+    @Data
+    class Business {
+
+        String introduction;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
+    }
+
+    @Data
+    class Location {
+
+        String introduction;
+        String avatarUrl;
+        String name;
+        String url;
+        String type;
+        String excerpt;
+        String id;
+    }
+
+    @Data
+    class Badge {
+
+        String description;
+        Topic[] topics;
+
+        @Data
+        class Topic {
+
+            String avatarUrl;
+            String excerpt;
+            String id;
+            String introduction;
+            String name;
+            String type;
+            String url;
+        }
+    }
 }
 
 /*

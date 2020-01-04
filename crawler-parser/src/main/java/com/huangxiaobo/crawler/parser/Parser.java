@@ -7,25 +7,25 @@ import com.huangxiaobo.crawler.common.ParseTask;
  */
 public abstract class Parser implements Runnable {
 
-  protected ParseTask parseTask;
-  protected ParserManager parserManager;
+    protected ParseTask parseTask;
+    protected ParserManager parserManager;
 
-  public Parser(ParseTask task) {
-    this.parseTask = task;
-  }
+    public Parser(ParseTask task) {
+        this.parseTask = task;
+    }
 
-  public ParserManager getParserManager() {
-    return parserManager;
-  }
+    public ParserManager getParserManager() {
+        return parserManager;
+    }
 
-  public void setParserManager(ParserManager parserManager) {
-    this.parserManager = parserManager;
-  }
+    public void setParserManager(ParserManager parserManager) {
+        this.parserManager = parserManager;
+    }
 
-  public abstract void parse(ParseTask task);
+    public abstract void parse(ParseTask task);
 
-  @Override
-  public void run() {
-    parse(parseTask);
-  }
+    @Override
+    public void run() {
+        parse(parseTask);
+    }
 }

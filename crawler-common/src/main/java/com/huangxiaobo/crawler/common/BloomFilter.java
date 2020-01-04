@@ -5,7 +5,7 @@ package com.huangxiaobo.crawler.common;
  */
 public interface BloomFilter {
 
-  boolean contains(String urlToken);
+    boolean contains(String urlToken);
 
-  void add(String urlToken);
+    void add(String urlToken);
 }

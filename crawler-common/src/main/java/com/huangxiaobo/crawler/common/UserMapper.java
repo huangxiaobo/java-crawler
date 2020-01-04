@@ -1,6 +1,7 @@
 package com.huangxiaobo.crawler.common;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserMapper {
 
-  List<User> findAll();
+    List<User> findAll();
 
-  void insertUser(User user);
+    void insertUser(User user);
 }

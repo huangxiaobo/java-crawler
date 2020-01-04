@@ -10,32 +10,32 @@ import org.springframework.stereotype.Component;
 public class RabbitmqClient {
 
 
-  private String x;
+    private String x;
 
-  @Autowired
-  private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-  @Autowired
-  @Qualifier("urlExchange")
-  private TopicExchange urlExchange;
+    @Autowired
+    @Qualifier("urlExchange")
+    private TopicExchange urlExchange;
 
-  @Autowired
-  @Qualifier("pageExchange")
-  private TopicExchange pageExchange;
+    @Autowired
+    @Qualifier("pageExchange")
+    private TopicExchange pageExchange;
 
-  @Autowired
-  @Qualifier("jsonExchange")
-  private TopicExchange jsonExchange;
+    @Autowired
+    @Qualifier("jsonExchange")
+    private TopicExchange jsonExchange;
 
-  public void sendFetchTask(String s) {
-    rabbitTemplate.convertAndSend(urlExchange.getName(), Constants.MQ_ROUTING_KEY, s);
-  }
+    public void sendFetchTask(String s) {
+        rabbitTemplate.convertAndSend(urlExchange.getName(), Constants.MQ_ROUTING_KEY, s);
+    }
 
-  public void sendParseTask(String s) {
-    rabbitTemplate.convertAndSend(pageExchange.getName(), Constants.MQ_PAGE_ROUTING_KEY, s);
-  }
+    public void sendParseTask(String s) {
+        rabbitTemplate.convertAndSend(pageExchange.getName(), Constants.MQ_PAGE_ROUTING_KEY, s);
+    }
 
-  public void sendProcessTask(String s) {
-    rabbitTemplate.convertAndSend(jsonExchange.getName(), Constants.MQ_JSON_ROUTING_KEY, s);
-  }
+    public void sendProcessTask(String s) {
+        rabbitTemplate.convertAndSend(jsonExchange.getName(), Constants.MQ_JSON_ROUTING_KEY, s);
+    }
 }

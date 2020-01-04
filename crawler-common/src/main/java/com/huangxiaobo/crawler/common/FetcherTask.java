@@ -11,22 +11,22 @@ import org.slf4j.LoggerFactory;
 @Data
 public class FetcherTask {
 
-  private String x;
+    private String x;
 
-  private static Logger logger = LoggerFactory.getLogger(FetcherTask.class);
-  public String url;
-  public String fetcherClassName;
-  public String parserClassName;
+    private static Logger logger = LoggerFactory.getLogger(FetcherTask.class);
+    public String url;
+    public String fetcherClassName;
+    public String parserClassName;
 
-  public FetcherTask(String url, String fetcherClassName, String parserClassName) {
-    this.url = url;
-    this.fetcherClassName = fetcherClassName;
-    this.parserClassName = parserClassName;
-  }
+    public FetcherTask(String url, String fetcherClassName, String parserClassName) {
+        this.url = url;
+        this.fetcherClassName = fetcherClassName;
+        this.parserClassName = parserClassName;
+    }
 
-  public String toString() {
-    return String.format("FetcherTask(url=%s,fetcherClassName=%s,parserClassName=%s)",
-        url, fetcherClassName, parserClassName
-    );
-  }
+    public String toString() {
+        return String.format("FetcherTask(url=%s,fetcherClassName=%s,parserClassName=%s)",
+                url, fetcherClassName, parserClassName
+        );
+    }
 }

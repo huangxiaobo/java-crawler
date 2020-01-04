@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>crawler-fetcher</artifactId>
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <artifactId>crawler-fetcher</artifactId>
 
-  <dependencies>
-    <dependency>
-      <artifactId>crawler-common</artifactId>
-      <groupId>com.huangxiaobo.crawler</groupId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
-  <description>Demo project for Spring Boot</description>
-  <groupId>com.huangxiaobo.crawler</groupId>
-  <modelVersion>4.0.0</modelVersion>
-  <name>crawler-fetcher</name>
-  <packaging>jar</packaging>
-
-  <parent>
-    <artifactId>crawler</artifactId>
+    <dependencies>
+        <dependency>
+            <artifactId>crawler-common</artifactId>
+            <groupId>com.huangxiaobo.crawler</groupId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <description>Demo project for Spring Boot</description>
     <groupId>com.huangxiaobo.crawler</groupId>
-    <relativePath>../pom.xml</relativePath>
-    <version>0.0.1-SNAPSHOT</version> <!-- lookup parent from repository -->
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <name>crawler-fetcher</name>
+    <packaging>jar</packaging>
+
+    <parent>
+        <artifactId>crawler</artifactId>
+        <groupId>com.huangxiaobo.crawler</groupId>
+        <relativePath>../pom.xml</relativePath>
+        <version>0.0.1-SNAPSHOT</version> <!-- lookup parent from repository -->
+    </parent>
 
 
-  <properties>
-    <java.version>1.8</java.version>
-  </properties>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 
-  <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <classifier>exec</classifier>
-              <executable>true</executable>
-            </configuration>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
-        <groupId>org.springframework.boot</groupId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skipTests>true</skipTests>
-        </configuration>
-        <groupId>org.apache.maven.plugins</groupId>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <classifier>exec</classifier>
+                            <executable>true</executable>
+                        </configuration>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <groupId>org.springframework.boot</groupId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

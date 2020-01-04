@@ -5,15 +5,15 @@ package com.huangxiaobo.crawler.processor;
  */
 public abstract class Processor<E> {
 
-  public Processor<E> next;
-  protected ProcessorManager processorManager;
+    public Processor<E> next;
+    protected ProcessorManager processorManager;
 
-  public Processor() {
-  }
+    public Processor() {
+    }
 
-  public void setProcessorManager(ProcessorManager processorManager) {
-    this.processorManager = processorManager;
-  }
+    public void setProcessorManager(ProcessorManager processorManager) {
+        this.processorManager = processorManager;
+    }
 
-  public abstract void process(E e);
+    public abstract void process(E e);
 }

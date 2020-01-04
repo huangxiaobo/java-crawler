@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
  */
 public class UserFollowingFetcher extends Fetcher {
 
-  private Logger logger = LoggerFactory.getLogger(UserFollowingFetcher.class);
+    private Logger logger = LoggerFactory.getLogger(UserFollowingFetcher.class);
 
-  public UserFollowingFetcher(FetcherTask task) {
-    super(task);
-  }
+    public UserFollowingFetcher(FetcherTask task) {
+        super(task);
+    }
 }

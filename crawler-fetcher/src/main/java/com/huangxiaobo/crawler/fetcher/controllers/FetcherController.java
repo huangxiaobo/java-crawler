@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FetcherController {
 
-  private Logger logger = LoggerFactory.getLogger(FetcherManager.class);
+    private Logger logger = LoggerFactory.getLogger(FetcherManager.class);
 
-  @Autowired
-  private FetcherManager fetcherManager;
+    @Autowired
+    private FetcherManager fetcherManager;
 
-  @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
-  public String submitTask(@RequestBody FetcherTask task) {
-    logger.info("add fetch task" + task);
-    if (task.url == null) {
-      logger.info("task is invalid.");
-      return null;
+    @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    public String submitTask(@RequestBody FetcherTask task) {
+        logger.info("add fetch task" + task);
+        if (task.url == null) {
+            logger.info("task is invalid.");
+            return null;
+        }
+        fetcherManager.addFetchTask(task);
+
+        return "successfully";
     }
-    fetcherManager.addFetchTask(task);
-
-    return "successfully";
-  }
 }

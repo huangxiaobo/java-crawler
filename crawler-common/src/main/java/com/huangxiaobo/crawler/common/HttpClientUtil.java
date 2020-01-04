@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+
 import org.apache.http.Consts;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
@@ -51,202 +52,199 @@ import org.slf4j.LoggerFactory;
 
 public class HttpClientUtil {
 
-  private static final String userAgent =
-      "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36";
-  private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
-  private static RequestConfig requestConfig;
-  private static HttpHost proxy;
-  private static CookieStore cookieStore = new BasicCookieStore();
-  private static CloseableHttpClient httpClient;
+    private static final String userAgent =
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36";
+    private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+    private static RequestConfig requestConfig;
+    private static HttpHost proxy;
+    private static CookieStore cookieStore = new BasicCookieStore();
+    private static CloseableHttpClient httpClient;
 
-  static {
-    init();
-  }
-
-  private static void init() {
-    try {
-      SSLContext sslContext =
-          SSLContexts.custom()
-              .loadTrustMaterial(
-                  KeyStore.getInstance(KeyStore.getDefaultType()),
-                  (TrustStrategy) (x509Certificates, s) -> true)
-              .build();
-
-      SSLConnectionSocketFactory sslSFactory = new SSLConnectionSocketFactory(sslContext);
-      Registry<ConnectionSocketFactory> socketFactoryRegistry =
-          RegistryBuilder.<ConnectionSocketFactory>create()
-              .register("http", PlainConnectionSocketFactory.INSTANCE)
-              .register("https", sslSFactory)
-              .build();
-
-      PoolingHttpClientConnectionManager connManager =
-          new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-      SocketConfig socketConfig =
-          SocketConfig.custom().setSoTimeout(Constants.TIMEOUT).setTcpNoDelay(true).build();
-      connManager.setDefaultSocketConfig(socketConfig);
-
-      ConnectionConfig connectionConfig =
-          ConnectionConfig.custom()
-              .setMalformedInputAction(CodingErrorAction.IGNORE)
-              .setUnmappableInputAction(CodingErrorAction.IGNORE)
-              .setCharset(Consts.UTF_8)
-              .build();
-      connManager.setDefaultConnectionConfig(connectionConfig);
-      connManager.setMaxTotal(500);
-      connManager.setDefaultMaxPerRoute(300);
-      HttpRequestRetryHandler retryHandler =
-          (IOException exception, int executionCount, HttpContext context) -> {
-            if (executionCount > 2) {
-              return false;
-            }
-            if (exception instanceof InterruptedIOException) {
-              return true;
-            }
-            if (exception instanceof ConnectTimeoutException) {
-              return true;
-            }
-            if (exception instanceof UnknownHostException) {
-              return true;
-            }
-            if (exception instanceof SSLException) {
-              return true;
-            }
-            HttpRequest request = HttpClientContext.adapt(context).getRequest();
-
-            if (!(request instanceof HttpEntityEnclosingRequest)) {
-              return true;
-            }
-            return false;
-          };
-      HttpClientBuilder httpClientBuilder =
-          HttpClients.custom()
-              .setConnectionManager(connManager)
-              .setRetryHandler(retryHandler)
-              .setDefaultCookieStore(new BasicCookieStore())
-              .setUserAgent(getUserAgent());
-      if (proxy != null) {
-        httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy)).build();
-      }
-      httpClient = httpClientBuilder.build();
-
-      requestConfig =
-          RequestConfig.custom()
-              .setSocketTimeout(Constants.TIMEOUT)
-              .setConnectTimeout(Constants.TIMEOUT)
-              .setConnectionRequestTimeout(Constants.TIMEOUT)
-              .setCookieSpec(CookieSpecs.STANDARD)
-              .build();
-    } catch (Exception e) {
-      e.printStackTrace();
+    static {
+        init();
     }
-  }
 
-  public static String getUserAgent() {
-    return Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)];
-  }
+    private static void init() {
+        try {
+            SSLContext sslContext =
+                    SSLContexts.custom()
+                            .loadTrustMaterial(
+                                    KeyStore.getInstance(KeyStore.getDefaultType()),
+                                    (TrustStrategy) (x509Certificates, s) -> true)
+                            .build();
 
-  private static String getWebPage(String url) throws IOException {
-    HttpGet request = new HttpGet(url);
+            SSLConnectionSocketFactory sslSFactory = new SSLConnectionSocketFactory(sslContext);
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", PlainConnectionSocketFactory.INSTANCE)
+                            .register("https", sslSFactory)
+                            .build();
 
-    return getWebPage(request, "utf-8");
-  }
+            PoolingHttpClientConnectionManager connManager =
+                    new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 
-  public static String getWebPage(HttpRequestBase request) throws IOException {
-    return getWebPage(request, "utf-8");
-  }
+            SocketConfig socketConfig =
+                    SocketConfig.custom().setSoTimeout(Constants.TIMEOUT).setTcpNoDelay(true).build();
+            connManager.setDefaultSocketConfig(socketConfig);
 
-  @SuppressWarnings({"unused"})
-  public static String postRequest(String postUrl, Map<String, String> params) throws IOException {
-    HttpPost post = new HttpPost(postUrl);
-    setHttpPostParams(post, params);
-    return getWebPage(post, "utf-8");
-  }
+            ConnectionConfig connectionConfig =
+                    ConnectionConfig.custom()
+                            .setMalformedInputAction(CodingErrorAction.IGNORE)
+                            .setUnmappableInputAction(CodingErrorAction.IGNORE)
+                            .setCharset(Consts.UTF_8)
+                            .build();
+            connManager.setDefaultConnectionConfig(connectionConfig);
+            connManager.setMaxTotal(500);
+            connManager.setDefaultMaxPerRoute(300);
+            HttpRequestRetryHandler retryHandler =
+                    (IOException exception, int executionCount, HttpContext context) -> {
+                        if (executionCount > 2) {
+                            return false;
+                        }
+                        if (exception instanceof InterruptedIOException) {
+                            return true;
+                        }
+                        if (exception instanceof ConnectTimeoutException) {
+                            return true;
+                        }
+                        if (exception instanceof UnknownHostException) {
+                            return true;
+                        }
+                        if (exception instanceof SSLException) {
+                            return true;
+                        }
+                        HttpRequest request = HttpClientContext.adapt(context).getRequest();
 
-  /**
-   * @param encoding 字符编码
-   * @return 网页内容
-   */
-  @SuppressWarnings({"unused"})
-  public static String getWebPage(HttpRequestBase request, String encoding) throws IOException {
-    CloseableHttpResponse response = getResponse(request);
-    logger.debug(
-        String.format(
-            "get %s status---%s", request.getURI(), response.getStatusLine().getStatusCode()));
-    String content = EntityUtils.toString(response.getEntity(), encoding);
-    request.releaseConnection();
-    return content;
-  }
+                        return !(request instanceof HttpEntityEnclosingRequest);
+                    };
+            HttpClientBuilder httpClientBuilder =
+                    HttpClients.custom()
+                            .setConnectionManager(connManager)
+                            .setRetryHandler(retryHandler)
+                            .setDefaultCookieStore(new BasicCookieStore())
+                            .setUserAgent(getUserAgent());
+            if (proxy != null) {
+                httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy)).build();
+            }
+            httpClient = httpClientBuilder.build();
 
-  @SuppressWarnings({"unused"})
-  public static CloseableHttpResponse getResponse(HttpRequestBase request) throws IOException {
-    if (request.getConfig() == null) {
-      request.setConfig(requestConfig);
+            requestConfig =
+                    RequestConfig.custom()
+                            .setSocketTimeout(Constants.TIMEOUT)
+                            .setConnectTimeout(Constants.TIMEOUT)
+                            .setConnectionRequestTimeout(Constants.TIMEOUT)
+                            .setCookieSpec(CookieSpecs.STANDARD)
+                            .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    request.setHeader("User-Agent", getUserAgent());
-    HttpClientContext httpClientContext = HttpClientContext.create();
-    httpClientContext.setCookieStore(cookieStore);
-    CloseableHttpResponse response = httpClient.execute(request, httpClientContext);
-    int statusCode = response.getStatusLine().getStatusCode();
-    if (statusCode != 200) {
-      throw new IOException("request url: " + request.getURI() + ",status code is:" + statusCode);
-    }
-    return response;
-  }
 
-  @SuppressWarnings({"unchecked"})
-  public static CloseableHttpResponse getResponse(String url) throws IOException {
-    HttpGet request = new HttpGet(url);
-    return getResponse(request);
-  }
-
-  /**
-   * 有bug 慎用 unicode转化String
-   */
-  @SuppressWarnings({"unused", "fallthrough"})
-  public static String decodeUnicode(String dataStr) {
-    int start = 0;
-    int end = 0;
-    final StringBuffer buffer = new StringBuffer();
-    while (start > -1) {
-      start = dataStr.indexOf("\\u", start - (6 - 1));
-      if (start == -1) {
-        break;
-      }
-      start = start + 2;
-      end = start + 4;
-      String tempStr = dataStr.substring(start, end);
-      String charStr = dataStr.substring(start, end);
-      char letter = (char) Integer.parseInt(charStr, 16); // 16进制parse整形字符串。
-      dataStr = dataStr.replace("\\u" + tempStr, letter + "");
-      start = end;
+    public static String getUserAgent() {
+        return Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)];
     }
-    logger.debug(dataStr);
-    return dataStr;
-  }
 
-  /**
-   * 设置request请求参数
-   */
-  private static void setHttpPostParams(HttpPost request, Map<String, String> params) {
-    List<NameValuePair> formParams = new ArrayList<>();
-    for (String key : params.keySet()) {
-      formParams.add(new BasicNameValuePair(key, params.get(key)));
-    }
-    UrlEncodedFormEntity entity = null;
-    try {
-      entity = new UrlEncodedFormEntity(formParams, "utf-8");
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    request.setEntity(entity);
-  }
+    private static String getWebPage(String url) throws IOException {
+        HttpGet request = new HttpGet(url);
 
-  public static org.apache.http.client.config.RequestConfig.Builder getRequestConfigBuilder() {
-    return RequestConfig.custom()
-        .setSocketTimeout(Constants.TIMEOUT)
-        .setConnectTimeout(Constants.TIMEOUT)
-        .setConnectionRequestTimeout(Constants.TIMEOUT)
-        .setCookieSpec(CookieSpecs.STANDARD);
-  }
+        return getWebPage(request, "utf-8");
+    }
+
+    public static String getWebPage(HttpRequestBase request) throws IOException {
+        return getWebPage(request, "utf-8");
+    }
+
+    @SuppressWarnings({"unused"})
+    public static String postRequest(String postUrl, Map<String, String> params) throws IOException {
+        HttpPost post = new HttpPost(postUrl);
+        setHttpPostParams(post, params);
+        return getWebPage(post, "utf-8");
+    }
+
+    /**
+     * @param encoding 字符编码
+     * @return 网页内容
+     */
+    @SuppressWarnings({"unused"})
+    public static String getWebPage(HttpRequestBase request, String encoding) throws IOException {
+        CloseableHttpResponse response = getResponse(request);
+        logger.debug(
+                String.format(
+                        "get %s status---%s", request.getURI(), response.getStatusLine().getStatusCode()));
+        String content = EntityUtils.toString(response.getEntity(), encoding);
+        request.releaseConnection();
+        return content;
+    }
+
+    @SuppressWarnings({"unused"})
+    public static CloseableHttpResponse getResponse(HttpRequestBase request) throws IOException {
+        if (request.getConfig() == null) {
+            request.setConfig(requestConfig);
+        }
+        request.setHeader("User-Agent", getUserAgent());
+        HttpClientContext httpClientContext = HttpClientContext.create();
+        httpClientContext.setCookieStore(cookieStore);
+        CloseableHttpResponse response = httpClient.execute(request, httpClientContext);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != 200) {
+            throw new IOException("request url: " + request.getURI() + ",status code is:" + statusCode);
+        }
+        return response;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static CloseableHttpResponse getResponse(String url) throws IOException {
+        HttpGet request = new HttpGet(url);
+        return getResponse(request);
+    }
+
+    /**
+     * 有bug 慎用 unicode转化String
+     */
+    @SuppressWarnings({"unused", "fallthrough"})
+    public static String decodeUnicode(String dataStr) {
+        int start = 0;
+        int end = 0;
+        final StringBuffer buffer = new StringBuffer();
+        while (start > -1) {
+            start = dataStr.indexOf("\\u", start - (6 - 1));
+            if (start == -1) {
+                break;
+            }
+            start = start + 2;
+            end = start + 4;
+            String tempStr = dataStr.substring(start, end);
+            String charStr = dataStr.substring(start, end);
+            char letter = (char) Integer.parseInt(charStr, 16); // 16进制parse整形字符串。
+            dataStr = dataStr.replace("\\u" + tempStr, letter + "");
+            start = end;
+        }
+        logger.debug(dataStr);
+        return dataStr;
+    }
+
+    /**
+     * 设置request请求参数
+     */
+    private static void setHttpPostParams(HttpPost request, Map<String, String> params) {
+        List<NameValuePair> formParams = new ArrayList<>();
+        for (String key : params.keySet()) {
+            formParams.add(new BasicNameValuePair(key, params.get(key)));
+        }
+        UrlEncodedFormEntity entity = null;
+        try {
+            entity = new UrlEncodedFormEntity(formParams, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        request.setEntity(entity);
+    }
+
+    public static org.apache.http.client.config.RequestConfig.Builder getRequestConfigBuilder() {
+        return RequestConfig.custom()
+                .setSocketTimeout(Constants.TIMEOUT)
+                .setConnectTimeout(Constants.TIMEOUT)
+                .setConnectionRequestTimeout(Constants.TIMEOUT)
+                .setCookieSpec(CookieSpecs.STANDARD);
+    }
 }
