@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitmqClient {
-
-
-    private String x;
-
     @Autowired
     private RabbitTemplate rabbitTemplate;
 

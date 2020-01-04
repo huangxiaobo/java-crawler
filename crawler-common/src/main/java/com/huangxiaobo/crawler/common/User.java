@@ -67,10 +67,6 @@ public class User {
     private int thankedCount = 0;
     private int gender;
 
-    public int getFollowingCount() {
-        return followingCount;
-    }
-
     public String toString() {
         return String.format(
                 "[name: %s, id: %s gender: %s, headline: %s, url: %s]",

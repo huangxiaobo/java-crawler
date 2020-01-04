@@ -1,10 +1,11 @@
 spring:
   application:
-    name: Crawler
-    savePath: /home/users
+    name: CrawlerParser
 
+server:
+  port: 8082
 
-  parse:
+  parser:
     threadSize: 1000
 
   rabbitmq:
@@ -36,6 +37,3 @@ spring:
 
 mybatis:
   mapperLocations: classpath:mybatis/*.xml
-
-server:
-  port: 8082

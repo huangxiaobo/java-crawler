@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 @Data
 public class FetcherTask {
-
-    private String x;
-
-    private static Logger logger = LoggerFactory.getLogger(FetcherTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(FetcherTask.class);
     public String url;
     public String fetcherClassName;
     public String parserClassName;

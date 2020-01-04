@@ -4,6 +4,9 @@ spring:
     savePath: /home/users
 
 
+  processor:
+    pipelines: com.huangxiaobo.crawler.processor.UserPrintProcessor,com.huangxiaobo.crawler.processor.UserPrintProcessor,com.huangxiaobo.crawler.processor.UserPrintProcessor,
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672

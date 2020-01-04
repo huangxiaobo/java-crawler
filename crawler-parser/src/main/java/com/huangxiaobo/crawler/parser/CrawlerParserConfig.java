@@ -12,14 +12,9 @@ public class CrawlerParserConfig {
     /**
      * 解析网页线程书
      */
-    @Value("${spring.parse.threadSize}")
+    @Value("${spring.parser.threadSize}")
     public int parseThreadSize;
 
-    /**
-     * user 保存路径
-     */
-    @Value("${spring.application.savePath}")
-    public String savePath;
 
     @Bean
     public TaskExecutor parseTaskExecutor() {
