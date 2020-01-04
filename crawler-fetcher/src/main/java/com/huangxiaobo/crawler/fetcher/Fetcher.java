@@ -4,7 +4,6 @@ import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.HttpClientUtil;
 import com.huangxiaobo.crawler.common.Page;
 import com.huangxiaobo.crawler.common.ParseTask;
-import com.huangxiaobo.crawler.common.Proxy;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -20,7 +19,6 @@ public class Fetcher implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(Fetcher.class);
     protected FetcherTask fetcherTask;
     protected HttpRequestBase request;
-    protected Proxy currentProxy;//当前线程使用的代理
 
     protected FetcherManager fetcherManager;
 
@@ -44,10 +42,11 @@ public class Fetcher implements Runnable {
 
             String currentProxy = fetcherManager.getProxy();
             int len = currentProxy.length();
-            currentProxy = currentProxy.substring(0, len-1);
-            String[] addrs = currentProxy.split(":");
+            currentProxy = currentProxy.substring(1, len - 1);
+            String[] address = currentProxy.split(":");
+            logger.info(String.format("===============> ip=%s, port=%s", address[0], address[1]));
 
-            HttpHost proxy = new HttpHost(addrs[0], Integer.valueOf(addrs[1]));
+            HttpHost proxy = new HttpHost(address[0], Integer.valueOf(address[1]));
             request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
 
             long requestStartTime = System.currentTimeMillis();
@@ -79,18 +78,10 @@ public class Fetcher implements Runnable {
         } finally {
             logger.info(String.format("request to %s %s.", url, success));
             if (success == false) {
-                if (currentProxy != null) {
-                    // 该代理可用，将该代理继续添加到proxyQueue
-                    currentProxy.setFailureTimes(currentProxy.getFailureTimes() + 1);
-                }
                 retry();
             }
             if (request != null) {
                 request.releaseConnection();
-            }
-            if (currentProxy != null && !currentProxy.isDiscardProxy()) {
-                currentProxy.setTimeInterval(180);
-                fetcherManager.addProxy(currentProxy);
             }
         }
     }
@@ -107,7 +98,6 @@ public class Fetcher implements Runnable {
      */
     protected void parse(Page page) {
         // 加入待解析队列
-        this.fetcherManager
-                .addParseTask(new ParseTask(page.getHtml(), this.fetcherTask.getParserClassName()));
+        this.fetcherManager.addParseTask(new ParseTask(page.getHtml(), this.fetcherTask.getParserClassName()));
     }
 }

@@ -1,15 +1,10 @@
 spring:
   application:
     name: CrawlerFetcher
-    savePath: /home/users
-    startUrl: https://www.zhihu.com/people/huang-liao-57
 
-
-  fetch:
-    threadSize: 1000
-    initUrl: https://www.zhihu.com/people/gong-qing-tuan-zhong-yang-67
-
-  parse:
+  fetcher:
+    startUrls: https://www.zhihu.com/people/huang-liao-57,https://www.zhihu.com/people/gong-qing-tuan-zhong-yang-67,https://www.zhihu.com/people/cloudycity
+    proxyUrl: http://127.0.0.1:5010/get/
     threadSize: 1000
 
   rabbitmq:
@@ -17,30 +12,6 @@ spring:
     port: 5672
     username: rabbitmq
     password: rabbitmq
-
-  datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/zhihu
-    username: postgres
-    password: postgres
-    platform: POSTGRESQL
-    driver-class-name: org.postgresql.Driver
-    maxActive: 50
-    initialSize: 10
-    maxWait: 60000
-    minIdle: 6
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: select 'x'
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    maxOpenPreparedStatements: 20
-
-
-
-mybatis:
-  mapperLocations: classpath:mybatis/*.xml
 
 server:
   port: 8081

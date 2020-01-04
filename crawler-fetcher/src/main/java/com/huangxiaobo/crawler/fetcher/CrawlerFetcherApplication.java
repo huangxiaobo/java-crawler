@@ -26,19 +26,7 @@ public class CrawlerFetcherApplication {
         System.out.println("hello world, I have just started up");
 
         fetcherManager.start();
-
-        fetcherManager.addFetchTask(
-                new FetcherTask(
-                        crawlerConfig.startURL,
-                        UserDetailFetcher.class.getName(),
-                        Constants.USER_DETAIL_PARSER_CLASS_NAME
-                )
-        );
-        String[] urls = new String[]{
-                "https://www.zhihu.com/people/gong-qing-tuan-zhong-yang-67",
-                "https://www.zhihu.com/people/cloudycity"
-        };
-        for (String url : urls) {
+        for (String url : crawlerConfig.startURLs) {
             fetcherManager.addFetchTask(
                     new FetcherTask(
                             url,

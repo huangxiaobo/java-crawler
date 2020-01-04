@@ -1,6 +1,7 @@
 package com.huangxiaobo.crawler.fetcher;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.huangxiaobo.crawler.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 @Service
 public class FetcherManager {
+    private static final Logger logger = LoggerFactory.getLogger(FetcherManager.class);
 
     private final ArrayBlockingQueue<String> proxyQueue = new ArrayBlockingQueue(1000);
     @Autowired
     public MemoryBloomFilter bloomFilter;
-    private Logger logger = LoggerFactory.getLogger(FetcherManager.class);
     @Autowired
     private RabbitmqClient rabbitmqClient;
-    @Autowired
-    private FetcherManager fetcherManager;
+
+    public CrawlerFetcherConfig crawlerConfig;
     @Autowired
     @Qualifier("fetchTaskExecutor")
     private TaskExecutor fetchTaskExecutor;
@@ -37,8 +38,8 @@ public class FetcherManager {
     /*
     从mq中获取任务，然后抓取用户详情
      */
-    public FetcherManager() {
-//    bloomFilter = new MemoryBloomFilter();
+    public FetcherManager(@Autowired CrawlerFetcherConfig crawlerConfig) {
+        this.crawlerConfig = crawlerConfig;
     }
 
     public void start() {
@@ -61,17 +62,17 @@ public class FetcherManager {
                     try {
                         RestTemplate restTemplate = new RestTemplate();
 
-                        final String baseUrl = "http://127.0.0.1:5010/get/";
-                        URI uri = new URI(baseUrl);
-
+                        URI uri = new URI(crawlerConfig.proxyUrl);
                         HttpHeaders headers = new HttpHeaders();
                         HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
                         ResponseEntity<String> entity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
 
-                        logger.info("" + entity.getStatusCodeValue());
-                        logger.info("" + entity.getBody());
+                        // logger.info("" + entity.getStatusCodeValue());
+                        // logger.info("" + entity.getBody());
                         String proxy = entity.getBody();
-                        proxyQueue.add(proxy);
+                        JsonObject proxyObject = new Gson().fromJson(proxy, JsonObject.class);
+
+                        proxyQueue.add(proxyObject.get("proxy").toString());
 
                         logger.info("proxy queue size: " + proxyQueue.size());
                     } catch (Exception e) {
@@ -84,7 +85,7 @@ public class FetcherManager {
 
     @RabbitListener(queues = Constants.MQ_QUEUE_NAME)
     public void receive(String message) {
-        System.out.println("FetcherManager [x] Received '" + message + "'" + this);
+        logger.info("FetcherManager [x] Received '" + message + "'" + this);
 
         FetcherTask fetcherTask;
         try {
@@ -109,7 +110,7 @@ public class FetcherManager {
             constructor.setAccessible(true);
 
             Fetcher fetcher = (Fetcher) constructor.newInstance(fetcherTask);
-            fetcher.setFetcherManager(fetcherManager);
+            fetcher.setFetcherManager(this);
 
             fetchTaskExecutor.execute(fetcher);
         } catch (Exception e) {
