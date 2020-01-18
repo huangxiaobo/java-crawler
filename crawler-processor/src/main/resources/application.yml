@@ -32,6 +32,10 @@ spring:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
 
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
 
 
 mybatis:

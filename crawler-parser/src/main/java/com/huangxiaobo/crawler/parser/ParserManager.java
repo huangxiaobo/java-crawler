@@ -31,9 +31,6 @@ public class ParserManager {
 
     }
 
-    public void start() {
-
-    }
 
     @RabbitListener(queues = Constants.MQ_PAGE_QUEUE_NAME)
     public void receive(String message) {
@@ -71,10 +68,12 @@ public class ParserManager {
     }
 
     public void addProcessTask(String userJson) {
+        logger.info("add task to process queue");
         rabbitmqClient.sendProcessTask(userJson);
     }
 
     public void addFetchTask(FetcherTask task) {
+        logger.info("add task to fetch queue");
         rabbitmqClient.sendFetchTask(new Gson().toJson(task));
     }
 }

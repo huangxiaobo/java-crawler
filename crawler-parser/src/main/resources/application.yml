@@ -2,8 +2,7 @@ spring:
   application:
     name: CrawlerParser
 
-server:
-  port: 8082
+
 
   parser:
     threadSize: 1000
@@ -33,7 +32,8 @@ server:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
 
-
+server:
+  port: 8082
 
 mybatis:
   mapperLocations: classpath:mybatis/*.xml

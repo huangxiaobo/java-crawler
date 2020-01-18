@@ -6,14 +6,13 @@ import com.google.gson.JsonParser;
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
-
-import java.util.Map;
-import java.util.Set;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by hxb on 2018/4/1.
@@ -45,7 +44,7 @@ public class UserDetailParser extends Parser {
                 System.out.println(urlToken);
 
                 String useJson = entry.getValue().toString();
-                getParserManager().addProcessTask(useJson);
+                parserManager.addProcessTask(useJson);
 
                 // 抓取关注他的人的所有用户详情
                 String url = "https://www.zhihu.com/people/" + urlToken;
@@ -65,6 +64,7 @@ public class UserDetailParser extends Parser {
                                     UserFollowingParser.class.getName()));
                 }
             }
+
         } catch (Exception e) {
             logger.warn("page may be not exists.");
         }

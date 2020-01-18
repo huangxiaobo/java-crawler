@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.huangxiaobo.crawler.common.UserMapper">
+<mapper namespace="com.huangxiaobo.crawler.common.mapper.UserMapper">
     <!--<cache />-->
     <insert id="insertUser" parameterType="com.huangxiaobo.crawler.common.User">
     insert into users (id, name, gender, headline, url)
@@ -16,6 +16,9 @@
         <result column="url" jdbcType="VARCHAR" property="url"/>
     </resultMap>
 
+    <select id="countAll" resultType="java.lang.Long">
+        select count(*) from users
+    </select>
 
     <select id="findAll" resultMap="baseResultMap">
         select id,name,gender, headline, url from users
