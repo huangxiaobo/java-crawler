@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.parser;
+package com.huangxiaobo.crawler.parser.parser;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

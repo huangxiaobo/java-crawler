@@ -2,6 +2,9 @@ package com.huangxiaobo.crawler.fetcher;
 
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
+import com.huangxiaobo.crawler.fetcher.configure.CrawlerFetcherConfig;
+import com.huangxiaobo.crawler.fetcher.fetcher.UserDetailFetcher;
+import com.huangxiaobo.crawler.fetcher.service.FetcherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +15,7 @@ import org.springframework.context.event.EventListener;
 public class CrawlerFetcherApplication {
 
     @Autowired
-    public FetcherManager fetcherManager;
+    public FetcherService fetcherManager;
 
     @Autowired
     public CrawlerFetcherConfig crawlerConfig;

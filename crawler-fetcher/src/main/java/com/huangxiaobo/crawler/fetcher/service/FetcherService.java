@@ -1,8 +1,10 @@
-package com.huangxiaobo.crawler.fetcher;
+package com.huangxiaobo.crawler.fetcher.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.huangxiaobo.crawler.common.*;
+import com.huangxiaobo.crawler.fetcher.fetcher.Fetcher;
+import com.huangxiaobo.crawler.fetcher.configure.CrawlerFetcherConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -21,16 +23,26 @@ import java.net.URI;
 import java.util.concurrent.ArrayBlockingQueue;
 
 @Service
-public class FetcherManager {
-    private static final Logger logger = LoggerFactory.getLogger(FetcherManager.class);
+public class FetcherService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FetcherService.class);
 
     private final ArrayBlockingQueue<String> proxyQueue = new ArrayBlockingQueue(1000);
     @Autowired
     public MemoryBloomFilter bloomFilter;
-    @Autowired
+
+    /**
+     * mq
+     */
     private RabbitmqClient rabbitmqClient;
 
+    /**
+     * fc
+     */
     public CrawlerFetcherConfig crawlerConfig;
+    /**
+     *
+     */
     @Autowired
     @Qualifier("fetchTaskExecutor")
     private TaskExecutor fetchTaskExecutor;
@@ -38,46 +50,44 @@ public class FetcherManager {
     /*
     从mq中获取任务，然后抓取用户详情
      */
-    public FetcherManager(@Autowired CrawlerFetcherConfig crawlerConfig) {
+    @Autowired
+    public FetcherService(CrawlerFetcherConfig crawlerConfig, RabbitmqClient rabbitmqClient) {
         this.crawlerConfig = crawlerConfig;
+        this.rabbitmqClient = rabbitmqClient;
     }
 
     public void start() {
 
-        new Thread(new Runnable() {
+        new Thread(() -> {
+            while (true) {
 
-            @Override
-            public void run() {
-                while (true) {
-
-                    if (proxyQueue.size() > 0) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        continue;
-                    }
-
+                if (proxyQueue.size() > 0) {
                     try {
-                        RestTemplate restTemplate = new RestTemplate();
-
-                        URI uri = new URI(crawlerConfig.proxyUrl);
-                        HttpHeaders headers = new HttpHeaders();
-                        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
-                        ResponseEntity<String> entity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
-
-                        // logger.info("" + entity.getStatusCodeValue());
-                        // logger.info("" + entity.getBody());
-                        String proxy = entity.getBody();
-                        JsonObject proxyObject = new Gson().fromJson(proxy, JsonObject.class);
-
-                        proxyQueue.add(proxyObject.get("proxy").toString());
-
-                        logger.info("proxy queue size: " + proxyQueue.size());
-                    } catch (Exception e) {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    continue;
+                }
+
+                try {
+                    RestTemplate restTemplate = new RestTemplate();
+
+                    URI uri = new URI(crawlerConfig.proxyUrl);
+                    HttpHeaders headers = new HttpHeaders();
+                    HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+                    ResponseEntity<String> entity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+
+                    // logger.info("" + entity.getStatusCodeValue());
+                    // logger.info("" + entity.getBody());
+                    String proxy = entity.getBody();
+                    JsonObject proxyObject = new Gson().fromJson(proxy, JsonObject.class);
+
+                    proxyQueue.add(proxyObject.get("proxy").toString());
+
+                    logger.info("proxy queue size: " + proxyQueue.size());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }).start();

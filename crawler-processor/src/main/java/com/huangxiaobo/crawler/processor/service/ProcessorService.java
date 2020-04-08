@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.processor;
+package com.huangxiaobo.crawler.processor.service;
 
 import com.google.gson.Gson;
 import com.huangxiaobo.crawler.common.User;
@@ -16,11 +16,15 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 public class ProcessorService {
+
     private Logger logger = LoggerFactory.getLogger(ProcessorService.class);
 
+    /**
+     * mapper
+     */
     private UserMapper userMapper;
 
-    public ProcessorService(@Autowired UserMapper userMapper){
+    public ProcessorService(@Autowired UserMapper userMapper) {
         this.userMapper = userMapper;
     }
 
@@ -38,7 +42,7 @@ public class ProcessorService {
         logger.info("user: " + user.toString());
         try {
             userMapper.insertUser(user);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("user: " + user + " err: " + e.toString());
         }
 

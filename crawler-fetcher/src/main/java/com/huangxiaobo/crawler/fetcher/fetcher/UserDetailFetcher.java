@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.fetcher;
+package com.huangxiaobo.crawler.fetcher.fetcher;
 
 import com.huangxiaobo.crawler.common.FetcherTask;
 

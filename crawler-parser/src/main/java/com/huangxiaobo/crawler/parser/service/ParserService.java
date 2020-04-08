@@ -1,10 +1,11 @@
-package com.huangxiaobo.crawler.parser;
+package com.huangxiaobo.crawler.parser.service;
 
 import com.google.gson.Gson;
 import com.huangxiaobo.crawler.common.Constants;
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;
 import com.huangxiaobo.crawler.common.RabbitmqClient;
+import com.huangxiaobo.crawler.parser.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,9 +17,9 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Constructor;
 
 @Service
-public class ParserManager {
+public class ParserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParserManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParserService.class);
 
     @Autowired
     public RabbitmqClient rabbitmqClient;
@@ -27,7 +28,7 @@ public class ParserManager {
     @Qualifier("parseTaskExecutor")
     private TaskExecutor parseTaskExecutor;
 
-    public ParserManager() {
+    public ParserService() {
 
     }
 

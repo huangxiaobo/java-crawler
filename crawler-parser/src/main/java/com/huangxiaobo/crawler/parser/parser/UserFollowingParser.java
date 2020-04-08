@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.parser;
+package com.huangxiaobo.crawler.parser.parser;
 
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.ParseTask;

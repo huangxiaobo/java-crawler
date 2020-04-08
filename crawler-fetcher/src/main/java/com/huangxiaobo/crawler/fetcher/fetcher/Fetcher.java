@@ -1,9 +1,10 @@
-package com.huangxiaobo.crawler.fetcher;
+package com.huangxiaobo.crawler.fetcher.fetcher;
 
 import com.huangxiaobo.crawler.common.FetcherTask;
 import com.huangxiaobo.crawler.common.HttpClientUtil;
 import com.huangxiaobo.crawler.common.Page;
 import com.huangxiaobo.crawler.common.ParseTask;
+import com.huangxiaobo.crawler.fetcher.service.FetcherService;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -20,13 +21,13 @@ public class Fetcher implements Runnable {
     protected FetcherTask fetcherTask;
     protected HttpRequestBase request;
 
-    protected FetcherManager fetcherManager;
+    protected FetcherService fetcherManager;
 
     public Fetcher(FetcherTask task) {
         this.fetcherTask = task;
     }
 
-    public void setFetcherManager(FetcherManager fetcherManager) {
+    public void setFetcherManager(FetcherService fetcherManager) {
         this.fetcherManager = fetcherManager;
     }
 
@@ -77,7 +78,7 @@ public class Fetcher implements Runnable {
                     .format("request to %s due to exception %s", url, e.getClass().getSimpleName()));
         } finally {
             logger.info(String.format("request to %s %s.", url, success));
-            if (success == false) {
+            if (!success) {
                 retry();
             }
             if (request != null) {

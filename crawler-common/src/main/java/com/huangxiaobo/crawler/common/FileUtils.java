@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 /**
  * Created by hxb on 2018/4/1.
  */
-public class FileUtils {
+public class   FileUtils {
 
     public static void readToBuffer(StringBuffer buffer, String filePath) throws IOException {
         InputStream is = new FileInputStream(filePath);

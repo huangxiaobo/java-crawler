@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.processor;
+package com.huangxiaobo.crawler.processor.configure;
 
 import org.springframework.beans.factory.annotation.Value;
 

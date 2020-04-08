@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.fetcher;
+package com.huangxiaobo.crawler.fetcher.configure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

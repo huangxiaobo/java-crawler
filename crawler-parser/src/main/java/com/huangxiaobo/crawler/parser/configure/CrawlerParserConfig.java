@@ -1,4 +1,4 @@
-package com.huangxiaobo.crawler.parser;
+package com.huangxiaobo.crawler.parser.configure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
