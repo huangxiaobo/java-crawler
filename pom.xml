@@ -92,7 +92,7 @@
         <dependency>
             <artifactId>postgresql</artifactId>
             <groupId>org.postgresql</groupId>
-            <version>42.2.5</version>
+            <version>42.4.1</version>
         </dependency>
 
 
